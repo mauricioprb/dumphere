@@ -1,15 +1,15 @@
 export default {
     // App
-    'app.title': 'MD Editor',
-    'app.titleFull': 'MD Editor — Markdown Colaborativo',
+    'app.title': 'Markdont',
+    'app.titleFull': 'Markdont - Markdown Colaborativo',
 
     // Home page
-    'home.heading': '📝 MD Editor',
+    'home.heading': '📝 Markdont',
     'home.subheading': 'Edição colaborativa de Markdown em tempo real.',
     'home.subheading2': 'Sem login. Crie uma URL e comece a escrever.',
     'home.getStarted': 'Comece agora',
-    'home.inputPlaceholder': 'minha-nota-incrivel',
-    'home.openButton': 'Abrir →',
+    'home.inputPlaceholder': 'minha-nota',
+    'home.openButton': 'Abrir',
     'home.inputHint': 'Digite qualquer caminho de URL para criar ou abrir um documento. Por exemplo:',
 
     // Features

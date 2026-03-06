@@ -79,7 +79,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.codeBlock',
         descKey: 'slash.codeBlockDesc',
-        icon: '{ }',
+        icon: '{}',
         searchTerms: ['code', 'codeblock', 'código', 'codigo'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).toggleCodeBlock().run()

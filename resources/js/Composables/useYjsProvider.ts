@@ -38,11 +38,15 @@ export function useYjsProvider(slug: string) {
     awareness.on('change', () => {
         const states = awareness.getStates()
         const users = Array.from(states.entries())
-            .filter(([clientId]) => clientId !== ydoc.clientID)
+            .filter(([clientId, state]) => {
+                if (clientId === ydoc.clientID) return false
+                if (!state || !state.user) return false
+                return true
+            })
             .map(([clientId, state]) => ({
                 id: String(clientId),
-                name: (state as any).user?.name ?? 'Anonymous',
-                color: (state as any).user?.color ?? '#888',
+                name: (state as any).user.name ?? 'Anonymous',
+                color: (state as any).user.color ?? '#888',
             }))
         store.setUsers(users)
     })
@@ -61,7 +65,15 @@ export function useYjsProvider(slug: string) {
         console.log(`[Yjs] IndexedDB synced for "${slug}"`)
     })
 
+    const handleBeforeUnload = () => {
+        awareness.setLocalState(null)
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
     onUnmounted(() => {
+        window.removeEventListener('beforeunload', handleBeforeUnload)
+        awareness.setLocalState(null)
+        store.setUsers([])
         wsProvider.disconnect()
         wsProvider.destroy()
         indexeddbPersistence.destroy()

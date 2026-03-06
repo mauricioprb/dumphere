@@ -2,6 +2,8 @@
 import { onMounted, onUnmounted, ref, watch, shallowRef } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { common, createLowlight } from 'lowlight'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -16,6 +18,8 @@ import Subscript from '@tiptap/extension-subscript'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import CharacterCount from '@tiptap/extension-character-count'
 import { SlashCommands } from '@/Extensions/SlashCommands'
+
+const lowlight = createLowlight(common)
 import { useYjsProvider } from '@/Composables/useYjsProvider'
 import { useAutoSave } from '@/Composables/useAutoSave'
 import { useI18n } from '@/Composables/useI18n'
@@ -43,6 +47,11 @@ const editor = useEditor({
     extensions: [
         StarterKit.configure({
             undoRedo: false,
+            codeBlock: false,
+        }),
+        CodeBlockLowlight.configure({
+            lowlight,
+            defaultLanguage: 'plaintext',
         }),
         Placeholder.configure({
             placeholder: () => t('editor.placeholder'),

@@ -40,7 +40,7 @@ const buttons: ToolbarItem[] = [
     { label: '❝', action: () => props.editor.chain().focus().toggleBlockquote().run(), isActive: () => props.editor.isActive('blockquote'), title: t('toolbar.blockquote') },
     { type: 'divider' },
     { label: '—', action: () => props.editor.chain().focus().setHorizontalRule().run(), isActive: () => false, title: t('toolbar.horizontalRule') },
-    { label: '{ }', action: () => props.editor.chain().focus().toggleCodeBlock().run(), isActive: () => props.editor.isActive('codeBlock'), title: t('toolbar.codeBlock') },
+    { label: '{}', action: () => props.editor.chain().focus().toggleCodeBlock().run(), isActive: () => props.editor.isActive('codeBlock'), title: t('toolbar.codeBlock') },
     { label: '▦', action: () => props.editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(), isActive: () => props.editor.isActive('table'), title: t('toolbar.table') },
 ]
 </script>
@@ -57,7 +57,7 @@ const buttons: ToolbarItem[] = [
                 @click="(btn as ToolbarButton).action()"
                 :title="(btn as ToolbarButton).title"
                 :class="[
-                    'px-2 py-1 rounded text-sm font-medium transition-colors duration-100',
+                    'px-2 py-1 rounded text-sm font-medium transition-colors duration-100 whitespace-nowrap shrink-0',
                     (btn as ToolbarButton).isActive()
                         ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300'
                         : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100'

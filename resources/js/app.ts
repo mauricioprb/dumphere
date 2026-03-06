@@ -4,7 +4,7 @@ import { createPinia } from 'pinia'
 import type { DefineComponent } from 'vue'
 
 createInertiaApp({
-    title: (title: string) => title ? `${title} — MD Editor` : 'MD Editor',
+    title: (title: string) => title ? `${title} - Markdont` : 'Markdont',
     resolve: (name: string) => {
         const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue', { eager: true })
         return pages[`./Pages/${name}.vue`]
