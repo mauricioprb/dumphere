@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain\Document\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+
+class Document extends Model
+{
+    use HasUuids;
+
+    protected $fillable = [
+        'slug',
+        'title',
+        'markdown_content',
+        'yjs_state',
+        'last_accessed_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'yjs_state' => 'array',
+            'last_accessed_at' => 'datetime',
+        ];
+    }
+
+    public const MAX_SIZE_BYTES = 512_000;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+}

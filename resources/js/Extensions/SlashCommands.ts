@@ -1,0 +1,196 @@
+import { Extension } from '@tiptap/core'
+import { VueRenderer } from '@tiptap/vue-3'
+import tippy, { type Instance as TippyInstance } from 'tippy.js'
+import Suggestion from '@tiptap/suggestion'
+import SlashCommandMenu from '@/Components/Editor/SlashCommandMenu.vue'
+
+export interface SlashCommandItem {
+    titleKey: string
+    descKey: string
+    icon: string
+    searchTerms: string[]
+    command: (props: { editor: any; range: any }) => void
+}
+
+const defaultItems: SlashCommandItem[] = [
+    {
+        titleKey: 'slash.heading1',
+        descKey: 'slash.heading1Desc',
+        icon: 'H1',
+        searchTerms: ['heading', 'h1', 'title', 'titulo', 'título'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run()
+        },
+    },
+    {
+        titleKey: 'slash.heading2',
+        descKey: 'slash.heading2Desc',
+        icon: 'H2',
+        searchTerms: ['heading', 'h2', 'subtitle', 'subtitulo', 'subtítulo'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run()
+        },
+    },
+    {
+        titleKey: 'slash.heading3',
+        descKey: 'slash.heading3Desc',
+        icon: 'H3',
+        searchTerms: ['heading', 'h3', 'titulo', 'título'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run()
+        },
+    },
+    {
+        titleKey: 'slash.bulletList',
+        descKey: 'slash.bulletListDesc',
+        icon: '•',
+        searchTerms: ['bullet', 'list', 'unordered', 'lista', 'marcadores'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).toggleBulletList().run()
+        },
+    },
+    {
+        titleKey: 'slash.orderedList',
+        descKey: 'slash.orderedListDesc',
+        icon: '1.',
+        searchTerms: ['ordered', 'list', 'numbered', 'numerada', 'lista'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).toggleOrderedList().run()
+        },
+    },
+    {
+        titleKey: 'slash.taskList',
+        descKey: 'slash.taskListDesc',
+        icon: '☑',
+        searchTerms: ['task', 'todo', 'checklist', 'checkbox', 'tarefa', 'tarefas'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).toggleTaskList().run()
+        },
+    },
+    {
+        titleKey: 'slash.blockquote',
+        descKey: 'slash.blockquoteDesc',
+        icon: '❝',
+        searchTerms: ['quote', 'blockquote', 'citação', 'citacao'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).toggleBlockquote().run()
+        },
+    },
+    {
+        titleKey: 'slash.codeBlock',
+        descKey: 'slash.codeBlockDesc',
+        icon: '{ }',
+        searchTerms: ['code', 'codeblock', 'código', 'codigo'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
+        },
+    },
+    {
+        titleKey: 'slash.horizontalRule',
+        descKey: 'slash.horizontalRuleDesc',
+        icon: '—',
+        searchTerms: ['horizontal', 'rule', 'divider', 'separator', 'divisor', 'linha'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).setHorizontalRule().run()
+        },
+    },
+    {
+        titleKey: 'slash.table',
+        descKey: 'slash.tableDesc',
+        icon: '▦',
+        searchTerms: ['table', 'grid', 'tabela'],
+        command: ({ editor, range }) => {
+            editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+                .run()
+        },
+    },
+]
+
+export const SlashCommands = Extension.create({
+    name: 'slashCommands',
+
+    addOptions() {
+        return {
+            suggestion: {
+                char: '/',
+                startOfLine: false,
+                items: ({ query }: { query: string }) => {
+                    const q = query.toLowerCase()
+                    if (!q) return defaultItems
+                    return defaultItems.filter((item) =>
+                        item.searchTerms.some((term) => term.includes(q)) ||
+                        item.titleKey.toLowerCase().includes(q)
+                    )
+                },
+                render: () => {
+                    let component: VueRenderer | null = null
+                    let popup: TippyInstance | null = null
+
+                    return {
+                        onStart: (props: any) => {
+                            component = new VueRenderer(SlashCommandMenu, {
+                                props,
+                                editor: props.editor,
+                            })
+
+                            if (!props.clientRect || !component.element) return
+
+                            popup = tippy(document.body, {
+                                getReferenceClientRect: props.clientRect,
+                                appendTo: () => document.body,
+                                content: component.element as Element,
+                                showOnCreate: true,
+                                interactive: true,
+                                trigger: 'manual',
+                                placement: 'bottom-start',
+                                animation: 'shift-away',
+                                theme: 'slash-menu',
+                            })
+                        },
+
+                        onUpdate: (props: any) => {
+                            component?.updateProps(props)
+
+                            if (popup && props.clientRect) {
+                                popup.setProps({
+                                    getReferenceClientRect: props.clientRect,
+                                })
+                            }
+                        },
+
+                        onKeyDown: (props: any) => {
+                            if (props.event.key === 'Escape') {
+                                popup?.hide()
+                                return true
+                            }
+                            return (component?.ref as any)?.onKeyDown(props.event) ?? false
+                        },
+
+                        onExit: () => {
+                            popup?.destroy()
+                            component?.destroy()
+                        },
+                    }
+                },
+                command: ({ editor, range, props }: any) => {
+                    props.command({ editor, range })
+                },
+            },
+        }
+    },
+
+    addProseMirrorPlugins() {
+        const { suggestion } = this.options
+
+        return [
+            Suggestion({
+                editor: this.editor,
+                ...suggestion,
+            }),
+        ]
+    },
+})
