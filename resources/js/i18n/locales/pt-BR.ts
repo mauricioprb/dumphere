@@ -1,10 +1,10 @@
 export default {
     // App
-    'app.title': 'Markdont',
-    'app.titleFull': 'Markdont - Markdown Colaborativo',
+    'app.title': 'Dumphere',
+    'app.titleFull': 'Dumphere - Markdown Colaborativo',
 
     // Home page
-    'home.heading': 'Markdont',
+    'home.heading': 'Dumphere',
     'home.subheading': 'Edição colaborativa de Markdown em tempo real.',
     'home.inputPlaceholder': 'minha-nota',
     'home.openButton': 'Abrir',
