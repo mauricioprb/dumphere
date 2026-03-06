@@ -17,6 +17,7 @@ import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import CharacterCount from '@tiptap/extension-character-count'
+import { Markdown } from 'tiptap-markdown'
 import { SlashCommands } from '@/Extensions/SlashCommands'
 
 const lowlight = createLowlight(common)
@@ -93,6 +94,16 @@ const editor = useEditor({
         TableCell,
         TableHeader,
         CharacterCount,
+        Markdown.configure({
+            html: true,
+            tightLists: true,
+            tightListClass: 'tight',
+            bulletListMarker: '-',
+            linkify: true,
+            breaks: false,
+            transformPastedText: true,
+            transformCopiedText: true,
+        }),
         SlashCommands,
     ],
     editorProps: {
