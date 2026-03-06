@@ -6,8 +6,6 @@ export default {
     // Home page
     'home.heading': '📝 Markdont',
     'home.subheading': 'Edição colaborativa de Markdown em tempo real.',
-    'home.subheading2': 'Sem login. Crie uma URL e comece a escrever.',
-    'home.getStarted': 'Comece agora',
     'home.inputPlaceholder': 'minha-nota',
     'home.openButton': 'Abrir',
     'home.inputHint': 'Digite qualquer caminho de URL para criar ou abrir um documento. Por exemplo:',
