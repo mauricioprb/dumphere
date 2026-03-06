@@ -9,6 +9,7 @@ import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useDocumentStore } from '@/Stores/documentStore'
 import { usePresence } from '@/Composables/usePresence'
 import { useI18n } from '@/Composables/useI18n'
+import { FileText } from 'lucide-vue-next'
 import type { DocumentData } from '@/types/document'
 
 const props = defineProps<{
@@ -30,7 +31,7 @@ onMounted(() => {
         <div class="shrink-0 border-b border-neutral-200 dark:border-neutral-700 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm z-10">
             <div class="px-4 py-2 flex items-center justify-between">
                 <div class="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 min-w-0">
-                    <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-medium text-base">📝</a>
+                    <a href="/" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors"><FileText class="w-5 h-5" :stroke-width="2" /></a>
                     <span class="text-neutral-300 dark:text-neutral-600">/</span>
                     <span class="font-mono text-neutral-700 dark:text-neutral-300 truncate">{{ document.slug }}</span>
                 </div>

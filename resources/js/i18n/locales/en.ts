@@ -4,7 +4,7 @@ export default {
     'app.titleFull': 'Markdont - Collaborative Markdown',
 
     // Home page
-    'home.heading': '📝 Markdont',
+    'home.heading': 'Markdont',
     'home.subheading': 'Collaborative Markdown editing in real-time.',
     'home.inputPlaceholder': 'my-note',
     'home.openButton': 'Open',

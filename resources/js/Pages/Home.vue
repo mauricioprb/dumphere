@@ -4,6 +4,7 @@ import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useI18n } from '@/Composables/useI18n'
+import { FileEdit, Users, LockOpen, FileText } from 'lucide-vue-next'
 
 const { t } = useI18n()
 
@@ -28,7 +29,8 @@ function goToDocument() {
 
             <div class="max-w-4xl w-full text-center space-y-5 sm:space-y-8">
                 <div class="space-y-2 sm:space-y-4 pt-8 sm:pt-0">
-                    <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                    <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center justify-center gap-3">
+                        <FileText class="w-8 h-8 sm:w-12 sm:h-12 text-primary-600 dark:text-primary-400" :stroke-width="1.75" />
                         {{ t('home.heading') }}
                     </h1>
                     <p class="text-sm sm:text-xl text-neutral-500 dark:text-neutral-400 leading-relaxed">
@@ -69,17 +71,23 @@ function goToDocument() {
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left pb-6 sm:pb-0">
                     <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
-                        <div class="text-xl sm:text-2xl">✏️</div>
+                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
+                            <FileEdit class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        </div>
                         <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.markdown') }}</h3>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.markdownDesc') }}</p>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
-                        <div class="text-xl sm:text-2xl">👥</div>
+                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
+                            <Users class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        </div>
                         <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.realtime') }}</h3>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.realtimeDesc') }}</p>
                     </div>
                     <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
-                        <div class="text-xl sm:text-2xl">🔓</div>
+                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
+                            <LockOpen class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        </div>
                         <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.noLogin') }}</h3>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.noLoginDesc') }}</p>
                     </div>

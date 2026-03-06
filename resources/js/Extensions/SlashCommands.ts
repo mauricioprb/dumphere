@@ -16,7 +16,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.heading1',
         descKey: 'slash.heading1Desc',
-        icon: 'H1',
+        icon: 'Heading1',
         searchTerms: ['heading', 'h1', 'title', 'titulo', 'título'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run()
@@ -25,7 +25,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.heading2',
         descKey: 'slash.heading2Desc',
-        icon: 'H2',
+        icon: 'Heading2',
         searchTerms: ['heading', 'h2', 'subtitle', 'subtitulo', 'subtítulo'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run()
@@ -34,7 +34,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.heading3',
         descKey: 'slash.heading3Desc',
-        icon: 'H3',
+        icon: 'Heading3',
         searchTerms: ['heading', 'h3', 'titulo', 'título'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run()
@@ -43,7 +43,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.bulletList',
         descKey: 'slash.bulletListDesc',
-        icon: '•',
+        icon: 'List',
         searchTerms: ['bullet', 'list', 'unordered', 'lista', 'marcadores'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).toggleBulletList().run()
@@ -52,7 +52,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.orderedList',
         descKey: 'slash.orderedListDesc',
-        icon: '1.',
+        icon: 'ListOrdered',
         searchTerms: ['ordered', 'list', 'numbered', 'numerada', 'lista'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).toggleOrderedList().run()
@@ -61,7 +61,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.taskList',
         descKey: 'slash.taskListDesc',
-        icon: '☑',
+        icon: 'ListChecks',
         searchTerms: ['task', 'todo', 'checklist', 'checkbox', 'tarefa', 'tarefas'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).toggleTaskList().run()
@@ -70,7 +70,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.blockquote',
         descKey: 'slash.blockquoteDesc',
-        icon: '❝',
+        icon: 'Quote',
         searchTerms: ['quote', 'blockquote', 'citação', 'citacao'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).toggleBlockquote().run()
@@ -79,7 +79,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.codeBlock',
         descKey: 'slash.codeBlockDesc',
-        icon: '{}',
+        icon: 'Braces',
         searchTerms: ['code', 'codeblock', 'código', 'codigo'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
@@ -88,7 +88,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.horizontalRule',
         descKey: 'slash.horizontalRuleDesc',
-        icon: '—',
+        icon: 'Minus',
         searchTerms: ['horizontal', 'rule', 'divider', 'separator', 'divisor', 'linha'],
         command: ({ editor, range }) => {
             editor.chain().focus().deleteRange(range).setHorizontalRule().run()
@@ -97,7 +97,7 @@ const defaultItems: SlashCommandItem[] = [
     {
         titleKey: 'slash.table',
         descKey: 'slash.tableDesc',
-        icon: '▦',
+        icon: 'Table',
         searchTerms: ['table', 'grid', 'tabela'],
         command: ({ editor, range }) => {
             editor

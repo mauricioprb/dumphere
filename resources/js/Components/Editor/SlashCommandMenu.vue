@@ -1,6 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { useI18n } from '@/Composables/useI18n'
+import {
+    Heading1, Heading2, Heading3,
+    List, ListOrdered, ListChecks, Quote,
+    Braces, Minus, Table,
+} from 'lucide-vue-next'
+import type { Component } from 'vue'
+
+const iconMap: Record<string, Component> = {
+    Heading1, Heading2, Heading3,
+    List, ListOrdered, ListChecks, Quote,
+    Braces, Minus, Table,
+}
 
 interface SlashItem {
     titleKey: string
@@ -77,8 +89,8 @@ defineExpose({ onKeyDown })
                 @click="selectItem(index)"
                 @mouseenter="selectedIndex = index"
             >
-                <span class="shrink-0 w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center text-lg">
-                    {{ item.icon }}
+                <span class="shrink-0 w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center">
+                    <component :is="iconMap[item.icon]" class="w-5 h-5" :stroke-width="1.75" />
                 </span>
                 <div class="min-w-0">
                     <div class="text-sm font-medium truncate">{{ t(item.titleKey as any) }}</div>
