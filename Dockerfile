@@ -8,6 +8,18 @@ RUN npm ci --ignore-scripts
 COPY vite.config.js tsconfig.json ./
 COPY resources/ resources/
 
+ARG VITE_APP_NAME=Dumphere
+ARG VITE_YJS_WS_HOST=localhost
+ARG VITE_YJS_WS_PORT=1234
+ARG VITE_YJS_WS_SCHEME=ws
+ARG VITE_YJS_WS_PATH=
+
+ENV VITE_APP_NAME=$VITE_APP_NAME \
+    VITE_YJS_WS_HOST=$VITE_YJS_WS_HOST \
+    VITE_YJS_WS_PORT=$VITE_YJS_WS_PORT \
+    VITE_YJS_WS_SCHEME=$VITE_YJS_WS_SCHEME \
+    VITE_YJS_WS_PATH=$VITE_YJS_WS_PATH
+
 RUN npm run build
 
 FROM composer:2 AS composer-deps
