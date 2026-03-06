@@ -2,13 +2,15 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { DocumentData, PresenceUser } from '@/types/document'
 
+export type SaveStatus = 'idle' | 'dirty' | 'saving' | 'saved' | 'error'
+
 export const useDocumentStore = defineStore('document', () => {
     const document = ref<DocumentData | null>(null)
     const connectedUsers = ref<PresenceUser[]>([])
     const isConnected = ref(false)
-    const isSaving = ref(false)
+    const saveStatus = ref<SaveStatus>('idle')
     const lastSavedAt = ref<string | null>(null)
-    const error = ref<string | null>(null)
+    const saveError = ref<string | null>(null)
 
     const slug = computed(() => document.value?.slug ?? '')
     const title = computed(() => document.value?.title ?? 'Untitled')
@@ -17,23 +19,35 @@ export const useDocumentStore = defineStore('document', () => {
     function setDocument(doc: DocumentData) {
         document.value = doc
         lastSavedAt.value = doc.updatedAt
+        if (doc.updatedAt) {
+            saveStatus.value = 'saved'
+        }
     }
 
     function setConnected(connected: boolean) {
         isConnected.value = connected
     }
 
-    function setSaving(saving: boolean) {
-        isSaving.value = saving
+    function markDirty() {
+        if (saveStatus.value !== 'saving') {
+            saveStatus.value = 'dirty'
+        }
     }
 
-    function setSavedAt(timestamp: string) {
+    function markSaving() {
+        saveStatus.value = 'saving'
+        saveError.value = null
+    }
+
+    function markSaved(timestamp: string) {
         lastSavedAt.value = timestamp
-        error.value = null
+        saveStatus.value = 'saved'
+        saveError.value = null
     }
 
-    function setError(err: string) {
-        error.value = err
+    function markError(err: string) {
+        saveStatus.value = 'error'
+        saveError.value = err
     }
 
     function addUser(user: PresenceUser) {
@@ -54,17 +68,18 @@ export const useDocumentStore = defineStore('document', () => {
         document,
         connectedUsers,
         isConnected,
-        isSaving,
+        saveStatus,
         lastSavedAt,
-        error,
+        saveError,
         slug,
         title,
         userCount,
         setDocument,
         setConnected,
-        setSaving,
-        setSavedAt,
-        setError,
+        markDirty,
+        markSaving,
+        markSaved,
+        markError,
         addUser,
         removeUser,
         setUsers,

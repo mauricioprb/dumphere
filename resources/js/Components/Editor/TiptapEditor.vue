@@ -100,15 +100,13 @@ const editor = useEditor({
     },
 })
 
-const { scheduleSave, saveNow } = useAutoSave(editor, props.slug)
+const { onEditorUpdate, saveNow } = useAutoSave(editor, props.slug)
 
-watch(
-    () => editor.value?.getHTML(),
-    () => {
-        scheduleSave()
-    },
-    { flush: 'post' }
-)
+watch(editor, (ed, _old, onCleanup) => {
+    if (!ed) return
+    ed.on('update', onEditorUpdate)
+    onCleanup(() => ed.off('update', onEditorUpdate))
+}, { immediate: true })
 
 const characterCount = ref(0)
 const wordCount = ref(0)

@@ -90,9 +90,10 @@ function buildWsUrl(): string {
 
 function randomColor(): string {
     const colors = [
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-        '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
-        '#BB8FCE', '#85C1E9', '#F1948A', '#82E0AA',
+        '#C62828', '#AD1457', '#6A1B9A', '#4527A0',
+        '#283593', '#1565C0', '#00695C', '#2E7D32',
+        '#558B2F', '#E65100', '#D84315', '#4E342E',
+        '#37474F'
     ]
     return colors[Math.floor(Math.random() * colors.length)]
 }

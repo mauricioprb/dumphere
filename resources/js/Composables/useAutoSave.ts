@@ -1,34 +1,51 @@
-import { ref, watch, onUnmounted, type ShallowRef } from 'vue'
+import { onUnmounted, type ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import { useDocumentStore } from '@/Stores/documentStore'
 import type { SaveResponse } from '@/types/document'
 
-export function useAutoSave(editorRef: ShallowRef<Editor | undefined>, slug: string, debounceMs = 5000) {
+export function useAutoSave(
+    editorRef: ShallowRef<Editor | undefined>,
+    slug: string,
+    debounceMs = 3000,
+) {
     const store = useDocumentStore()
-    let timeoutId: ReturnType<typeof setTimeout> | null = null
-    const pendingSave = ref(false)
 
-    function scheduleSave() {
-        if (timeoutId) {
-            clearTimeout(timeoutId)
-        }
-        pendingSave.value = true
-        timeoutId = setTimeout(() => {
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null
+    let retryTimer: ReturnType<typeof setTimeout> | null = null
+    let savingInFlight = false
+    let dirty = false
+    const minSavingDisplayMs = 600
+    const maxRetryMs = 30_000
+    let currentRetryMs = 5_000
+
+    function onEditorUpdate() {
+        dirty = true
+        store.markDirty()
+        scheduleDebounce()
+    }
+
+    function scheduleDebounce() {
+        if (debounceTimer) clearTimeout(debounceTimer)
+        debounceTimer = setTimeout(() => {
+            debounceTimer = null
             performSave()
         }, debounceMs)
     }
 
     async function performSave() {
-        if (!editorRef.value) return
+        const ed = editorRef.value
+        if (!ed || savingInFlight) return
 
-        const content = editorRef.value.getHTML()
-
+        const content = ed.getHTML()
         if (!content || content === '<p></p>') {
-            pendingSave.value = false
+            dirty = false
             return
         }
 
-        store.setSaving(true)
+        savingInFlight = true
+        dirty = false
+        store.markSaving()
+        const saveStartedAt = Date.now()
 
         try {
             const response = await fetch(`/${slug}/save`, {
@@ -44,51 +61,78 @@ export function useAutoSave(editorRef: ShallowRef<Editor | undefined>, slug: str
                 }),
             })
 
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`)
+            }
+
             const data: SaveResponse = await response.json()
 
             if (data.success && data.updatedAt) {
-                store.setSavedAt(data.updatedAt)
-            } else if (data.error) {
-                store.setError(data.error)
+                // Ensure "Saving…" is visible long enough
+                const elapsed = Date.now() - saveStartedAt
+                const remaining = minSavingDisplayMs - elapsed
+                if (remaining > 0) {
+                    await delay(remaining)
+                }
+
+                store.markSaved(data.updatedAt)
+                currentRetryMs = 5_000 // reset back-off on success
+            } else {
+                throw new Error(data.error ?? 'Unknown save error')
             }
         } catch (err) {
-            console.error('[AutoSave] Failed to save:', err)
-            store.setError('Failed to save. Will retry...')
-            setTimeout(() => scheduleSave(), 10000)
+            console.error('[AutoSave] Failed:', err)
+            store.markError('Falha ao salvar. Tentando novamente…')
+            retryTimer = setTimeout(() => {
+                retryTimer = null
+                performSave()
+            }, currentRetryMs)
+            currentRetryMs = Math.min(currentRetryMs * 2, maxRetryMs)
         } finally {
-            store.setSaving(false)
-            pendingSave.value = false
+            savingInFlight = false
+            // If more changes came in while saving, schedule another save
+            if (dirty) {
+                scheduleDebounce()
+            }
         }
     }
 
+    /** Force an immediate save (used on beforeunload). */
     function saveNow() {
-        if (timeoutId) {
-            clearTimeout(timeoutId)
-            timeoutId = null
+        if (debounceTimer) {
+            clearTimeout(debounceTimer)
+            debounceTimer = null
         }
-        performSave()
+        if (dirty || store.saveStatus === 'dirty') {
+            performSave()
+        }
     }
 
-    const handleBeforeUnload = () => {
-        if (pendingSave.value) {
+    function handleBeforeUnload() {
+        if (dirty || store.saveStatus === 'dirty') {
             saveNow()
         }
     }
+
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     onUnmounted(() => {
-        if (timeoutId) clearTimeout(timeoutId)
+        if (debounceTimer) clearTimeout(debounceTimer)
+        if (retryTimer) clearTimeout(retryTimer)
         window.removeEventListener('beforeunload', handleBeforeUnload)
     })
 
     return {
-        scheduleSave,
+        onEditorUpdate,
         saveNow,
-        pendingSave,
     }
 }
 
 function getCSRFToken(): string {
     const meta = document.querySelector('meta[name="csrf-token"]')
     return meta?.getAttribute('content') ?? ''
+}
+
+function delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms))
 }
