@@ -7,4 +7,4 @@ RUN npm install --production
 
 EXPOSE 1234
 
-CMD ["node", "node_modules/y-websocket/bin/server.cjs"]
+CMD ["node", "node_modules/y-websocket/bin/server.js"]
