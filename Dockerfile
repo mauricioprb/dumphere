@@ -72,6 +72,8 @@ COPY --from=composer-deps /app/vendor ./vendor
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
 
+RUN cp -r public /tmp/public-build
+
 RUN rm -rf \
     .env \
     .env.* \
@@ -85,6 +87,7 @@ RUN rm -rf \
     storage/framework/cache/data/*
 
 RUN chown -R www-data:www-data /var/www/html \
+    && chown -R www-data:www-data /tmp/public-build \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
