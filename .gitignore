@@ -22,3 +22,9 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# SSL certificates
+docker/nginx/ssl/
+
+# Docker data volumes
+docker-data/

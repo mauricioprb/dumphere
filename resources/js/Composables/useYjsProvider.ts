@@ -96,8 +96,9 @@ function buildWsUrl(): string {
     const host = import.meta.env.VITE_YJS_WS_HOST ?? 'localhost'
     const port = import.meta.env.VITE_YJS_WS_PORT ?? '1234'
     const scheme = import.meta.env.VITE_YJS_WS_SCHEME ?? 'ws'
+    const path = import.meta.env.VITE_YJS_WS_PATH ?? ''
 
-    return `${scheme}://${host}:${port}`
+    return `${scheme}://${host}:${port}${path}`
 }
 
 function randomColor(): string {

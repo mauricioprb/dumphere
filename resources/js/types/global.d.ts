@@ -11,6 +11,10 @@ interface ImportMetaEnv {
     readonly VITE_REVERB_HOST: string
     readonly VITE_REVERB_PORT: string
     readonly VITE_REVERB_SCHEME: string
+    readonly VITE_YJS_WS_HOST: string
+    readonly VITE_YJS_WS_PORT: string
+    readonly VITE_YJS_WS_SCHEME: string
+    readonly VITE_YJS_WS_PATH: string
 }
 
 interface ImportMeta {
