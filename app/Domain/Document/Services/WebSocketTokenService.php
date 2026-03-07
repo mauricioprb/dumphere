@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Config;
 
 class WebSocketTokenService
 {
-    private const TTL_SECONDS = 300;
+    private const TTL_SECONDS = 86400;
 
     public function generate(string $slug): string
     {
