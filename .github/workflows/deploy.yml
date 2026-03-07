@@ -79,23 +79,22 @@ jobs:
           script: |
             cd ${{ vars.DEPLOY_PATH }}
 
-            # Pull latest images
+            git pull origin main
+
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            export APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest
             docker compose -f docker-compose.prod.yml pull
 
-            # Rebuild app with new image
-            docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-            # Run migrations
             docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
 
-            # Clear and warm caches
             docker compose -f docker-compose.prod.yml exec -T app php artisan optimize
 
-            # Restart queue workers gracefully
             docker compose -f docker-compose.prod.yml exec -T app php artisan queue:restart
 
-            # Health check
             sleep 10
-            curl -sf http://localhost/health || exit 1
+            curl -sf http://dumphere.app/health || exit 1
 
             echo "Deploy concluído com sucesso!"

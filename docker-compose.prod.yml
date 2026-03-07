@@ -24,16 +24,7 @@ services:
                 max-file: "3"
 
     app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-            target: production
-            args:
-                VITE_APP_NAME: ${VITE_APP_NAME:-Dumphere}
-                VITE_YJS_WS_HOST: ${VITE_YJS_WS_HOST:-localhost}
-                VITE_YJS_WS_PORT: ${VITE_YJS_WS_PORT:-1234}
-                VITE_YJS_WS_SCHEME: ${VITE_YJS_WS_SCHEME:-ws}
-                VITE_YJS_WS_PATH: ${VITE_YJS_WS_PATH:-}
+        image: ${APP_IMAGE:-ghcr.io/mauricioprb/md-online-editor:latest}
         container_name: md-editor-app
         restart: unless-stopped
         env_file:
@@ -63,16 +54,7 @@ services:
                 max-file: "5"
 
     queue:
-        build:
-            context: .
-            dockerfile: Dockerfile
-            target: production
-            args:
-                VITE_APP_NAME: ${VITE_APP_NAME:-Dumphere}
-                VITE_YJS_WS_HOST: ${VITE_YJS_WS_HOST:-localhost}
-                VITE_YJS_WS_PORT: ${VITE_YJS_WS_PORT:-1234}
-                VITE_YJS_WS_SCHEME: ${VITE_YJS_WS_SCHEME:-ws}
-                VITE_YJS_WS_PATH: ${VITE_YJS_WS_PATH:-}
+        image: ${APP_IMAGE:-ghcr.io/mauricioprb/md-online-editor:latest}
         container_name: md-editor-queue
         restart: unless-stopped
         env_file:
@@ -96,16 +78,7 @@ services:
                 max-file: "3"
 
     scheduler:
-        build:
-            context: .
-            dockerfile: Dockerfile
-            target: production
-            args:
-                VITE_APP_NAME: ${VITE_APP_NAME:-Dumphere}
-                VITE_YJS_WS_HOST: ${VITE_YJS_WS_HOST:-localhost}
-                VITE_YJS_WS_PORT: ${VITE_YJS_WS_PORT:-1234}
-                VITE_YJS_WS_SCHEME: ${VITE_YJS_WS_SCHEME:-ws}
-                VITE_YJS_WS_PATH: ${VITE_YJS_WS_PATH:-}
+        image: ${APP_IMAGE:-ghcr.io/mauricioprb/md-online-editor:latest}
         container_name: md-editor-scheduler
         restart: unless-stopped
         env_file:
