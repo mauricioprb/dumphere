@@ -58,6 +58,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VITE_APP_NAME=${{ vars.VITE_APP_NAME }}
+            VITE_YJS_WS_HOST=${{ vars.VITE_YJS_WS_HOST }}
+            VITE_YJS_WS_PORT=${{ vars.VITE_YJS_WS_PORT }}
+            VITE_YJS_WS_SCHEME=${{ vars.VITE_YJS_WS_SCHEME }}
+            VITE_YJS_WS_PATH=${{ vars.VITE_YJS_WS_PATH }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -79,22 +85,27 @@ jobs:
           script: |
             cd ${{ vars.DEPLOY_PATH }}
 
+            # Pull latest config files (docker-compose, nginx, etc.)
             git pull origin main
 
+            # Login to GHCR
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            export APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest
-            docker compose -f docker-compose.prod.yml pull
+            # Pull new image
+            APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest docker compose -f docker-compose.prod.yml pull
 
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            # Deploy with new images (force-recreate to ensure new image is used)
+            APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
 
+            # Run migrations
             docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
 
+            # Clear and warm caches
             docker compose -f docker-compose.prod.yml exec -T app php artisan optimize
 
+            # Restart queue workers gracefully
             docker compose -f docker-compose.prod.yml exec -T app php artisan queue:restart
 
+            # Health check
             sleep 10
-            curl -sf http://dumphere.app/health || exit 1
-
-            echo "Deploy concluído com sucesso!"
+            curl -sf http://localhost/health || exit 1
