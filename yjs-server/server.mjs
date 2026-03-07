@@ -1,7 +1,10 @@
 import http from 'node:http'
 import crypto from 'node:crypto'
+import { createRequire } from 'node:module'
 import { WebSocketServer } from 'ws'
-import { setupWSConnection } from 'y-websocket/bin/utils.js'
+
+const require = createRequire(import.meta.url)
+const { setupWSConnection } = require('y-websocket/bin/utils')
 
 const HOST = process.env.HOST || '0.0.0.0'
 const PORT = parseInt(process.env.PORT || '1234', 10)
