@@ -89,13 +89,17 @@ jobs:
             git pull origin main
 
             # Login to GHCR
-            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u mauricioprb --password-stdin
 
-            # Pull new image
-            APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest docker compose -f docker-compose.prod.yml pull
+            # Force pull new image (ignore cache)
+            docker pull ghcr.io/mauricioprb/md-online-editor:latest
 
-            # Deploy with new images (force-recreate to ensure new image is used)
-            APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+            # Deploy with new images
+            APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest \
+              docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+
+            # Wait for containers to be healthy
+            sleep 15
 
             # Run migrations
             docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
@@ -106,6 +110,8 @@ jobs:
             # Restart queue workers gracefully
             docker compose -f docker-compose.prod.yml exec -T app php artisan queue:restart
 
+            # Clean up old images
+            docker image prune -f
+
             # Health check
-            sleep 10
             curl -sf http://localhost/health || exit 1
