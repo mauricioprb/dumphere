@@ -271,6 +271,42 @@
     color: var(--editor-code-text);
 }
 
+.tiptap .code-block-wrapper {
+    position: relative;
+    margin: 0.75em 0;
+}
+
+.tiptap .code-block-copy-btn {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 0.375em;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--editor-pre-text);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.tiptap .code-block-wrapper:hover .code-block-copy-btn {
+    opacity: 1;
+}
+
+.tiptap .code-block-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tiptap .code-block-copy-btn:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 .tiptap pre {
     background: var(--editor-pre-bg);
     color: var(--editor-pre-text);
@@ -278,7 +314,7 @@
     border-radius: 0.5em;
     padding: 1em;
     overflow-x: auto;
-    margin: 0.75em 0;
+    margin: 0;
     font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
     font-size: 0.875em;
     line-height: 1.6;
@@ -291,8 +327,6 @@
     font-size: inherit;
 }
 
-/* ── Syntax Highlighting (lowlight / highlight.js) ── */
-/* Light theme – inspired by VS Code Light+ */
 .tiptap pre .hljs-comment,
 .tiptap pre .hljs-quote {
     color: #6a737d;
@@ -389,7 +423,6 @@
     color: #24292e;
 }
 
-/* Dark theme – inspired by VS Code Dark+ / One Dark */
 .dark .tiptap pre .hljs-comment,
 .dark .tiptap pre .hljs-quote {
     color: #6a9955;

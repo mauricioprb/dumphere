@@ -2,8 +2,8 @@
 import { onMounted, onUnmounted, ref, watch, shallowRef } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { common, createLowlight } from 'lowlight'
+import { CustomCodeBlock } from '@/Extensions/CustomCodeBlock'
 import Collaboration from '@tiptap/extension-collaboration'
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -51,7 +51,7 @@ const editor = useEditor({
             undoRedo: false,
             codeBlock: false,
         }),
-        CodeBlockLowlight.configure({
+        CustomCodeBlock.configure({
             lowlight,
             defaultLanguage: 'plaintext',
         }),
