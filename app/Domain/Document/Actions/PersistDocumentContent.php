@@ -18,7 +18,7 @@ class PersistDocumentContent
         $contentSizeBytes = strlen($markdownContent);
         if ($contentSizeBytes > Document::MAX_SIZE_BYTES) {
             throw new DocumentTooLargeException(
-                "Document '{$slug}' exceeds maximum size of " . Document::MAX_SIZE_BYTES . " bytes (current: {$contentSizeBytes} bytes)."
+                "Document '{$slug}' exceeds maximum size of ".Document::MAX_SIZE_BYTES." bytes (current: {$contentSizeBytes} bytes)."
             );
         }
 

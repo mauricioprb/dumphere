@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Document\Policies;
 
-use Illuminate\Http\Request;
-
 class RateLimitPolicy
 {
     public const HTTP_MAX_PER_MINUTE = 60;

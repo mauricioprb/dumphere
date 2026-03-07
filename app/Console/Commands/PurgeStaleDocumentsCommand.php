@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 class PurgeStaleDocumentsCommand extends Command
 {
     protected $signature = 'documents:purge {--days=30 : Number of days of inactivity before purging}';
+
     protected $description = 'Purge documents that have not been accessed within the specified number of days.';
 
     public function handle(PurgeStaleDocuments $purgeAction): int

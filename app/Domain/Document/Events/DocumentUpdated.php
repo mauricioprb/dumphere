@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Document\Events;
 
-use App\Domain\Document\Models\Document;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;

@@ -28,7 +28,7 @@ class SanitizeSlug
 
         $slug = strtolower(trim($slug, '/'));
 
-        if (!preg_match(self::SLUG_PATTERN, $slug)) {
+        if (! preg_match(self::SLUG_PATTERN, $slug)) {
             abort(404, 'Invalid document URL.');
         }
 

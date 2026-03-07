@@ -12,7 +12,7 @@ class DocumentChannel
     {
         return [
             'id' => session()->getId() ?: Str::uuid()->toString(),
-            'name' => 'Anonymous ' . Str::random(4),
+            'name' => 'Anonymous '.Str::random(4),
             'color' => self::randomColor(),
         ];
     }
