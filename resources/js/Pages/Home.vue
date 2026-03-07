@@ -12,7 +12,7 @@ const slugInput = ref('')
 const examples = ['notas-reuniao', 'lista-compras', 'ideias-projeto']
 
 function goToDocument() {
-    const slug = slugInput.value.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '-')
+    const slug = slugInput.value.trim().replace(/^\/+/, '').toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/^-+|-+$/g, '')
     if (slug) {
         window.location.href = `/${slug}`
     }
