@@ -41,6 +41,7 @@ services:
         environment:
             HOST: "0.0.0.0"
             PORT: "1234"
+            YJS_WS_SECRET: ${YJS_WS_SECRET:-${APP_KEY}}
         ports:
             - "1234:1234"
         healthcheck:

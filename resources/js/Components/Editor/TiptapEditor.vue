@@ -29,6 +29,7 @@ import EditorToolbar from './EditorToolbar.vue'
 const props = defineProps<{
     slug: string
     initialContent: string
+    wsToken: string
 }>()
 
 const { t } = useI18n()
@@ -42,7 +43,7 @@ const {
     userName,
     userColor,
     whenSynced,
-} = useYjsProvider(props.slug)
+} = useYjsProvider(props.slug, props.wsToken)
 
 const editor = useEditor({
     extensions: [

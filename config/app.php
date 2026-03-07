@@ -107,6 +107,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Yjs WebSocket Shared Secret
+    |--------------------------------------------------------------------------
+    |
+    | HMAC secret shared between Laravel and the Yjs WebSocket server to
+    | sign short-lived connection tokens. Falls back to APP_KEY when unset.
+    |
+    */
+
+    'yjs_ws_secret' => env('YJS_WS_SECRET'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Maintenance Mode Driver
     |--------------------------------------------------------------------------
     |

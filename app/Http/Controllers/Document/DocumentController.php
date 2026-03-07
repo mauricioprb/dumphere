@@ -8,6 +8,7 @@ use App\Domain\Document\Actions\FindOrCreateDocument;
 use App\Domain\Document\Actions\PersistDocumentContent;
 use App\Domain\Document\DTOs\DocumentData;
 use App\Domain\Document\Exceptions\DocumentTooLargeException;
+use App\Domain\Document\Services\WebSocketTokenService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ class DocumentController extends Controller
     public function __construct(
         private readonly FindOrCreateDocument $findOrCreate,
         private readonly PersistDocumentContent $persistContent,
+        private readonly WebSocketTokenService $wsTokenService,
     ) {}
 
     public function show(string $slug): Response
@@ -28,6 +30,7 @@ class DocumentController extends Controller
 
         return Inertia::render('Document/Show', [
             'document' => $data->toArray(),
+            'wsToken' => $this->wsTokenService->generate($slug),
         ]);
     }
 

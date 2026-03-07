@@ -4,7 +4,7 @@ import { WebsocketProvider } from 'y-websocket'
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { useDocumentStore } from '@/Stores/documentStore'
 
-export function useYjsProvider(slug: string) {
+export function useYjsProvider(slug: string, wsToken: string) {
     const store = useDocumentStore()
 
     const ydoc = new Y.Doc()
@@ -16,6 +16,7 @@ export function useYjsProvider(slug: string) {
     const wsProvider = new WebsocketProvider(wsUrl, `document-${slug}`, ydoc, {
         connect: true,
         maxBackoffTime: 10000,
+        params: { token: wsToken },
     })
 
     const awareness = wsProvider.awareness
