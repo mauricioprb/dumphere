@@ -102,7 +102,7 @@ const editor = useEditor({
         TableHeader,
         CharacterCount,
         Image.configure({
-            inline: true,
+            inline: false,
             allowBase64: true,
         }),
         Markdown.configure({
@@ -136,20 +136,23 @@ const editor = useEditor({
             const storage = (editor.value?.storage as any)
             const serializer = storage?.markdown?.serializer
             if (!serializer) return false
-            const md = serializer.serialize(node).trim()
+            const tempDoc = view.state.schema.topNodeType.create(null, node)
+            const md = serializer.serialize(tempDoc).trim()
             const containerEl = (event.target as HTMLElement).closest('[data-editor-container]') as HTMLElement
             if (!containerEl) return false
             inlineEditRef.value?.open(md, dom, containerEl).then((result: string | null) => {
                 if (result !== null && editor.value) {
-                    editor.value
-                        .chain()
-                        .focus()
-                        .command(({ tr }) => {
-                            tr.delete(from, to)
-                            return true
-                        })
-                        .insertContentAt(from, result)
-                        .run()
+                    const ed = editor.value
+                    const mdParser = (ed.storage as any)?.markdown?.parser
+                    if (mdParser) {
+                        const html = mdParser.parse(result)
+                        if (html) {
+                            ed.chain()
+                                .focus()
+                                .insertContentAt({ from, to }, html)
+                                .run()
+                        }
+                    }
                 }
             })
             return true

@@ -533,6 +533,21 @@
     cursor: pointer;
 }
 
+/* Images */
+.tiptap img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.75em 0;
+    border-radius: 0.375em;
+}
+
+.tiptap img.ProseMirror-selectednode {
+    outline: 2px solid var(--editor-resize-handle);
+    outline-offset: 2px;
+    border-radius: 0.375em;
+}
+
 /* Highlight / Mark */
 .tiptap mark {
     background-color: var(--editor-mark-bg);

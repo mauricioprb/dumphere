@@ -7,12 +7,14 @@ const inputEl = ref<HTMLTextAreaElement | null>(null)
 const position = ref({ top: 0, left: 0, width: 0, minHeight: 0, paddingLeft: '0px', paddingRight: '0px', paddingTop: '0px', paddingBottom: '0px', fontSize: '16px', lineHeight: '1.5' })
 
 let resolveCallback: ((value: string | null) => void) | null = null
+let originalMd = ''
 
 function open(md: string, dom: HTMLElement, containerEl: HTMLElement) {
     const containerRect = containerEl.getBoundingClientRect()
     const rect = dom.getBoundingClientRect()
     const cs = window.getComputedStyle(dom)
 
+    originalMd = md
     markdownText.value = md
     position.value = {
         top: rect.top - containerRect.top + containerEl.scrollTop,
@@ -44,7 +46,11 @@ function open(md: string, dom: HTMLElement, containerEl: HTMLElement) {
 
 function finish(apply: boolean) {
     if (!isOpen.value) return
-    const val = apply ? markdownText.value.trim() : null
+    let val: string | null = null
+    if (apply) {
+        const trimmed = markdownText.value.trim()
+        val = trimmed !== originalMd ? trimmed : null
+    }
     isOpen.value = false
     resolveCallback?.(val)
     resolveCallback = null
