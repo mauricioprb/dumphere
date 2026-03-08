@@ -4,14 +4,14 @@ import { useI18n } from '@/Composables/useI18n'
 import {
     Heading1, Heading2, Heading3,
     List, ListOrdered, ListChecks, Quote,
-    Braces, Minus, Table,
+    Braces, Minus, Table, ImageIcon,
 } from 'lucide-vue-next'
 import type { Component } from 'vue'
 
 const iconMap: Record<string, Component> = {
     Heading1, Heading2, Heading3,
     List, ListOrdered, ListChecks, Quote,
-    Braces, Minus, Table,
+    Braces, Minus, Table, ImageIcon,
 }
 
 interface SlashItem {

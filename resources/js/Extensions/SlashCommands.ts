@@ -108,6 +108,16 @@ const defaultItems: SlashCommandItem[] = [
                 .run()
         },
     },
+    {
+        titleKey: 'slash.image',
+        descKey: 'slash.imageDesc',
+        icon: 'ImageIcon',
+        searchTerms: ['image', 'img', 'picture', 'photo', 'imagem', 'foto'],
+        command: ({ editor, range }) => {
+            editor.chain().focus().deleteRange(range).run()
+            window.dispatchEvent(new CustomEvent('open-image-modal', { detail: { editor } }))
+        },
+    },
 ]
 
 export const SlashCommands = Extension.create({

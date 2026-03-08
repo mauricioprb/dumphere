@@ -2,16 +2,25 @@
 import type { Editor } from '@tiptap/vue-3'
 import type { Component } from 'vue'
 import { useI18n } from '@/Composables/useI18n'
+import { useImageModal } from '@/Composables/useImageModal'
 import {
     Bold, Italic, Underline, Strikethrough, Code, Highlighter,
     Heading1, Heading2, Heading3,
     List, ListOrdered, ListChecks, Quote,
-    Minus, Braces, Table,
+    Minus, Braces, Table, ImageIcon,
+    FileCode, FileText,
 } from 'lucide-vue-next'
 
 const props = defineProps<{
     editor: Editor
+    sourceMode: boolean
 }>()
+
+const emit = defineEmits<{
+    toggleSource: []
+}>()
+
+const { open: openImageModal } = useImageModal()
 
 const { t } = useI18n()
 
@@ -49,6 +58,12 @@ const buttons: ToolbarItem[] = [
     { icon: Minus, action: () => props.editor.chain().focus().setHorizontalRule().run(), isActive: () => false, title: t('toolbar.horizontalRule') },
     { icon: Braces, action: () => props.editor.chain().focus().toggleCodeBlock().run(), isActive: () => props.editor.isActive('codeBlock'), title: t('toolbar.codeBlock') },
     { icon: Table, action: () => props.editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(), isActive: () => props.editor.isActive('table'), title: t('toolbar.table') },
+    { icon: ImageIcon, action: async () => {
+        const data = await openImageModal()
+        if (data) {
+            props.editor.chain().focus().setImage({ src: data.src, alt: data.alt }).run()
+        }
+    }, isActive: () => false, title: t('toolbar.image') },
 ]
 </script>
 
@@ -63,15 +78,33 @@ const buttons: ToolbarItem[] = [
                 v-else
                 @click="(btn as ToolbarButton).action()"
                 :title="(btn as ToolbarButton).title"
+                :disabled="sourceMode"
                 :class="[
                     'p-1.5 rounded transition-colors duration-100 shrink-0',
-                    (btn as ToolbarButton).isActive()
-                        ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100'
+                    sourceMode
+                        ? 'text-neutral-300 dark:text-neutral-600 cursor-not-allowed'
+                        : (btn as ToolbarButton).isActive()
+                            ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300'
+                            : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100'
                 ]"
             >
                 <component :is="(btn as ToolbarButton).icon" class="w-4 h-4" :stroke-width="2" />
             </button>
         </template>
+
+        <!-- Source mode toggle -->
+        <div class="w-px h-5 bg-neutral-300 dark:bg-neutral-600 mx-1" />
+        <button
+            @click="emit('toggleSource')"
+            :title="sourceMode ? t('toolbar.sourceOff') : t('toolbar.sourceOn')"
+            :class="[
+                'p-1.5 rounded transition-colors duration-100 shrink-0',
+                sourceMode
+                    ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:text-neutral-900 dark:hover:text-neutral-100'
+            ]"
+        >
+            <component :is="sourceMode ? FileText : FileCode" class="w-4 h-4" :stroke-width="2" />
+        </button>
     </div>
 </template>

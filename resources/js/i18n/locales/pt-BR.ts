@@ -21,6 +21,7 @@ export default {
     // Editor
     'editor.placeholder': 'Comece a digitar... Use / para comandos, **negrito**, *itálico*, # títulos...',
     'editor.untitled': 'Sem título',
+    'editor.sourcePlaceholder': 'Escreva seu Markdown aqui...',
 
     // Toolbar
     'toolbar.bold': 'Negrito (Ctrl+B)',
@@ -40,9 +41,12 @@ export default {
     'toolbar.codeBlock': 'Bloco de Código',
     'toolbar.table': 'Tabela',
     'toolbar.image': 'Imagem',
+    'toolbar.imagePrompt': 'URL da imagem:',
     'toolbar.link': 'Link',
     'toolbar.undo': 'Desfazer',
     'toolbar.redo': 'Refazer',
+    'toolbar.sourceOn': 'Editar código Markdown',
+    'toolbar.sourceOff': 'Voltar ao modo visual',
 
     // Time ago
     'time.now': 'agora mesmo',
@@ -92,4 +96,25 @@ export default {
     'slash.image': 'Imagem',
     'slash.imageDesc': 'Inserir imagem por URL',
     'slash.noResults': 'Nenhum resultado',
+
+    // Image modal
+    'imageModal.title': 'Inserir Imagem',
+    'imageModal.urlLabel': 'URL da imagem',
+    'imageModal.urlPlaceholder': 'https://exemplo.com/imagem.png',
+    'imageModal.altLabel': 'Texto alternativo (opcional)',
+    'imageModal.altPlaceholder': 'Descrição da imagem',
+    'imageModal.preview': 'Pré-visualização',
+    'imageModal.loading': 'Carregando...',
+    'imageModal.previewError': 'Não foi possível carregar a pré-visualização. A imagem ainda será inserida.',
+    'imageModal.cancel': 'Cancelar',
+    'imageModal.insert': 'Inserir imagem',
+
+    // Table toolbar
+    'table.addRowBefore': 'Adicionar linha acima',
+    'table.addRowAfter': 'Adicionar linha abaixo',
+    'table.deleteRow': 'Remover linha',
+    'table.addColBefore': 'Adicionar coluna à esquerda',
+    'table.addColAfter': 'Adicionar coluna à direita',
+    'table.deleteCol': 'Remover coluna',
+    'table.delete': 'Remover tabela',
 } as const

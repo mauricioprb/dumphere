@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch, shallowRef } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
+import { BubbleMenu } from '@tiptap/vue-3/menus'
 import StarterKit from '@tiptap/starter-kit'
 import { common, createLowlight } from 'lowlight'
 import { CustomCodeBlock } from '@/Extensions/CustomCodeBlock'
@@ -17,6 +18,7 @@ import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import CharacterCount from '@tiptap/extension-character-count'
+import Image from '@tiptap/extension-image'
 import { Markdown } from 'tiptap-markdown'
 import { SlashCommands } from '@/Extensions/SlashCommands'
 
@@ -25,6 +27,10 @@ import { useYjsProvider } from '@/Composables/useYjsProvider'
 import { useAutoSave } from '@/Composables/useAutoSave'
 import { useI18n } from '@/Composables/useI18n'
 import EditorToolbar from './EditorToolbar.vue'
+import ImageInsertModal from './ImageInsertModal.vue'
+import InlineMarkdownEdit from './InlineMarkdownEdit.vue'
+import TableFloatingToolbar from './TableFloatingToolbar.vue'
+import { useImageModal } from '@/Composables/useImageModal'
 
 const props = defineProps<{
     slug: string
@@ -95,6 +101,10 @@ const editor = useEditor({
         TableCell,
         TableHeader,
         CharacterCount,
+        Image.configure({
+            inline: true,
+            allowBase64: true,
+        }),
         Markdown.configure({
             html: true,
             tightLists: true,
@@ -110,6 +120,39 @@ const editor = useEditor({
     editorProps: {
         attributes: {
             class: 'tiptap prose prose-lg max-w-none focus:outline-none min-h-full',
+        },
+        handleDoubleClick: (view, pos, event) => {
+            if (sourceMode.value) return false
+            const $pos = view.state.doc.resolve(pos)
+            const depth = $pos.depth > 0 ? 1 : 0
+            if (depth === 0) return false
+            const node = $pos.node(depth)
+            const skip = ['table', 'codeBlock', 'image', 'horizontalRule']
+            if (skip.includes(node.type.name)) return false
+            const from = $pos.before(depth)
+            const to = $pos.after(depth)
+            const dom = view.nodeDOM(from)
+            if (!(dom instanceof HTMLElement)) return false
+            const storage = (editor.value?.storage as any)
+            const serializer = storage?.markdown?.serializer
+            if (!serializer) return false
+            const md = serializer.serialize(node).trim()
+            const containerEl = (event.target as HTMLElement).closest('[data-editor-container]') as HTMLElement
+            if (!containerEl) return false
+            inlineEditRef.value?.open(md, dom, containerEl).then((result: string | null) => {
+                if (result !== null && editor.value) {
+                    editor.value
+                        .chain()
+                        .focus()
+                        .command(({ tr }) => {
+                            tr.delete(from, to)
+                            return true
+                        })
+                        .insertContentAt(from, result)
+                        .run()
+                }
+            })
+            return true
         },
     },
     onCreate({ editor: ed }) {
@@ -129,8 +172,37 @@ watch(editor, (ed, _old, onCleanup) => {
     onCleanup(() => ed.off('update', onEditorUpdate))
 }, { immediate: true })
 
+const { open: openImageModal } = useImageModal()
+
+function handleSlashImage(e: Event) {
+    const detail = (e as CustomEvent).detail
+    openImageModal().then((data) => {
+        if (data && detail?.editor) {
+            detail.editor.chain().focus().setImage({ src: data.src, alt: data.alt }).run()
+        }
+    })
+}
+
+onMounted(() => window.addEventListener('open-image-modal', handleSlashImage))
+onUnmounted(() => window.removeEventListener('open-image-modal', handleSlashImage))
+
+const inlineEditRef = ref<InstanceType<typeof InlineMarkdownEdit> | null>(null)
+
 const characterCount = ref(0)
 const wordCount = ref(0)
+const sourceMode = ref(false)
+const sourceContent = ref('')
+
+function toggleSourceMode() {
+    if (!editor.value) return
+    if (!sourceMode.value) {
+        sourceContent.value = (editor.value.storage as any).markdown.getMarkdown()
+        sourceMode.value = true
+    } else {
+        editor.value.commands.setContent(sourceContent.value)
+        sourceMode.value = false
+    }
+}
 
 watch(
     () => editor.value?.storage.characterCount,
@@ -146,12 +218,41 @@ watch(
 
 <template>
     <div class="flex flex-col h-full">
-        <EditorToolbar v-if="editor" :editor="editor" />
+        <EditorToolbar v-if="editor" :editor="editor" :source-mode="sourceMode" @toggle-source="toggleSourceMode" />
+        <ImageInsertModal />
 
-        <EditorContent
-            :editor="editor"
+        <div v-if="!sourceMode" data-editor-container class="relative flex-1 min-h-0 overflow-y-auto">
+            <EditorContent
+                :editor="editor"
+                class="h-full"
+            />
+
+            <BubbleMenu
+                v-if="editor"
+                :editor="editor"
+                plugin-key="tableMenu"
+                :should-show="({ editor: e }: { editor: any }) => e.isActive('table')"
+                :tippy-options="{ placement: 'top', duration: [150, 100] }"
+            >
+                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg px-1.5 py-1">
+                    <TableFloatingToolbar :editor="editor" />
+                </div>
+            </BubbleMenu>
+
+            <InlineMarkdownEdit ref="inlineEditRef" />
+        </div>
+
+        <div
+            v-else
             class="flex-1 min-h-0 overflow-y-auto"
-        />
+        >
+            <textarea
+                v-model="sourceContent"
+                spellcheck="false"
+                class="w-full h-full resize-none bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 font-mono text-sm leading-relaxed p-4 sm:p-6 focus:outline-none"
+                :placeholder="t('editor.sourcePlaceholder')"
+            />
+        </div>
 
         <div
             v-if="editor"

@@ -21,6 +21,7 @@ export default {
     // Editor
     'editor.placeholder': 'Start typing... Use / for commands, **bold**, *italic*, # headings...',
     'editor.untitled': 'Untitled',
+    'editor.sourcePlaceholder': 'Write your Markdown here...',
 
     // Toolbar
     'toolbar.bold': 'Bold (Ctrl+B)',
@@ -40,9 +41,12 @@ export default {
     'toolbar.codeBlock': 'Code Block',
     'toolbar.table': 'Table',
     'toolbar.image': 'Image',
+    'toolbar.imagePrompt': 'Image URL:',
     'toolbar.link': 'Link',
     'toolbar.undo': 'Undo',
     'toolbar.redo': 'Redo',
+    'toolbar.sourceOn': 'Edit Markdown source',
+    'toolbar.sourceOff': 'Back to visual mode',
 
     // Time ago
     'time.now': 'just now',
@@ -92,4 +96,25 @@ export default {
     'slash.image': 'Image',
     'slash.imageDesc': 'Insert image from URL',
     'slash.noResults': 'No results',
+
+    // Image modal
+    'imageModal.title': 'Insert Image',
+    'imageModal.urlLabel': 'Image URL',
+    'imageModal.urlPlaceholder': 'https://example.com/image.png',
+    'imageModal.altLabel': 'Alt text (optional)',
+    'imageModal.altPlaceholder': 'Image description',
+    'imageModal.preview': 'Preview',
+    'imageModal.loading': 'Loading...',
+    'imageModal.previewError': 'Could not load preview. The image will still be inserted.',
+    'imageModal.cancel': 'Cancel',
+    'imageModal.insert': 'Insert image',
+
+    // Table toolbar
+    'table.addRowBefore': 'Add row above',
+    'table.addRowAfter': 'Add row below',
+    'table.deleteRow': 'Delete row',
+    'table.addColBefore': 'Add column left',
+    'table.addColAfter': 'Add column right',
+    'table.deleteCol': 'Delete column',
+    'table.delete': 'Delete table',
 } as const
