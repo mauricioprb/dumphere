@@ -6,11 +6,8 @@ import { useDocumentStore } from '@/Stores/documentStore'
 
 export function useYjsProvider(slug: string, wsToken: string) {
     const store = useDocumentStore()
-
     const ydoc = new Y.Doc()
-
     const yXmlFragment = ydoc.getXmlFragment('document')
-
     const wsUrl = buildWsUrl()
 
     const wsProvider = new WebsocketProvider(wsUrl, `document-${slug}`, ydoc, {
@@ -20,7 +17,6 @@ export function useYjsProvider(slug: string, wsToken: string) {
     })
 
     const awareness = wsProvider.awareness
-
     const userColor = randomColor()
     const userName = getOrCreateUserName()
 
@@ -38,6 +34,36 @@ export function useYjsProvider(slug: string, wsToken: string) {
 
     awareness.on('change', () => {
         const states = awareness.getStates()
+        const myState = awareness.getLocalState()
+
+        if (myState && myState.user) {
+            const myName = myState.user.name
+            let hasCollision = false
+
+            states.forEach((state: any, clientId: number) => {
+                if (clientId !== ydoc.clientID && state?.user?.name === myName) {
+                    if (ydoc.clientID > clientId) {
+                        hasCollision = true
+                    }
+                }
+            })
+
+            if (hasCollision) {
+                const usedNames = Array.from(states.values())
+                    .map((s: any) => s?.user?.name)
+                    .filter(Boolean)
+
+                const newName = generateUniqueName(usedNames)
+                localStorage.setItem(USERNAME_STORAGE_KEY, newName)
+
+                awareness.setLocalStateField('user', {
+                    ...myState.user,
+                    name: newName
+                })
+                return
+            }
+        }
+
         const users = Array.from(states.entries())
             .filter(([clientId, state]) => {
                 if (clientId === ydoc.clientID) return false
@@ -121,69 +147,39 @@ function getOrCreateUserName(): string {
     const stored = localStorage.getItem(USERNAME_STORAGE_KEY)
     if (stored) return stored
 
-    const name = generateCreativeName()
+    const name = generateUniqueName([])
     localStorage.setItem(USERNAME_STORAGE_KEY, name)
     return name
 }
 
-function generateCreativeName(): string {
-    const scientists = [
-        // Físicos
-        'Albert Einstein',
-        'Isaac Newton',
-        'Nikola Tesla',
-        'Marie Curie',
-        'Richard Feynman',
-        'Niels Bohr',
-        'Stephen Hawking',
-        'Max Planck',
-        'Erwin Schrödinger',
-        'Werner Heisenberg',
-        // Matemáticos
-        'Ada Lovelace',
-        'Alan Turing',
-        'Carl Gauss',
-        'Leonhard Euler',
-        'Blaise Pascal',
-        'Hypatia',
-        'Emmy Noether',
-        'Ramanujan',
-        // Inventores & Engenheiros
-        'Santos Dumont',
-        'Leonardo da Vinci',
-        'Thomas Edison',
-        'Hedy Lamarr',
-        'Alexander Bell',
-        'Guglielmo Marconi',
-        // Biólogos & Químicos
-        'Charles Darwin',
-        'Rosalind Franklin',
-        'Gregor Mendel',
-        'Louis Pasteur',
-        'Dmitri Mendeleev',
-        'Linus Pauling',
-        'Barbara McClintock',
-        // Astrônomos
-        'Galileo Galilei',
-        'Johannes Kepler',
-        'Carl Sagan',
-        'Vera Rubin',
-        'Edwin Hubble',
-        // Computação
-        'Grace Hopper',
-        'John von Neumann',
-        'Claude Shannon',
-        'Tim Berners-Lee',
-        'Linus Torvalds',
-        'Dennis Ritchie',
-        'Margaret Hamilton',
-        // Brasileiros
-        'César Lattes',
-        'Johanna Döbereiner',
-        'Vital Brazil',
-        'Carlos Chagas',
-        'Mário Schenberg',
+function generateUniqueName(usedNames: string[]): string {
+    const names = [
+        'Albert Einstein', 'Isaac Newton', 'Nikola Tesla', 'Marie Curie',
+        'Richard Feynman', 'Niels Bohr', 'Stephen Hawking', 'Max Planck',
+        'Erwin Schrödinger', 'Werner Heisenberg', 'Lise Meitner', 'Enrico Fermi',
+        'Chien-Shiung Wu', 'Ada Lovelace', 'Alan Turing', 'Carl Gauss',
+        'Leonhard Euler', 'Blaise Pascal', 'Hypatia', 'Emmy Noether',
+        'Ramanujan', 'Katherine Johnson', 'Mary Jackson', 'Dorothy Vaughan',
+        'Santos Dumont', 'Leonardo da Vinci', 'Thomas Edison', 'Hedy Lamarr',
+        'Alexander Bell', 'Guglielmo Marconi', 'Nikolaus Otto', 'George Washington Carver',
+        'Charles Darwin', 'Rosalind Franklin', 'Gregor Mendel', 'Louis Pasteur',
+        'Dmitri Mendeleev', 'Linus Pauling', 'Barbara McClintock', 'Jane Goodall',
+        'Rachel Carson', 'Alexander Fleming', 'Galileo Galilei', 'Johannes Kepler',
+        'Carl Sagan', 'Vera Rubin', 'Edwin Hubble', 'Copérnico',
+        'Neil deGrasse Tyson', 'Jocelyn Bell Burnell', 'Grace Hopper', 'John von Neumann',
+        'Claude Shannon', 'Tim Berners-Lee', 'Linus Torvalds', 'Dennis Ritchie',
+        'Margaret Hamilton', 'Donald Knuth', 'César Lattes', 'Johanna Döbereiner',
+        'Vital Brazil', 'Carlos Chagas', 'Mário Schenberg', 'Oswaldo Cruz',
+        'Nise da Silveira', 'Milton Santos', 'Enedina Alves Marques', 'Ayrton Senna',
+        'Machado de Assis', 'Tarsila do Amaral'
     ]
 
-    return scientists[Math.floor(Math.random() * scientists.length)]
+    const availableNames = names.filter(name => !usedNames.includes(name))
+
+    if (availableNames.length === 0) {
+        const fallbackName = names[Math.floor(Math.random() * names.length)]
+        return `${fallbackName} ${Math.floor(Math.random() * 1000)}`
+    }
+
+    return availableNames[Math.floor(Math.random() * availableNames.length)]
 }

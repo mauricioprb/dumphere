@@ -146,7 +146,7 @@ const editor = useEditor({
                     const mdParser = (ed.storage as any)?.markdown?.parser
                     if (mdParser) {
                         const html = mdParser.parse(result)
-                        if (html) {
+                        if (typeof html === 'string') {
                             ed.chain()
                                 .focus()
                                 .insertContentAt({ from, to }, html)
@@ -198,11 +198,20 @@ const sourceContent = ref('')
 
 function toggleSourceMode() {
     if (!editor.value) return
+
     if (!sourceMode.value) {
         sourceContent.value = (editor.value.storage as any).markdown.getMarkdown()
         sourceMode.value = true
     } else {
-        editor.value.commands.setContent(sourceContent.value)
+        const mdParser = (editor.value.storage as any)?.markdown?.parser
+
+        if (mdParser) {
+            const html = mdParser.parse(sourceContent.value)
+            editor.value.commands.setContent(html, { emitUpdate: true })
+        } else {
+            editor.value.commands.setContent(sourceContent.value, { emitUpdate: true })
+        }
+
         sourceMode.value = false
     }
 }
@@ -224,7 +233,7 @@ watch(
         <EditorToolbar v-if="editor" :editor="editor" :source-mode="sourceMode" @toggle-source="toggleSourceMode" />
         <ImageInsertModal />
 
-        <div v-if="!sourceMode" data-editor-container class="relative flex-1 min-h-0 overflow-y-auto">
+        <div v-show="!sourceMode" data-editor-container class="relative flex-1 min-h-0 overflow-y-auto">
             <EditorContent
                 :editor="editor"
                 class="h-full"
@@ -246,7 +255,7 @@ watch(
         </div>
 
         <div
-            v-else
+            v-show="sourceMode"
             class="flex-1 min-h-0 overflow-y-auto"
         >
             <textarea
