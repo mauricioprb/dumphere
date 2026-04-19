@@ -28,8 +28,9 @@ const statusColor = computed(() => {
 })
 
 const dotColor = computed(() => {
-    if (!store.isConnected) return 'bg-danger-400'
+    if (store.saveStatus === 'error') return 'bg-danger-500'
     if (store.saveStatus === 'saving' || store.saveStatus === 'dirty') return 'bg-warning-400'
+    if (!store.isConnected) return 'bg-danger-400'
     return 'bg-success-400'
 })
 </script>

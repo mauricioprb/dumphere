@@ -120,10 +120,18 @@ export function useYjsProvider(slug: string, wsToken: string) {
 }
 
 function buildWsUrl(): string {
-    const host = import.meta.env.VITE_YJS_WS_HOST ?? 'localhost'
+    let host = import.meta.env.VITE_YJS_WS_HOST
     const port = import.meta.env.VITE_YJS_WS_PORT ?? '1234'
-    const scheme = import.meta.env.VITE_YJS_WS_SCHEME ?? 'ws'
+    let scheme = import.meta.env.VITE_YJS_WS_SCHEME
     const path = import.meta.env.VITE_YJS_WS_PATH ?? ''
+
+    if (!host || host === 'localhost') {
+        host = window.location.hostname
+    }
+
+    if (!scheme) {
+        scheme = window.location.protocol === 'https:' ? 'wss' : 'ws'
+    }
 
     const isDefaultPort = (scheme === 'wss' && port === '443') || (scheme === 'ws' && port === '80')
     const portSuffix = isDefaultPort || !port ? '' : `:${port}`
