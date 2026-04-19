@@ -162,7 +162,7 @@ services:
     build:
       context: ./yjs-server
       dockerfile: Dockerfile
-    container_name: md-editor-yjs-ws
+    container_name: md-online-editor-yjs-ws
     restart: unless-stopped
     environment:
       HOST: "0.0.0.0"
