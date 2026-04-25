@@ -85,33 +85,21 @@ jobs:
           script: |
             cd ${{ vars.DEPLOY_PATH }}
 
-            # Pull latest config files (docker-compose, nginx, etc.)
             git pull origin main
 
-            # Login to GHCR
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u mauricioprb --password-stdin
 
-            # Force pull new image (ignore cache)
             docker pull ghcr.io/mauricioprb/md-online-editor:latest
-
-            # Deploy with new images
             APP_IMAGE=ghcr.io/mauricioprb/md-online-editor:latest \
               docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
 
-            # Wait for containers to be healthy
             sleep 15
 
-            # Run migrations
             docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
 
-            # Clear and warm caches
             docker compose -f docker-compose.prod.yml exec -T app php artisan optimize
-
-            # Restart queue workers gracefully
             docker compose -f docker-compose.prod.yml exec -T app php artisan queue:restart
 
-            # Clean up old images
             docker image prune -f
 
-            # Health check
-            curl -sf http://localhost/health || exit 1
+            curl -sf http://localhost:8081/health || exit 1

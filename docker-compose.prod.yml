@@ -204,4 +204,3 @@ networks:
     driver: bridge
   backend:
     driver: bridge
-    internal: true
