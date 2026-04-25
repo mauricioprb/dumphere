@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useI18n } from '@/Composables/useI18n'
-import { FileEdit, Users, LockOpen, FileText, Github } from 'lucide-vue-next'
+import { FileEdit, Users, LockOpen, FileText } from 'lucide-vue-next'
 
 const { t } = useI18n()
 
@@ -92,21 +92,13 @@ function goToDocument() {
                         <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.noLoginDesc') }}</p>
                     </div>
                 </div>
-                <div class="flex items-center justify-center gap-3 pb-4 sm:pb-0">
-                    <a
-                        href="https://github.com/mauricioprb"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
-                    >
-                        <Github class="w-3.5 h-3.5" />
-                        mauricioprb
-                    </a>
-                    <span class="text-neutral-300 dark:text-neutral-700">&middot;</span>
-                    <a href="/terms" class="text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors underline-offset-2 hover:underline">
+                <p class="text-xs text-neutral-400 dark:text-neutral-600 text-center pb-4 sm:pb-0">
+                    <a href="/terms" class="hover:text-neutral-500 dark:hover:text-neutral-400 transition-colors underline-offset-2 hover:underline">
                         {{ t('terms.heading') }}
                     </a>
-                </div>
+                    &nbsp;&middot;&nbsp;
+                    {{ t('terms.footer') }}
+                </p>
             </div>
         </div>
     </AppLayout>
