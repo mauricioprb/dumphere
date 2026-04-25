@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useI18n } from '@/Composables/useI18n'
-import { FileEdit, Users, LockOpen, FileText } from 'lucide-vue-next'
+import { FileEdit, Users, LockOpen, FileText, Github } from 'lucide-vue-next'
 
 const { t } = useI18n()
 
@@ -69,7 +69,7 @@ function goToDocument() {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left pb-6 sm:pb-0">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left pb-2 sm:pb-0">
                     <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
                         <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
                             <FileEdit class="w-5 h-5 text-primary-600 dark:text-primary-400" />
@@ -91,6 +91,21 @@ function goToDocument() {
                         <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.noLogin') }}</h3>
                         <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.noLoginDesc') }}</p>
                     </div>
+                </div>
+                <div class="flex items-center justify-center gap-3 pb-4 sm:pb-0">
+                    <a
+                        href="https://github.com/mauricioprb"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
+                    >
+                        <Github class="w-3.5 h-3.5" />
+                        mauricioprb
+                    </a>
+                    <span class="text-neutral-300 dark:text-neutral-700">&middot;</span>
+                    <a href="/terms" class="text-xs text-neutral-400 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors underline-offset-2 hover:underline">
+                        {{ t('terms.heading') }}
+                    </a>
                 </div>
             </div>
         </div>

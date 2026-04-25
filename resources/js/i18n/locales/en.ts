@@ -170,6 +170,22 @@ export default {
     'expiration.notice': 'This page is automatically deleted after 30 days without visits.',
     'expiration.dismiss': 'Got it',
 
+    // Terms page
+    'terms.pageTitle': 'Terms & Privacy · Dumphere',
+    'terms.back': 'Back',
+    'terms.heading': 'Terms & Privacy',
+    'terms.lastUpdated': '04/24/2026',
+    'terms.banner': 'Dumphere is a public platform. Anyone with the link can read and edit content. Do not store personal or confidential information.',
+    'terms.public.title': 'Fully public platform',
+    'terms.public.body': 'All documents created on this platform are public by default. There is no access control or authentication: anyone who knows the URL can view and modify the content. Do not use this platform to store private documents.',
+    'terms.noResponsibility.title': 'No responsibility for content',
+    'terms.noResponsibility.body': 'Dumphere is not responsible for content stored by users. Use of this platform is entirely at the user\'s own risk. Illegal, offensive, or third-party rights-infringing content is the sole responsibility of whoever publishes it.',
+    'terms.retention.title': 'Data retention and deletion',
+    'terms.retention.body': 'Documents are automatically deleted after 30 days without access. There is no guarantee of continuous availability or data backup. Do not use this platform as a permanent repository for important information.',
+    'terms.noSensitive.title': 'Do not store sensitive data',
+    'terms.noSensitive.body': 'Avoid storing passwords, financial data, personally identifiable information, medical data, or any other sensitive information. The platform does not offer content encryption or confidentiality guarantees.',
+    'terms.footer': 'Use at your own risk.',
+
     // Table toolbar
     'table.addRowBefore': 'Add row above',
     'table.addRowAfter': 'Add row below',

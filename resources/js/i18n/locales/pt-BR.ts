@@ -170,6 +170,22 @@ export default {
     'expiration.notice': 'Esta página é excluída automaticamente após 30 dias sem visitas.',
     'expiration.dismiss': 'Entendi',
 
+    // Terms page
+    'terms.pageTitle': 'Termos e Privacidade · Dumphere',
+    'terms.back': 'Voltar',
+    'terms.heading': 'Termos e Privacidade',
+    'terms.lastUpdated': '24/04/2026',
+    'terms.banner': 'Dumphere é uma plataforma pública. Qualquer pessoa com o link pode ler e editar o conteúdo. Não armazene informações pessoais ou confidenciais.',
+    'terms.public.title': 'Plataforma totalmente pública',
+    'terms.public.body': 'Todos os documentos criados nesta plataforma são públicos por padrão. Não existe controle de acesso ou autenticação: qualquer pessoa que conheça a URL pode visualizar e modificar o conteúdo. Não utilize esta plataforma para armazenar documentos privados.',
+    'terms.noResponsibility.title': 'Sem responsabilidade por conteúdo',
+    'terms.noResponsibility.body': 'O Dumphere não se responsabiliza pelo conteúdo armazenado pelos usuários. O uso desta plataforma é de inteira responsabilidade de quem a utiliza. Conteúdos ilegais, ofensivos ou que violem direitos de terceiros são de responsabilidade exclusiva de quem os publica.',
+    'terms.retention.title': 'Retenção e exclusão de dados',
+    'terms.retention.body': 'Os documentos são excluídos automaticamente após 30 dias sem acesso. Não há garantia de disponibilidade contínua ou backup dos dados. Não utilize esta plataforma como repositório permanente de informações importantes.',
+    'terms.noSensitive.title': 'Não armazene dados sensíveis',
+    'terms.noSensitive.body': 'Evite armazenar senhas, dados financeiros, informações pessoais identificáveis (CPF, RG, endereço), dados médicos ou qualquer outra informação sensível. A plataforma não oferece criptografia de conteúdo nem garantias de confidencialidade.',
+    'terms.footer': 'Uso por conta e risco do usuário.',
+
     // Table toolbar
     'table.addRowBefore': 'Adicionar linha acima',
     'table.addRowAfter': 'Adicionar linha abaixo',
