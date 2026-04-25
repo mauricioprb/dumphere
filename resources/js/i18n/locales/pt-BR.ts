@@ -9,6 +9,10 @@ export default {
     'home.inputPlaceholder': 'minha-nota',
     'home.openButton': 'Abrir',
     'home.inputHint': 'Digite qualquer caminho de URL para criar ou abrir um documento. Por exemplo:',
+    'home.example1': 'notas-reuniao',
+    'home.example2': 'lista-compras',
+    'home.example3': 'ideias-projeto',
+
 
     // Features
     'features.markdown': 'Markdown',

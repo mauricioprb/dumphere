@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
-import { useI18n } from '@/Composables/useI18n'
+import { useI18n, type TranslationKey } from '@/Composables/useI18n'
 import { FileEdit, Users, LockOpen, FileText } from 'lucide-vue-next'
 
 const { t } = useI18n()
 
 const slugInput = ref('')
-const examples = ['notas-reuniao', 'lista-compras', 'ideias-projeto']
+const examples = computed(() => [
+    'home.example1',
+    'home.example2',
+    'home.example3'
+] as TranslationKey[])
 const year = new Date().getFullYear()
 
 function goToDocument() {
@@ -62,13 +66,14 @@ function goToDocument() {
                         <a
                             v-for="example in examples"
                             :key="example"
-                            :href="`/${example}`"
+                            :href="`/${t(example)}`"
                             class="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-600 dark:text-neutral-300 rounded-full text-sm transition-colors"
                         >
-                            /{{ example }}
+                            /{{ t(example) }}
                         </a>
                     </div>
                 </div>
+
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left pb-2 sm:pb-0">
                     <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
