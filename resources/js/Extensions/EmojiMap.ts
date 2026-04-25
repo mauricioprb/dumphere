@@ -202,6 +202,42 @@ export const EMOJIS: EmojiDef[] = [
         searchTerms: ['punch', 'soco', 'fist', 'emoji'],
     },
     {
+        emoji: ['👌'],
+        filename: 'a_ok.png',
+        label: 'A OK', labelPt: 'Ok',
+        searchTerms: ['a ok', 'ok', 'emoji'],
+    },
+    {
+        emoji: ['🧐'],
+        filename: 'a_monocle.png',
+        label: 'Monocle', labelPt: 'Monóculo',
+        searchTerms: ['monocle', 'monóculo', 'emoji'],
+    },
+    {
+        emoji: ['🌹'],
+        filename: 'a_rose.png',
+        label: 'Rose', labelPt: 'Rosa',
+        searchTerms: ['rose', 'rosa', 'emoji'],
+    },
+    {
+        emoji: ['💀'],
+        filename: 'a_skull.png',
+        label: 'Skull', labelPt: 'Caveira',
+        searchTerms: ['skull', 'caveira', 'emoji'],
+    },
+    {
+        emoji: ['💣'],
+        filename: 'a_bomb.png',
+        label: 'Bomb', labelPt: 'Bomba',
+        searchTerms: ['bomb', 'bomba', 'emoji'],
+    },
+    {
+        emoji: ['😎'],
+        filename: 'a_cool.png',
+        label: 'Cool', labelPt: 'Legal',
+        searchTerms: ['cool', 'legal', 'emoji'],
+    },
+    {
         emoji: ['🤗'],
         filename: 'right_hug.png',
         label: 'Hug', labelPt: 'Abraço',
@@ -371,12 +407,6 @@ export const EMOJIS: EmojiDef[] = [
         filename: 'e-mail.png',
         label: 'Email', labelPt: 'Email',
         searchTerms: ['email', 'mail', 'envelope', 'emoji'],
-    },
-    {
-        emoji: ['🌹'],
-        filename: 'red_rose.png',
-        label: 'Rose', labelPt: 'Rosa',
-        searchTerms: ['rose', 'rosa', 'flower', 'flor', 'emoji'],
     },
     {
         emoji: ['🎁'],
