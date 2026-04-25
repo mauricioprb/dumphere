@@ -4,6 +4,7 @@ import { onMounted } from 'vue'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import TiptapEditor from '@/Components/Editor/TiptapEditor.vue'
 import ConnectionStatus from '@/Components/UI/ConnectionStatus.vue'
+import ExpirationNotice from '@/Components/UI/ExpirationNotice.vue'
 import UserBadge from '@/Components/UI/UserBadge.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useDocumentStore } from '@/Stores/documentStore'
@@ -67,5 +68,7 @@ onMounted(() => {
                 class="flex-1 min-h-0 flex flex-col"
             />
         </div>
+
+        <ExpirationNotice :slug="document.slug" :created-at="document.createdAt" />
     </AppLayout>
 </template>

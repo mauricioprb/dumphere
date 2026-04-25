@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, shallowRef } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import { BubbleMenu } from '@tiptap/vue-3/menus'
 import StarterKit from '@tiptap/starter-kit'
@@ -12,8 +12,6 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import Highlight from '@tiptap/extension-highlight'
 import Typography from '@tiptap/extension-typography'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
 import Superscript from '@tiptap/extension-superscript'
 import Subscript from '@tiptap/extension-subscript'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
@@ -21,6 +19,7 @@ import CharacterCount from '@tiptap/extension-character-count'
 import Image from '@tiptap/extension-image'
 import { Markdown } from 'tiptap-markdown'
 import { SlashCommands } from '@/Extensions/SlashCommands'
+import { EmojiPlugin } from '@/Extensions/EmojiPlugin'
 
 const lowlight = createLowlight(common)
 import { useYjsProvider } from '@/Composables/useYjsProvider'
@@ -31,6 +30,7 @@ import ImageInsertModal from './ImageInsertModal.vue'
 import InlineMarkdownEdit from './InlineMarkdownEdit.vue'
 import TableFloatingToolbar from './TableFloatingToolbar.vue'
 import { useImageModal } from '@/Composables/useImageModal'
+import { Download } from 'lucide-vue-next'
 
 const props = defineProps<{
     slug: string
@@ -85,13 +85,6 @@ const editor = useEditor({
             multicolor: false,
         }),
         Typography,
-        Underline,
-        Link.configure({
-            openOnClick: false,
-            HTMLAttributes: {
-                class: 'text-primary-600 dark:text-primary-400 underline cursor-pointer',
-            },
-        }),
         Superscript,
         Subscript,
         Table.configure({
@@ -116,6 +109,7 @@ const editor = useEditor({
             transformCopiedText: true,
         }),
         SlashCommands,
+        EmojiPlugin,
     ],
     editorProps: {
         attributes: {
@@ -226,6 +220,29 @@ watch(
     },
     { deep: true, flush: 'post' }
 )
+
+function downloadFile(content: string, filename: string, type: string) {
+    const blob = new Blob([content], { type })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
+}
+
+function exportMarkdown() {
+    const md = (editor.value?.storage as any)?.markdown?.getMarkdown?.() ?? ''
+    const filename = props.slug.split('/').pop() ?? 'document'
+    downloadFile(md, `${filename}.md`, 'text/markdown;charset=utf-8')
+}
+
+function exportHtml() {
+    const body = editor.value?.getHTML() ?? ''
+    const title = props.slug.split('/').pop() ?? 'document'
+    const html = `<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>${title}</title>\n</head>\n<body>\n${body}\n</body>\n</html>`
+    downloadFile(html, `${title}.html`, 'text/html;charset=utf-8')
+}
 </script>
 
 <template>
@@ -268,10 +285,34 @@ watch(
 
         <div
             v-if="editor"
-            class="shrink-0 flex items-center justify-end px-4 py-1.5 border-t border-neutral-100 dark:border-neutral-800 text-xs text-neutral-400 dark:text-neutral-500 gap-3"
+            class="shrink-0 flex items-center justify-between px-4 py-1.5 border-t border-neutral-100 dark:border-neutral-800 text-xs text-neutral-400 dark:text-neutral-500"
         >
-            <span>{{ wordCount }} palavras</span>
-            <span>{{ characterCount }} caracteres</span>
+            <div class="flex items-center gap-1">
+                <button
+                    type="button"
+                    :aria-label="t('export.markdown')"
+                    :title="t('export.markdown')"
+                    class="flex items-center gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                    @click="exportMarkdown"
+                >
+                    <Download class="w-3 h-3" aria-hidden="true" />
+                    <span>.md</span>
+                </button>
+                <button
+                    type="button"
+                    :aria-label="t('export.html')"
+                    :title="t('export.html')"
+                    class="flex items-center gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                    @click="exportHtml"
+                >
+                    <Download class="w-3 h-3" aria-hidden="true" />
+                    <span>.html</span>
+                </button>
+            </div>
+            <div class="flex items-center gap-3">
+                <span>{{ wordCount }} palavras</span>
+                <span>{{ characterCount }} caracteres</span>
+            </div>
         </div>
     </div>
 </template>

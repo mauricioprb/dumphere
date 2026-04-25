@@ -534,12 +534,32 @@
 }
 
 /* Images */
-.tiptap img {
+.tiptap img:not(.emoji-img) {
     display: block;
     max-width: 100%;
     height: auto;
     margin: 0.75em 0;
     border-radius: 0.375em;
+}
+
+/* Custom Emojis */
+.emoji-img {
+    display: inline-block;
+    width: 1.3em;
+    height: 1.3em;
+    margin: 0 0.1em;
+    vertical-align: middle;
+    image-rendering: pixelated;
+    pointer-events: none;
+    user-select: none;
+    border-radius: 0;
+    object-fit: contain;
+}
+
+.emoji-char {
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
 }
 
 .tiptap img.ProseMirror-selectednode {

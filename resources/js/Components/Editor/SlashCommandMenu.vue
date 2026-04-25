@@ -90,7 +90,13 @@ defineExpose({ onKeyDown })
                 @mouseenter="selectedIndex = index"
             >
                 <span class="shrink-0 w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center">
-                    <component :is="iconMap[item.icon]" class="w-5 h-5" :stroke-width="1.75" />
+                    <img
+                        v-if="item.icon.startsWith('emoji:')"
+                        :src="`/images/emojis/${item.icon.slice(6)}`"
+                        class="w-7 h-7 object-contain"
+                        :alt="t(item.titleKey as any)"
+                    />
+                    <component v-else :is="iconMap[item.icon]" class="w-5 h-5" :stroke-width="1.75" />
                 </span>
                 <div class="min-w-0">
                     <div class="text-sm font-medium truncate">{{ t(item.titleKey as any) }}</div>

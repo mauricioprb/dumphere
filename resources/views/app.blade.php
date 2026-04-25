@@ -12,7 +12,7 @@
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
     @inertiaHead
-    <script>
+    <script nonce="{{ app('csp-nonce') }}">
         (function() {
             const t = localStorage.getItem('md-editor-theme');
             if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {

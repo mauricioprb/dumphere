@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDocumentStore } from '@/Stores/documentStore'
 import { useI18n } from '@/Composables/useI18n'
@@ -33,17 +33,48 @@ const dotColor = computed(() => {
     if (!store.isConnected) return 'bg-danger-400'
     return 'bg-success-400'
 })
+
+const dotLabel = computed(() =>
+    store.isConnected ? t('status.connected') : t('status.disconnected')
+)
+
+const politeAnnouncement = ref('')
+const assertiveAnnouncement = ref('')
+
+watch(() => store.saveStatus, (status) => {
+    if (status === 'saving' || status === 'dirty') {
+        politeAnnouncement.value = t('status.saving')
+        assertiveAnnouncement.value = ''
+    } else if (status === 'saved') {
+        politeAnnouncement.value = t('status.savedAgo', { time: timeAgo.value })
+        assertiveAnnouncement.value = ''
+    } else if (status === 'error') {
+        assertiveAnnouncement.value = store.saveError ?? t('status.failedToSave')
+        politeAnnouncement.value = ''
+    }
+})
+
+watch(() => store.isConnected, (connected) => {
+    if (!connected) {
+        assertiveAnnouncement.value = t('status.disconnected')
+    } else {
+        politeAnnouncement.value = t('status.connected')
+        assertiveAnnouncement.value = ''
+    }
+})
 </script>
 
 <template>
-    <div class="flex items-center gap-2 text-xs">
+    <div class="flex items-center gap-2 text-xs" aria-hidden="true">
         <span
             class="w-2 h-2 rounded-full"
             :class="dotColor"
-            :title="store.isConnected ? t('status.connected') : t('status.disconnected')"
         />
-        <span :class="statusColor">
-            {{ statusText }}
-        </span>
+        <span :class="statusColor">{{ statusText }}</span>
     </div>
+
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ politeAnnouncement }}</div>
+    <div class="sr-only" aria-live="assertive" aria-atomic="true">{{ assertiveAnnouncement }}</div>
+
+    <span class="sr-only">{{ dotLabel }}</span>
 </template>

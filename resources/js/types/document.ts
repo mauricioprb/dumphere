@@ -5,6 +5,7 @@ export interface DocumentData {
     markdownContent: string
     yjsStateBase64: string | null
     updatedAt: string
+    createdAt: string
 }
 
 export interface PresenceUser {

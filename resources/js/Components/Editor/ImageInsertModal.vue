@@ -10,6 +10,7 @@ const { t } = useI18n()
 const url = ref('')
 const alt = ref('')
 const urlInput = ref<HTMLInputElement | null>(null)
+const formRef = ref<HTMLFormElement | null>(null)
 const previewError = ref(false)
 const previewLoaded = ref(false)
 
@@ -39,7 +40,30 @@ function onOverlayClick(e: MouseEvent) {
 }
 
 function onKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') cancel()
+    if (e.key === 'Escape') {
+        cancel()
+        return
+    }
+
+    if (e.key !== 'Tab') return
+
+    const focusable = Array.from(
+        formRef.value?.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        ) ?? []
+    )
+    if (focusable.length === 0) return
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+    }
 }
 </script>
 
@@ -69,22 +93,27 @@ function onKeydown(e: KeyboardEvent) {
                 >
                     <form
                         v-if="isOpen"
+                        ref="formRef"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="image-modal-title"
                         @submit.prevent="onSubmit"
                         class="bg-white dark:bg-neutral-800 rounded-xl shadow-2xl border border-neutral-200 dark:border-neutral-700 w-full max-w-md overflow-hidden"
                     >
                         <div class="flex items-center gap-3 px-5 py-4 border-b border-neutral-100 dark:border-neutral-700">
-                            <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0">
+                            <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0" aria-hidden="true">
                                 <ImageIcon class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                             </div>
-                            <h2 class="text-base font-semibold text-neutral-800 dark:text-neutral-100 flex-1">
+                            <h2 id="image-modal-title" class="text-base font-semibold text-neutral-800 dark:text-neutral-100 flex-1">
                                 {{ t('imageModal.title') }}
                             </h2>
                             <button
                                 type="button"
+                                :aria-label="t('imageModal.cancel')"
                                 @click="cancel"
                                 class="p-1 rounded-md text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
-                                <X class="w-4 h-4" />
+                                <X class="w-4 h-4" aria-hidden="true" />
                             </button>
                         </div>
 

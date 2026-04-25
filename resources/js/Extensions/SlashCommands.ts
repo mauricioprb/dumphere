@@ -3,6 +3,7 @@ import { VueRenderer } from '@tiptap/vue-3'
 import tippy, { type Instance as TippyInstance } from 'tippy.js'
 import Suggestion from '@tiptap/suggestion'
 import SlashCommandMenu from '@/Components/Editor/SlashCommandMenu.vue'
+import { EMOJIS } from '@/Extensions/EmojiMap'
 
 export interface SlashCommandItem {
     titleKey: string
@@ -11,6 +12,16 @@ export interface SlashCommandItem {
     searchTerms: string[]
     command: (props: { editor: any; range: any }) => void
 }
+
+const emojiItems: SlashCommandItem[] = EMOJIS.map((def) => ({
+    titleKey: def.label as any,
+    descKey: def.labelPt as any,
+    icon: `emoji:${def.filename}`,
+    searchTerms: def.searchTerms,
+    command: ({ editor, range }) => {
+        editor.chain().focus().deleteRange(range).insertContent(def.emoji[0]).run()
+    },
+}))
 
 const defaultItems: SlashCommandItem[] = [
     {
@@ -131,7 +142,8 @@ export const SlashCommands = Extension.create({
                 items: ({ query }: { query: string }) => {
                     const q = query.toLowerCase()
                     if (!q) return defaultItems
-                    return defaultItems.filter((item) =>
+                    const allItems = [...defaultItems, ...emojiItems]
+                    return allItems.filter((item) =>
                         item.searchTerms.some((term) => term.includes(q)) ||
                         item.titleKey.toLowerCase().includes(q)
                     )

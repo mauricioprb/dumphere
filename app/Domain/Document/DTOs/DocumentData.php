@@ -13,6 +13,7 @@ class DocumentData
         public readonly string $markdownContent,
         public readonly ?string $yjsStateBase64,
         public readonly string $updatedAt,
+        public readonly string $createdAt,
     ) {}
 
     public static function fromModel(\App\Domain\Document\Models\Document $document): self
@@ -24,6 +25,7 @@ class DocumentData
             markdownContent: $document->markdown_content ?? '',
             yjsStateBase64: $document->yjs_state ? base64_encode(json_encode($document->yjs_state)) : null,
             updatedAt: $document->updated_at->toISOString(),
+            createdAt: $document->created_at->toISOString(),
         );
     }
 
@@ -36,6 +38,7 @@ class DocumentData
             'markdownContent' => $this->markdownContent,
             'yjsStateBase64' => $this->yjsStateBase64,
             'updatedAt' => $this->updatedAt,
+            'createdAt' => $this->createdAt,
         ];
     }
 }

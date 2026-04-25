@@ -76,7 +76,7 @@ export function useAutoSave(
                 }
 
                 store.markSaved(data.updatedAt)
-                currentRetryMs = 5_000 // reset back-off on success
+                currentRetryMs = 5_000
             } else {
                 throw new Error(data.error ?? 'Unknown save error')
             }
@@ -90,14 +90,12 @@ export function useAutoSave(
             currentRetryMs = Math.min(currentRetryMs * 2, maxRetryMs)
         } finally {
             savingInFlight = false
-            // If more changes came in while saving, schedule another save
             if (dirty) {
                 scheduleDebounce()
             }
         }
     }
 
-    /** Force an immediate save (used on beforeunload). */
     function saveNow() {
         if (debounceTimer) {
             clearTimeout(debounceTimer)
@@ -108,10 +106,31 @@ export function useAutoSave(
         }
     }
 
-    function handleBeforeUnload() {
-        if (dirty || store.saveStatus === 'dirty') {
-            saveNow()
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+        if (!dirty && store.saveStatus !== 'dirty') return
+
+        event.preventDefault()
+
+        if (debounceTimer) {
+            clearTimeout(debounceTimer)
+            debounceTimer = null
         }
+
+        const ed = editorRef.value
+        if (!ed) return
+        const content = ed.getHTML()
+        if (!content || content === '<p></p>') return
+
+        fetch(`/${slug}/save`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCSRFToken(),
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ markdownContent: content, yjsStateBase64: null }),
+            keepalive: true,
+        }).catch(() => {})
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
