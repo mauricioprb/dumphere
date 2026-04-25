@@ -14,7 +14,7 @@ class FindOrCreateDocument
     private const BLACKLIST = [
         '.env', 'phpinfo', 'actuator', 'wp-admin', 'wp-login', 'config', 'settings',
         'admin', 'administrator', 'cgi-bin', 'etc', 'var', 'tmp', 'credentials',
-        'swagger', 'api-docs', 'v1', 'v2', 'health', 'metrics', 'proxy', 'webfig'
+        'swagger', 'api-docs', 'v1', 'v2', 'health', 'metrics', 'proxy', 'webfig',
     ];
 
     private const MAX_CREATIONS_PER_HOUR = 10;
@@ -71,7 +71,7 @@ class FindOrCreateDocument
         $count = Cache::get($key, 0);
 
         if ($count >= self::MAX_CREATIONS_PER_HOUR) {
-            throw new TooManyDocumentsCreatedException();
+            throw new TooManyDocumentsCreatedException;
         }
 
         Cache::put($key, $count + 1, now()->addHour());

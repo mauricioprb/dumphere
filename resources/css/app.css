@@ -543,23 +543,26 @@
 }
 
 /* Custom Emojis */
-.emoji-img {
-    display: inline-block;
-    width: 1.3em;
-    height: 1.3em;
-    margin: 0 0.1em;
+.emoji-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2em;
+    height: 1.2em;
     vertical-align: middle;
-    image-rendering: pixelated;
-    pointer-events: none;
-    user-select: none;
-    border-radius: 0;
-    object-fit: contain;
-}
-
-.emoji-char {
-    font-size: 0;
-    line-height: 0;
-    color: transparent;
+    line-height: 1;
+    
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    color: var(--editor-body);
+    -webkit-text-fill-color: transparent;
+    caret-color: var(--editor-body) !important;
+    
+    user-select: text;
+    cursor: text;
+    image-rendering: -webkit-optimize-contrast;
 }
 
 .tiptap img.ProseMirror-selectednode {

@@ -12,7 +12,6 @@ function buildDecorations(doc: any): DecorationSet {
         if (node.type.name === 'codeBlock') return false
         if (!node.isText || !node.text) return
 
-        // Skip text nodes with code mark
         if (node.marks?.some((m: any) => m.type.name === 'code')) return
 
         const regex = new RegExp(EMOJI_REGEX.source, 'gu')
@@ -26,21 +25,11 @@ function buildDecorations(doc: any): DecorationSet {
             const from = pos + match.index
             const to = from + emoji.length
 
-            const imgSrc = `/images/emojis/${name}`
-            const imgAlt = emoji
-
             decorations.push(
-                Decoration.widget(from, () => {
-                    const el = document.createElement('img')
-                    el.src = imgSrc
-                    el.className = 'emoji-img'
-                    el.alt = imgAlt
-                    el.draggable = false
-                    return el
-                }, { side: -1, key: `mw${from}` })
-            )
-            decorations.push(
-                Decoration.inline(from, to, { class: 'emoji-char' }, { key: `mi${from}` })
+                Decoration.inline(from, to, {
+                    class: 'emoji-inline',
+                    style: `background-image: url('/images/emojis/${name}')`,
+                })
             )
         }
     })

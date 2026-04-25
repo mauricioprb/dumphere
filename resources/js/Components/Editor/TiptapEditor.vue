@@ -292,7 +292,7 @@ function exportHtml() {
                     type="button"
                     :aria-label="t('export.markdown')"
                     :title="t('export.markdown')"
-                    class="flex items-center gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                    class="flex items-center cursor-pointer gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
                     @click="exportMarkdown"
                 >
                     <Download class="w-3 h-3" aria-hidden="true" />
@@ -302,7 +302,7 @@ function exportHtml() {
                     type="button"
                     :aria-label="t('export.html')"
                     :title="t('export.html')"
-                    class="flex items-center gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
+                    class="flex items-center cursor-pointer gap-1 px-2 py-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
                     @click="exportHtml"
                 >
                     <Download class="w-3 h-3" aria-hidden="true" />

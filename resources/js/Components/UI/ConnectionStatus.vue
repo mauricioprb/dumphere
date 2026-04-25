@@ -46,7 +46,7 @@ watch(() => store.saveStatus, (status) => {
         politeAnnouncement.value = t('status.saving')
         assertiveAnnouncement.value = ''
     } else if (status === 'saved') {
-        politeAnnouncement.value = t('status.savedAgo', { time: timeAgo.value })
+        politeAnnouncement.value = t('status.savedAgo', { time: timeAgo.value ?? '' })
         assertiveAnnouncement.value = ''
     } else if (status === 'error') {
         assertiveAnnouncement.value = store.saveError ?? t('status.failedToSave')
