@@ -10,8 +10,20 @@ const locales: Record<Locale, Record<string, string>> = {
     'en': en,
 }
 
+const getBrowserLocale = (): Locale => {
+    if (typeof window === 'undefined') return 'pt-BR'
+    
+    const browserLang = window.navigator.language.toLowerCase()
+    
+    if (browserLang.startsWith('pt')) {
+        return 'pt-BR'
+    }
+    
+    return 'en'
+}
+
 const currentLocale = ref<Locale>(
-    (localStorage.getItem('md-editor-locale') as Locale) || 'pt-BR'
+    (localStorage.getItem('md-editor-locale') as Locale) || getBrowserLocale()
 )
 
 export function useI18n() {
