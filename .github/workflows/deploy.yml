@@ -102,4 +102,4 @@ jobs:
 
             docker image prune -f
 
-            curl -sf http://localhost:8081/health || exit 1
+            curl -sf http://localhost:8001/health || exit 1
