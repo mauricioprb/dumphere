@@ -10,6 +10,7 @@ const { t } = useI18n()
 
 const slugInput = ref('')
 const examples = ['notas-reuniao', 'lista-compras', 'ideias-projeto']
+const year = new Date().getFullYear()
 
 function goToDocument() {
     const slug = slugInput.value.trim().replace(/^\/+/, '').toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/^-+|-+$/g, '')
@@ -93,11 +94,11 @@ function goToDocument() {
                     </div>
                 </div>
                 <p class="text-xs text-neutral-400 dark:text-neutral-600 text-center pb-4 sm:pb-0">
-                    <a href="/terms" class="hover:text-neutral-500 dark:hover:text-neutral-400 transition-colors underline-offset-2 hover:underline">
+                    &copy; {{ year }} Dumphere
+                    &nbsp;&middot;&nbsp;
+                    <a href="/terms" class="text-neutral-500 dark:text-neutral-400 underline underline-offset-2 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors">
                         {{ t('terms.heading') }}
                     </a>
-                    &nbsp;&middot;&nbsp;
-                    {{ t('terms.footer') }}
                 </p>
             </div>
         </div>
