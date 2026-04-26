@@ -233,7 +233,7 @@ export const EMOJIS: EmojiDef[] = [
     },
     {
         emoji: ['😎'],
-        filename: 'a_cool.png',
+        filename: 'cool_oc.png',
         label: 'Cool', labelPt: 'Legal',
         searchTerms: ['cool', 'legal', 'emoji'],
     },
