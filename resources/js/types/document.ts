@@ -2,7 +2,7 @@ export interface DocumentData {
     id: string
     slug: string
     title: string | null
-    markdownContent: string
+    contentHtml: string
     yjsStateBase64: string | null
     updatedAt: string
     createdAt: string

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useI18n } from '@/Composables/useI18n'
-import { FileText, ArrowLeft, Globe, ShieldOff, Clock, AlertTriangle } from 'lucide-vue-next'
+import { FileText, ArrowLeft, Globe, ShieldOff, Clock, AlertTriangle } from '@lucide/vue'
 
 const { t } = useI18n()
 </script>
@@ -18,13 +18,14 @@ const { t } = useI18n()
 
             <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-16 space-y-10">
                 <div class="space-y-3">
-                    <a
+                    <Link
                         href="/"
+                        prefetch
                         class="inline-flex items-center gap-1.5 text-sm text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
                     >
-                        <ArrowLeft class="w-4 h-4" />
+                        <ArrowLeft class="w-4 h-4" aria-hidden="true" />
                         {{ t('terms.back') }}
-                    </a>
+                    </Link>
 
                     <div class="flex items-center gap-3">
                         <FileText class="w-7 h-7 text-primary-600 dark:text-primary-400 shrink-0" :stroke-width="1.75" />

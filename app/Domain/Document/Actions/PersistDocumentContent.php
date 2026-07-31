@@ -6,35 +6,36 @@ namespace App\Domain\Document\Actions;
 
 use App\Domain\Document\Exceptions\DocumentTooLargeException;
 use App\Domain\Document\Models\Document;
-use Illuminate\Support\Facades\Cache;
+use App\Domain\Document\Services\DocumentHtmlSanitizer;
 use Illuminate\Support\Facades\Log;
 
 class PersistDocumentContent
 {
-    public function execute(string $slug, string $markdownContent, ?string $yjsStateBase64 = null): Document
+    public function __construct(
+        private readonly DocumentHtmlSanitizer $htmlSanitizer,
+    ) {}
+
+    public function execute(string $slug, string $contentHtml): Document
     {
         $document = Document::where('slug', $slug)->firstOrFail();
 
-        $contentSizeBytes = strlen($markdownContent);
+        $contentSizeBytes = strlen($contentHtml);
         if ($contentSizeBytes > Document::MAX_SIZE_BYTES) {
             throw new DocumentTooLargeException(
                 "Document '{$slug}' exceeds maximum size of ".Document::MAX_SIZE_BYTES." bytes (current: {$contentSizeBytes} bytes)."
             );
         }
 
+        $contentHtml = $this->htmlSanitizer->sanitize($contentHtml);
+
         $document->update([
-            'markdown_content' => $markdownContent,
-            'yjs_state' => $yjsStateBase64 ? json_decode(base64_decode($yjsStateBase64), true) : null,
+            'content_html' => $contentHtml,
             'last_accessed_at' => now(),
         ]);
 
-        if ($yjsStateBase64) {
-            Cache::put("doc:yjs:{$slug}", $yjsStateBase64, now()->addHour());
-        }
-
-        Log::info("Document '{$slug}' persisted", [
+        Log::info('Document content persisted', [
+            'document_id' => $document->id,
             'size_bytes' => $contentSizeBytes,
-            'has_yjs_state' => (bool) $yjsStateBase64,
         ]);
 
         return $document;

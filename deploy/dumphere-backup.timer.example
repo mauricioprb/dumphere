@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Dumphere PostgreSQL backup daily
+
+[Timer]
+OnCalendar=*-*-* 04:15:00 UTC
+Persistent=true
+RandomizedDelaySec=15m
+Unit=dumphere-backup.service
+
+[Install]
+WantedBy=timers.target

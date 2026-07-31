@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from '@/Composables/useI18n'
-import { X } from 'lucide-vue-next'
+import { X } from '@lucide/vue'
 
 const props = defineProps<{
     slug: string
@@ -9,8 +9,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const dismissed = ref(true)
-
 const isOldEnough = computed(() => {
     const ageMs = Date.now() - new Date(props.createdAt).getTime()
     const ageDays = ageMs / (1000 * 60 * 60 * 24)
@@ -18,10 +16,10 @@ const isOldEnough = computed(() => {
 })
 
 const storageKey = computed(() => `expiration-dismissed:${props.slug}`)
-
-onMounted(() => {
-    dismissed.value = sessionStorage.getItem(storageKey.value) === '1'
-})
+const dismissed = ref(
+    typeof sessionStorage !== 'undefined'
+        && sessionStorage.getItem(storageKey.value) === '1'
+)
 
 function dismiss() {
     sessionStorage.setItem(storageKey.value, '1')
@@ -42,7 +40,7 @@ function dismiss() {
             class="shrink-0 rounded p-0.5 hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors focus-visible:outline focus-visible:outline-amber-500"
             @click="dismiss"
         >
-            <X class="w-3.5 h-3.5" />
+            <X class="w-3.5 h-3.5" aria-hidden="true" />
         </button>
     </div>
 </template>

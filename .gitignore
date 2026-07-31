@@ -8,6 +8,7 @@
 /.fleet
 /.idea
 /.nova
+/.dep
 /.phpunit.cache
 /.vscode
 /.zed
@@ -22,9 +23,3 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
-
-# SSL certificates
-docker/nginx/ssl/
-
-# Docker data volumes
-docker-data/

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { NodeViewContent, NodeViewWrapper } from '@tiptap/vue-3'
-import { Copy, Check } from 'lucide-vue-next'
+import { Copy, Check } from '@lucide/vue'
 
 const props = defineProps<{
     node: any
@@ -27,13 +27,15 @@ function copyCode() {
 <template>
     <NodeViewWrapper class="code-block-wrapper" as="div">
         <button
+            type="button"
             class="code-block-copy-btn"
+            :aria-label="copied ? 'Código copiado' : 'Copiar código'"
             :title="copied ? 'Copiado!' : 'Copiar código'"
             @click="copyCode"
             contenteditable="false"
         >
-            <Check v-if="copied" :size="14" />
-            <Copy v-else :size="14" />
+            <Check v-if="copied" :size="14" aria-hidden="true" />
+            <Copy v-else :size="14" aria-hidden="true" />
         </button>
         <pre><NodeViewContent as="code" :class="language ? `language-${language}` : ''" /></pre>
     </NodeViewWrapper>

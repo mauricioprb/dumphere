@@ -7,7 +7,10 @@ export default {
     'home.heading': 'Dumphere',
     'home.subheading': 'Collaborative Markdown editing in real-time.',
     'home.inputPlaceholder': 'my-note',
+    'home.inputLabel': 'Document path',
+    'home.inputError': 'Enter a valid path with up to four parts.',
     'home.openButton': 'Open',
+    'home.opening': 'Opening...',
     'home.inputHint': 'Type any URL path to create or open a document. For example:',
     'home.example1': 'meeting-notes',
     'home.example2': 'shopping-list',
@@ -24,8 +27,15 @@ export default {
 
     // Editor
     'editor.placeholder': 'Start typing... Use / for commands, **bold**, *italic*, # headings...',
+    'editor.wordCount': '{count} words',
+    'editor.characterCount': '{count} characters',
     'editor.untitled': 'Untitled',
     'editor.sourcePlaceholder': 'Write your Markdown here...',
+    'editor.sourceLabel': 'Document Markdown source',
+    'editor.loading': 'Preparing the editor...',
+
+    // Navigation
+    'navigation.home': 'Back to home',
 
     // Toolbar
     'toolbar.ariaLabel': 'Formatting toolbar',
@@ -100,6 +110,7 @@ export default {
     'slash.tableDesc': 'Insert a 3×3 table',
     'slash.image': 'Image',
     'slash.imageDesc': 'Insert image from URL',
+    'slash.ariaLabel': 'Editor commands',
     'slash.noResults': 'No results',
 
     // Emoji slash commands
@@ -163,6 +174,7 @@ export default {
     'imageModal.preview': 'Preview',
     'imageModal.loading': 'Loading...',
     'imageModal.previewError': 'Could not load preview. The image will still be inserted.',
+    'imageModal.invalidUrl': 'Enter a valid HTTP or HTTPS URL.',
     'imageModal.cancel': 'Cancel',
     'imageModal.insert': 'Insert image',
 

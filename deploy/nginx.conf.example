@@ -1,0 +1,76 @@
+limit_req_zone $binary_remote_addr zone=pages:10m rate=5r/s;
+limit_req_zone $binary_remote_addr zone=saves:10m rate=1r/s;
+limit_conn_zone $binary_remote_addr zone=websockets:10m;
+
+server {
+    listen 80;
+    server_name editor.example.com;
+
+    return 308 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name editor.example.com;
+
+    ssl_certificate /etc/letsencrypt/live/editor.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/editor.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:DumphereTLS:10m;
+    ssl_session_tickets off;
+
+    root /var/www/dumphere/current/public;
+    index index.php;
+    charset utf-8;
+
+    client_max_body_size 600k;
+    server_tokens off;
+    access_log /var/log/nginx/dumphere.access.log dumphere_privacy;
+    error_log /var/log/nginx/dumphere.error.log warn;
+
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
+
+    location /yjs-ws/ {
+        limit_conn websockets 10;
+        rewrite ^/yjs-ws/(.*) /$1 break;
+        proxy_pass http://127.0.0.1:1234;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        # Discard any client-supplied forwarding chain. The Yjs server trusts
+        # this header only because it accepts connections from this local proxy.
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+    }
+
+    location / {
+        limit_req zone=pages burst=15 nodelay;
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ /save$ {
+        limit_req zone=saves burst=5 nodelay;
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.5-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_hide_header X-Powered-By;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}

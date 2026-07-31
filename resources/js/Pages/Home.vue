@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Components/Layout/AppLayout.vue'
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
 import { useI18n, type TranslationKey } from '@/Composables/useI18n'
-import { FileEdit, Users, LockOpen, FileText } from 'lucide-vue-next'
+import { normalizeDocumentPath } from '@/Lib/documentPath'
+import { FileEdit, Users, LockOpen, FileText } from '@lucide/vue'
 
 const { t } = useI18n()
 
 const slugInput = ref('')
+const inputError = ref('')
+const isNavigating = ref(false)
 const examples = computed(() => [
     'home.example1',
     'home.example2',
@@ -17,11 +20,24 @@ const examples = computed(() => [
 const year = new Date().getFullYear()
 
 function goToDocument() {
-    const slug = slugInput.value.trim().replace(/^\/+/, '').toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/^-+|-+$/g, '')
-    if (slug) {
-        window.location.href = `/${slug}`
+    const slug = normalizeDocumentPath(slugInput.value)
+
+    if (!slug) {
+        inputError.value = t('home.inputError')
+        return
     }
+
+    inputError.value = ''
+    router.visit(`/${slug}`, {
+        onStart: () => {
+            isNavigating.value = true
+        },
+        onFinish: () => {
+            isNavigating.value = false
+        },
+    })
 }
+
 </script>
 
 <template>
@@ -47,30 +63,53 @@ function goToDocument() {
                     <p class="text-base text-neutral-500 dark:text-neutral-400">
                         {{ t('home.inputHint') }}
                     </p>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input
-                            v-model="slugInput"
-                            type="text"
-                            :placeholder="t('home.inputPlaceholder')"
-                            class="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-4 py-2.5 sm:py-3 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder-neutral-400 dark:placeholder-neutral-500"
-                            @keyup.enter="goToDocument"
-                        />
-                        <button
-                            @click="goToDocument"
-                            class="px-6 py-2.5 sm:py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 cursor-pointer"
+                    <form
+                        class="space-y-2"
+                        @submit.prevent="goToDocument"
+                    >
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <label for="document-path" class="sr-only">
+                                {{ t('home.inputLabel') }}
+                            </label>
+                            <input
+                                id="document-path"
+                                v-model="slugInput"
+                                type="text"
+                                :placeholder="t('home.inputPlaceholder')"
+                                autocomplete="off"
+                                autocapitalize="none"
+                                spellcheck="false"
+                                :aria-invalid="inputError ? 'true' : undefined"
+                                aria-describedby="document-path-help"
+                                class="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-4 py-2.5 sm:py-3 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder-neutral-400 dark:placeholder-neutral-500"
+                                @input="inputError = ''"
+                            />
+                            <button
+                                type="submit"
+                                :disabled="isNavigating || !slugInput.trim()"
+                                class="px-6 py-2.5 sm:py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {{ isNavigating ? t('home.opening') : t('home.openButton') }}
+                            </button>
+                        </div>
+                        <p
+                            id="document-path-help"
+                            class="min-h-5 text-left text-sm text-danger-600 dark:text-danger-400"
+                            role="alert"
                         >
-                            {{ t('home.openButton') }}
-                        </button>
-                    </div>
+                            {{ inputError }}
+                        </p>
+                    </form>
                     <div class="flex flex-wrap gap-2 justify-center">
-                        <a
+                        <Link
                             v-for="example in examples"
                             :key="example"
                             :href="`/${t(example)}`"
+                            prefetch
                             class="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-600 dark:text-neutral-300 rounded-full text-sm transition-colors"
                         >
                             /{{ t(example) }}
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
@@ -101,9 +140,13 @@ function goToDocument() {
                 <p class="text-xs text-neutral-400 dark:text-neutral-600 text-center pb-4 sm:pb-0">
                     &copy; {{ year }} Dumphere
                     &nbsp;&middot;&nbsp;
-                    <a href="/terms" class="text-neutral-500 dark:text-neutral-400 underline underline-offset-2 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors">
+                    <Link
+                        href="/terms"
+                        prefetch
+                        class="text-neutral-500 dark:text-neutral-400 underline underline-offset-2 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                    >
                         {{ t('terms.heading') }}
-                    </a>
+                    </Link>
                 </p>
             </div>
         </div>

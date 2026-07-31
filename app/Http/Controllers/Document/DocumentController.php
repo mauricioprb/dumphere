@@ -24,7 +24,7 @@ class DocumentController extends Controller
         private readonly WebSocketTokenService $wsTokenService,
     ) {}
 
-    public function show(Request $request, string $slug): Response|\Illuminate\Http\JsonResponse
+    public function show(string $slug): Response
     {
         try {
             $document = $this->findOrCreate->execute($slug);
@@ -36,22 +36,20 @@ class DocumentController extends Controller
 
         return Inertia::render('Document/Show', [
             'document' => $data->toArray(),
-            'wsToken' => $this->wsTokenService->generate($slug),
+            'wsToken' => $this->wsTokenService->generate($document->id),
         ]);
     }
 
     public function save(Request $request, string $slug): JsonResponse
     {
         $validated = $request->validate([
-            'markdownContent' => ['required', 'string', 'max:512000'],
-            'yjsStateBase64' => ['nullable', 'string'],
+            'contentHtml' => ['present', 'nullable', 'string'],
         ]);
 
         try {
             $document = $this->persistContent->execute(
                 slug: $slug,
-                markdownContent: $validated['markdownContent'],
-                yjsStateBase64: $validated['yjsStateBase64'] ?? null,
+                contentHtml: $validated['contentHtml'] ?? '',
             );
 
             return response()->json([

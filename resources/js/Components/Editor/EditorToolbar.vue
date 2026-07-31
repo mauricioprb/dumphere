@@ -10,7 +10,7 @@ import {
     List, ListOrdered, ListChecks, Quote,
     Minus, Braces, Table, ImageIcon,
     FileCode, FileText,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 const props = defineProps<{
     editor: Editor
@@ -116,6 +116,7 @@ function onButtonFocus(btnIdx: number) {
             />
             <button
                 v-else
+                type="button"
                 :tabindex="btnIdx === tabbableIdx ? 0 : -1"
                 :aria-label="(item as ToolbarButton).title"
                 :aria-pressed="(item as ToolbarButton).isToggle ? (item as ToolbarButton).isActive() : undefined"
@@ -139,6 +140,7 @@ function onButtonFocus(btnIdx: number) {
 
         <div role="separator" class="w-px h-5 bg-neutral-300 dark:bg-neutral-600 mx-1" />
         <button
+            type="button"
             :tabindex="SOURCE_BTN_IDX === tabbableIdx ? 0 : -1"
             :aria-label="sourceMode ? t('toolbar.sourceOff') : t('toolbar.sourceOn')"
             :aria-pressed="sourceMode"

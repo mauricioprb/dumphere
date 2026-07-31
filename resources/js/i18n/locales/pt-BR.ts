@@ -7,7 +7,10 @@ export default {
     'home.heading': 'Dumphere',
     'home.subheading': 'Edição colaborativa de Markdown em tempo real.',
     'home.inputPlaceholder': 'minha-nota',
+    'home.inputLabel': 'Caminho do documento',
+    'home.inputError': 'Informe um caminho válido com até quatro partes.',
     'home.openButton': 'Abrir',
+    'home.opening': 'Abrindo...',
     'home.inputHint': 'Digite qualquer caminho de URL para criar ou abrir um documento. Por exemplo:',
     'home.example1': 'notas-reuniao',
     'home.example2': 'lista-compras',
@@ -24,8 +27,15 @@ export default {
 
     // Editor
     'editor.placeholder': 'Comece a digitar... Use / para comandos, **negrito**, *itálico*, # títulos...',
+    'editor.wordCount': '{count} palavras',
+    'editor.characterCount': '{count} caracteres',
     'editor.untitled': 'Sem título',
     'editor.sourcePlaceholder': 'Escreva seu Markdown aqui...',
+    'editor.sourceLabel': 'Código Markdown do documento',
+    'editor.loading': 'Preparando o editor...',
+
+    // Navigation
+    'navigation.home': 'Voltar para o início',
 
     // Toolbar
     'toolbar.ariaLabel': 'Barra de formatação',
@@ -100,6 +110,7 @@ export default {
     'slash.tableDesc': 'Inserir tabela 3×3',
     'slash.image': 'Imagem',
     'slash.imageDesc': 'Inserir imagem por URL',
+    'slash.ariaLabel': 'Comandos do editor',
     'slash.noResults': 'Nenhum resultado',
 
     // Emoji slash commands
@@ -163,6 +174,7 @@ export default {
     'imageModal.preview': 'Pré-visualização',
     'imageModal.loading': 'Carregando...',
     'imageModal.previewError': 'Não foi possível carregar a pré-visualização. A imagem ainda será inserida.',
+    'imageModal.invalidUrl': 'Informe uma URL HTTP ou HTTPS válida.',
     'imageModal.cancel': 'Cancelar',
     'imageModal.insert': 'Inserir imagem',
 

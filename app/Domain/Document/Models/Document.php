@@ -14,15 +14,14 @@ class Document extends Model
     protected $fillable = [
         'slug',
         'title',
-        'markdown_content',
-        'yjs_state',
+        'content_html',
+        'yjs_state_base64',
         'last_accessed_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'yjs_state' => 'array',
             'last_accessed_at' => 'datetime',
         ];
     }

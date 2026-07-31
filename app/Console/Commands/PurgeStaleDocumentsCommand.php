@@ -17,6 +17,12 @@ class PurgeStaleDocumentsCommand extends Command
     {
         $days = (int) $this->option('days');
 
+        if ($days < 1) {
+            $this->error('The number of days must be at least 1.');
+
+            return self::FAILURE;
+        }
+
         $this->info("Purging documents not accessed in the last {$days} days...");
 
         $count = $purgeAction->execute($days);

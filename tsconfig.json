@@ -6,24 +6,25 @@
         "strict": true,
         "jsx": "preserve",
         "importHelpers": true,
-        "experimentalDecorators": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "useDefineForClassFields": true,
         "sourceMap": true,
-        "baseUrl": ".",
         "types": ["node"],
         "paths": {
-            "@/*": ["resources/js/*"]
+            "@/*": ["./resources/js/*"]
         },
         "lib": ["ESNext", "DOM", "DOM.Iterable"]
     },
     "include": [
         "resources/js/**/*.ts",
         "resources/js/**/*.d.ts",
-        "resources/js/**/*.vue"
+        "resources/js/**/*.vue",
+        "tests/Frontend/**/*.ts"
     ],
     "exclude": ["node_modules", "public"]
 }

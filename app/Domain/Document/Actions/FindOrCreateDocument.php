@@ -6,47 +6,43 @@ namespace App\Domain\Document\Actions;
 
 use App\Domain\Document\Exceptions\TooManyDocumentsCreatedException;
 use App\Domain\Document\Models\Document;
+use App\Domain\Document\Support\DocumentSlug;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Request;
 
 class FindOrCreateDocument
 {
-    private const BLACKLIST = [
-        '.env', 'phpinfo', 'actuator', 'wp-admin', 'wp-login', 'config', 'settings',
-        'admin', 'administrator', 'cgi-bin', 'etc', 'var', 'tmp', 'credentials',
-        'swagger', 'api-docs', 'v1', 'v2', 'health', 'metrics', 'proxy', 'webfig',
-    ];
-
     private const MAX_CREATIONS_PER_HOUR = 10;
 
     public function execute(string $slug): Document
     {
-        $cleanSlug = trim($slug, '/');
+        $slug = DocumentSlug::normalize($slug);
 
-        foreach (self::BLACKLIST as $forbidden) {
-            if (str_contains($cleanSlug, $forbidden)) {
-                abort(403, 'Forbidden slug.');
-            }
+        if (! DocumentSlug::isValid($slug)) {
+            abort(404, 'Invalid document URL.');
         }
 
-        if (substr_count($cleanSlug, '/') > 3 || strlen($cleanSlug) > 100) {
-            abort(403, 'Invalid slug structure.');
+        $document = Document::where('slug', $slug)->first();
+
+        if ($document === null) {
+            $document = Cache::lock('doc:create:'.hash('sha256', $slug), 5)
+                ->block(3, function () use ($slug): Document {
+                    $existing = Document::where('slug', $slug)->first();
+
+                    if ($existing !== null) {
+                        return $existing;
+                    }
+
+                    $this->enforceCreationRateLimit();
+
+                    return Document::create([
+                        'slug' => $slug,
+                        'title' => $this->slugToTitle($slug),
+                        'content_html' => '',
+                    ]);
+                });
         }
-
-        $exists = Document::where('slug', $slug)->exists();
-
-        if (! $exists) {
-            $this->enforceCreationRateLimit();
-        }
-
-        $document = Document::firstOrCreate(
-            ['slug' => $slug],
-            [
-                'title' => $this->slugToTitle($slug),
-                'markdown_content' => '',
-                'yjs_state' => null,
-            ]
-        );
 
         $stale = $document->last_accessed_at === null
             || $document->last_accessed_at->lt(now()->subMinutes(5));
@@ -54,8 +50,6 @@ class FindOrCreateDocument
         if ($stale) {
             $document->update(['last_accessed_at' => now()]);
         }
-
-        Cache::put("doc:slug:{$slug}", $document->id, now()->addHour());
 
         return $document;
     }
@@ -68,13 +62,11 @@ class FindOrCreateDocument
         $ip = Request::ip();
         $key = "doc_create_ip:{$ip}";
 
-        $count = Cache::get($key, 0);
+        $attempts = RateLimiter::hit($key, 3600);
 
-        if ($count >= self::MAX_CREATIONS_PER_HOUR) {
+        if ($attempts > self::MAX_CREATIONS_PER_HOUR) {
             throw new TooManyDocumentsCreatedException;
         }
-
-        Cache::put($key, $count + 1, now()->addHour());
     }
 
     private function slugToTitle(string $slug): string

@@ -6,7 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { common, createLowlight } from 'lowlight'
 import { CustomCodeBlock } from '@/Extensions/CustomCodeBlock'
 import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
+import { CollaborationCaret } from '@tiptap/extension-collaboration-caret'
 import Placeholder from '@tiptap/extension-placeholder'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -30,28 +30,35 @@ import ImageInsertModal from './ImageInsertModal.vue'
 import InlineMarkdownEdit from './InlineMarkdownEdit.vue'
 import TableFloatingToolbar from './TableFloatingToolbar.vue'
 import { useImageModal } from '@/Composables/useImageModal'
-import { Download } from 'lucide-vue-next'
+import { Download } from '@lucide/vue'
 
 const props = defineProps<{
+    documentId: string
     slug: string
     initialContent: string
+    initialYjsState: string | null
     wsToken: string
 }>()
 
 const { t } = useI18n()
+const editorReady = ref(false)
 
 const {
     ydoc,
     yXmlFragment,
     wsProvider,
-    awareness,
-    isConnected,
     userName,
     userColor,
-    whenSynced,
-} = useYjsProvider(props.slug, props.wsToken)
+    whenLocalSynced,
+    connect,
+} = useYjsProvider({
+    documentId: props.documentId,
+    wsToken: props.wsToken,
+    initialStateBase64: props.initialYjsState,
+})
 
 const editor = useEditor({
+    editable: false,
     extensions: [
         StarterKit.configure({
             undoRedo: false,
@@ -70,7 +77,7 @@ const editor = useEditor({
             document: ydoc,
             fragment: yXmlFragment,
         }),
-        CollaborationCursor.configure({
+        CollaborationCaret.configure({
             provider: wsProvider,
             user: {
                 name: userName,
@@ -96,10 +103,10 @@ const editor = useEditor({
         CharacterCount,
         Image.configure({
             inline: false,
-            allowBase64: true,
+            allowBase64: false,
         }),
         Markdown.configure({
-            html: true,
+            html: false,
             tightLists: true,
             tightListClass: 'tight',
             bulletListMarker: '-',
@@ -153,21 +160,17 @@ const editor = useEditor({
         },
     },
     onCreate({ editor: ed }) {
-        whenSynced.then(() => {
+        void whenLocalSynced.then(() => {
             if (yXmlFragment.length === 0 && props.initialContent) {
-                ed.commands.setContent(props.initialContent)
+                ed.commands.setContent(props.initialContent, { emitUpdate: false })
             }
+
+            connect()
+            ed.setEditable(true)
+            editorReady.value = true
         })
     },
 })
-
-const { onEditorUpdate, saveNow } = useAutoSave(editor, props.slug)
-
-watch(editor, (ed, _old, onCleanup) => {
-    if (!ed) return
-    ed.on('update', onEditorUpdate)
-    onCleanup(() => ed.off('update', onEditorUpdate))
-}, { immediate: true })
 
 const { open: openImageModal } = useImageModal()
 
@@ -190,6 +193,17 @@ const wordCount = ref(0)
 const sourceMode = ref(false)
 const sourceContent = ref('')
 
+function applySourceContent(emitUpdate: boolean) {
+    if (!editor.value || !sourceMode.value) return
+
+    const mdParser = (editor.value.storage as any)?.markdown?.parser
+    const content = mdParser
+        ? mdParser.parse(sourceContent.value)
+        : sourceContent.value
+
+    editor.value.commands.setContent(content, { emitUpdate })
+}
+
 function toggleSourceMode() {
     if (!editor.value) return
 
@@ -197,18 +211,23 @@ function toggleSourceMode() {
         sourceContent.value = (editor.value.storage as any).markdown.getMarkdown()
         sourceMode.value = true
     } else {
-        const mdParser = (editor.value.storage as any)?.markdown?.parser
-
-        if (mdParser) {
-            const html = mdParser.parse(sourceContent.value)
-            editor.value.commands.setContent(html, { emitUpdate: true })
-        } else {
-            editor.value.commands.setContent(sourceContent.value, { emitUpdate: true })
-        }
-
+        applySourceContent(true)
         sourceMode.value = false
     }
 }
+
+const { onEditorUpdate } = useAutoSave(
+    editor,
+    props.slug,
+    1500,
+    () => applySourceContent(false),
+)
+
+watch(editor, (ed, _old, onCleanup) => {
+    if (!ed) return
+    ed.on('update', onEditorUpdate)
+    onCleanup(() => ed.off('update', onEditorUpdate))
+}, { immediate: true })
 
 watch(
     () => editor.value?.storage.characterCount,
@@ -232,12 +251,15 @@ function downloadFile(content: string, filename: string, type: string) {
 }
 
 function exportMarkdown() {
-    const md = (editor.value?.storage as any)?.markdown?.getMarkdown?.() ?? ''
+    const md = sourceMode.value
+        ? sourceContent.value
+        : (editor.value?.storage as any)?.markdown?.getMarkdown?.() ?? ''
     const filename = props.slug.split('/').pop() ?? 'document'
     downloadFile(md, `${filename}.md`, 'text/markdown;charset=utf-8')
 }
 
 function exportHtml() {
+    applySourceContent(false)
     const body = editor.value?.getHTML() ?? ''
     const title = props.slug.split('/').pop() ?? 'document'
     const html = `<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>${title}</title>\n</head>\n<body>\n${body}\n</body>\n</html>`
@@ -247,10 +269,22 @@ function exportHtml() {
 
 <template>
     <div class="flex flex-col h-full">
-        <EditorToolbar v-if="editor" :editor="editor" :source-mode="sourceMode" @toggle-source="toggleSourceMode" />
+        <EditorToolbar v-if="editor && editorReady" :editor="editor" :source-mode="sourceMode" @toggle-source="toggleSourceMode" />
         <ImageInsertModal />
 
-        <div v-show="!sourceMode" data-editor-container class="relative flex-1 min-h-0 overflow-y-auto">
+        <div
+            v-if="!editorReady"
+            class="flex flex-1 items-center justify-center text-sm text-neutral-500 dark:text-neutral-400"
+            role="status"
+            aria-live="polite"
+        >
+            <span class="inline-flex items-center gap-2">
+                <span class="h-4 w-4 animate-spin rounded-full border-2 border-neutral-300 border-t-primary-500 dark:border-neutral-700 dark:border-t-primary-400" aria-hidden="true" />
+                {{ t('editor.loading') }}
+            </span>
+        </div>
+
+        <div v-show="editorReady && !sourceMode" data-editor-container class="relative flex-1 min-h-0 overflow-y-auto">
             <EditorContent
                 :editor="editor"
                 class="h-full"
@@ -278,13 +312,15 @@ function exportHtml() {
             <textarea
                 v-model="sourceContent"
                 spellcheck="false"
+                :aria-label="t('editor.sourceLabel')"
                 class="w-full h-full resize-none bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 font-mono text-sm leading-relaxed p-4 sm:p-6 focus:outline-none"
                 :placeholder="t('editor.sourcePlaceholder')"
+                @input="onEditorUpdate"
             />
         </div>
 
         <div
-            v-if="editor"
+            v-if="editor && editorReady"
             class="shrink-0 flex items-center justify-between px-4 py-1.5 border-t border-neutral-100 dark:border-neutral-800 text-xs text-neutral-400 dark:text-neutral-500"
         >
             <div class="flex items-center gap-1">
@@ -310,8 +346,8 @@ function exportHtml() {
                 </button>
             </div>
             <div class="flex items-center gap-3">
-                <span>{{ wordCount }} palavras</span>
-                <span>{{ characterCount }} caracteres</span>
+                <span>{{ t('editor.wordCount', { count: wordCount }) }}</span>
+                <span>{{ t('editor.characterCount', { count: characterCount }) }}</span>
             </div>
         </div>
     </div>

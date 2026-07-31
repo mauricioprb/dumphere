@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted, nextTick, computed } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import { useI18n } from '@/Composables/useI18n'
 import {
     Heading1, Heading2, Heading3,
     List, ListOrdered, ListChecks, Quote,
     Braces, Minus, Table, ImageIcon,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import type { Component } from 'vue'
 
 const iconMap: Record<string, Component> = {
@@ -75,12 +75,17 @@ defineExpose({ onKeyDown })
 <template>
     <div
         ref="scrollContainer"
+        role="listbox"
+        :aria-label="t('slash.ariaLabel')"
         class="slash-menu bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg overflow-y-auto max-h-80 w-72 py-1"
     >
         <template v-if="items.length > 0">
             <button
                 v-for="(item, index) in items"
                 :key="item.titleKey"
+                type="button"
+                role="option"
+                :aria-selected="index === selectedIndex"
                 :data-selected="index === selectedIndex ? '' : undefined"
                 class="flex items-center gap-3 w-full px-3 py-2 text-left transition-colors duration-75"
                 :class="index === selectedIndex

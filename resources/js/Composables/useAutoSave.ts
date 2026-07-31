@@ -1,12 +1,15 @@
 import { onUnmounted, type ShallowRef } from 'vue'
+import { router } from '@inertiajs/vue3'
 import type { Editor } from '@tiptap/vue-3'
 import { useDocumentStore } from '@/Stores/documentStore'
 import type { SaveResponse } from '@/types/document'
+import { getPersistableHtml } from '@/Lib/editorContent'
 
 export function useAutoSave(
     editorRef: ShallowRef<Editor | undefined>,
     slug: string,
-    debounceMs = 3000,
+    debounceMs = 1500,
+    beforeRead?: () => void,
 ) {
     const store = useDocumentStore()
 
@@ -14,7 +17,7 @@ export function useAutoSave(
     let retryTimer: ReturnType<typeof setTimeout> | null = null
     let savingInFlight = false
     let dirty = false
-    const minSavingDisplayMs = 600
+    const minSavingDisplayMs = 250
     const maxRetryMs = 30_000
     let currentRetryMs = 5_000
 
@@ -36,11 +39,8 @@ export function useAutoSave(
         const ed = editorRef.value
         if (!ed || savingInFlight) return
 
-        const content = ed.getHTML()
-        if (!content || content === '<p></p>') {
-            dirty = false
-            return
-        }
+        beforeRead?.()
+        const contentHtml = getPersistableHtml(ed)
 
         savingInFlight = true
         dirty = false
@@ -56,8 +56,7 @@ export function useAutoSave(
                     'Accept': 'application/json',
                 },
                 body: JSON.stringify({
-                    markdownContent: content,
-                    yjsStateBase64: null,
+                    contentHtml,
                 }),
             })
 
@@ -96,20 +95,8 @@ export function useAutoSave(
         }
     }
 
-    function saveNow() {
-        if (debounceTimer) {
-            clearTimeout(debounceTimer)
-            debounceTimer = null
-        }
-        if (dirty || store.saveStatus === 'dirty') {
-            performSave()
-        }
-    }
-
-    function handleBeforeUnload(event: BeforeUnloadEvent) {
+    function persistLatestOnExit() {
         if (!dirty && store.saveStatus !== 'dirty') return
-
-        event.preventDefault()
 
         if (debounceTimer) {
             clearTimeout(debounceTimer)
@@ -118,8 +105,9 @@ export function useAutoSave(
 
         const ed = editorRef.value
         if (!ed) return
-        const content = ed.getHTML()
-        if (!content || content === '<p></p>') return
+        beforeRead?.()
+        const contentHtml = getPersistableHtml(ed)
+        dirty = false
 
         fetch(`/${slug}/save`, {
             method: 'POST',
@@ -128,22 +116,36 @@ export function useAutoSave(
                 'X-CSRF-TOKEN': getCSRFToken(),
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({ markdownContent: content, yjsStateBase64: null }),
+            body: JSON.stringify({ contentHtml }),
             keepalive: true,
         }).catch(() => {})
     }
 
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+        if (!dirty && store.saveStatus !== 'dirty') return
+
+        event.preventDefault()
+        persistLatestOnExit()
+    }
+
+    const removeInertiaListener = router.on('before', (event) => {
+        if (event.detail.visit.prefetch) return
+
+        persistLatestOnExit()
+    })
+
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     onUnmounted(() => {
+        persistLatestOnExit()
         if (debounceTimer) clearTimeout(debounceTimer)
         if (retryTimer) clearTimeout(retryTimer)
+        removeInertiaListener()
         window.removeEventListener('beforeunload', handleBeforeUnload)
     })
 
     return {
         onEditorUpdate,
-        saveNow,
     }
 }
 

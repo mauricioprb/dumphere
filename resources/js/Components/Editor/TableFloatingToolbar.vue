@@ -11,7 +11,7 @@ import {
     ArrowDown,
     ArrowLeft,
     ArrowRight,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 const props = defineProps<{
     editor: Editor
@@ -77,7 +77,9 @@ const colActions: TableAction[] = [
         <button
             v-for="act in rowActions"
             :key="act.label"
+            type="button"
             @click="act.action"
+            :aria-label="t(act.label as any)"
             :title="t(act.label as any)"
             :class="[
                 'relative p-1.5 rounded transition-colors duration-100 shrink-0',
@@ -94,7 +96,9 @@ const colActions: TableAction[] = [
         <button
             v-for="act in colActions"
             :key="act.label"
+            type="button"
             @click="act.action"
+            :aria-label="t(act.label as any)"
             :title="t(act.label as any)"
             :class="[
                 'relative p-1.5 rounded transition-colors duration-100 shrink-0',
@@ -109,7 +113,9 @@ const colActions: TableAction[] = [
         <div class="w-px h-4 bg-neutral-300 dark:bg-neutral-600 mx-0.5" />
 
         <button
+            type="button"
             @click="props.editor.chain().focus().deleteTable().run()"
+            :aria-label="t('table.delete' as any)"
             :title="t('table.delete' as any)"
             class="p-1.5 rounded transition-colors duration-100 shrink-0 text-neutral-500 dark:text-neutral-400 hover:bg-danger-500/10 hover:text-danger-600 dark:hover:text-danger-400"
         >

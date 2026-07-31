@@ -17,10 +17,16 @@ export const useDocumentStore = defineStore('document', () => {
     const userCount = computed(() => connectedUsers.value.length)
 
     function setDocument(doc: DocumentData) {
+        const changedDocument = document.value?.id !== doc.id
+
         document.value = doc
         lastSavedAt.value = doc.updatedAt
-        if (doc.updatedAt) {
-            saveStatus.value = 'saved'
+        saveStatus.value = doc.updatedAt ? 'saved' : 'idle'
+        saveError.value = null
+
+        if (changedDocument) {
+            connectedUsers.value = []
+            isConnected.value = false
         }
     }
 

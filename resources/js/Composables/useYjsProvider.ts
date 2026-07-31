@@ -3,17 +3,33 @@ import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { useDocumentStore } from '@/Stores/documentStore'
+import { applyBase64YjsState } from '@/Lib/yjsState'
+import { buildWebSocketUrl } from '@/Lib/websocketUrl'
 
-export function useYjsProvider(slug: string, wsToken: string) {
+interface YjsProviderOptions {
+    documentId: string
+    wsToken: string
+    initialStateBase64: string | null
+}
+
+export function useYjsProvider({ documentId, wsToken, initialStateBase64 }: YjsProviderOptions) {
     const store = useDocumentStore()
     const ydoc = new Y.Doc()
     const yXmlFragment = ydoc.getXmlFragment('document')
-    const wsUrl = buildWsUrl()
+    const wsUrl = buildWebSocketUrl({
+        host: import.meta.env.VITE_YJS_WS_HOST,
+        port: import.meta.env.VITE_YJS_WS_PORT,
+        scheme: import.meta.env.VITE_YJS_WS_SCHEME,
+        path: import.meta.env.VITE_YJS_WS_PATH,
+    })
 
-    const wsProvider = new WebsocketProvider(wsUrl, `document-${slug}`, ydoc, {
-        connect: true,
+    applyBase64YjsState(ydoc, initialStateBase64)
+
+    const indexeddbPersistence = new IndexeddbPersistence(`md-editor-${documentId}`, ydoc)
+    const wsProvider = new WebsocketProvider(wsUrl, `document-${documentId}`, ydoc, {
+        connect: false,
         maxBackoffTime: 10000,
-        params: { token: wsToken },
+        protocols: ['yjs', `auth.${wsToken}`],
     })
 
     const awareness = wsProvider.awareness
@@ -26,13 +42,14 @@ export function useYjsProvider(slug: string, wsToken: string) {
     })
 
     const isConnected = ref(wsProvider.wsconnected)
+    store.setConnected(false)
 
     wsProvider.on('status', (event: { status: string }) => {
         isConnected.value = event.status === 'connected'
         store.setConnected(event.status === 'connected')
     })
 
-    awareness.on('change', () => {
+    const handleAwarenessChange = () => {
         const states = awareness.getStates()
         const myState = awareness.getLocalState()
 
@@ -58,7 +75,7 @@ export function useYjsProvider(slug: string, wsToken: string) {
 
                 awareness.setLocalStateField('user', {
                     ...myState.user,
-                    name: newName
+                    name: newName,
                 })
                 return
             }
@@ -76,11 +93,11 @@ export function useYjsProvider(slug: string, wsToken: string) {
                 color: (state as any).user.color ?? '#888',
             }))
         store.setUsers(users)
-    })
+    }
 
-    const indexeddbPersistence = new IndexeddbPersistence(`md-editor-${slug}`, ydoc)
+    awareness.on('change', handleAwarenessChange)
 
-    const whenSynced = new Promise<void>((resolve) => {
+    const whenLocalSynced = new Promise<void>((resolve) => {
         if (indexeddbPersistence.synced) {
             resolve()
         } else {
@@ -88,9 +105,9 @@ export function useYjsProvider(slug: string, wsToken: string) {
         }
     })
 
-    indexeddbPersistence.on('synced', () => {
-        console.log(`[Yjs] IndexedDB synced for "${slug}"`)
-    })
+    function connect(): void {
+        wsProvider.connect()
+    }
 
     const handleBeforeUnload = () => {
         awareness.setLocalState(null)
@@ -100,6 +117,8 @@ export function useYjsProvider(slug: string, wsToken: string) {
     onUnmounted(() => {
         window.removeEventListener('beforeunload', handleBeforeUnload)
         awareness.setLocalState(null)
+        awareness.off('change', handleAwarenessChange)
+        store.setConnected(false)
         store.setUsers([])
         wsProvider.disconnect()
         wsProvider.destroy()
@@ -111,37 +130,11 @@ export function useYjsProvider(slug: string, wsToken: string) {
         ydoc,
         yXmlFragment,
         wsProvider,
-        awareness,
-        isConnected,
         userName,
         userColor,
-        whenSynced,
+        whenLocalSynced,
+        connect,
     }
-}
-
-function buildWsUrl(): string {
-    let host = import.meta.env.VITE_YJS_WS_HOST
-    let port = import.meta.env.VITE_YJS_WS_PORT
-    let scheme = import.meta.env.VITE_YJS_WS_SCHEME
-    let path = import.meta.env.VITE_YJS_WS_PATH
-
-    const isLocalhost = !host || host === 'localhost' || host === '127.0.0.1'
-
-    if (isLocalhost) {
-        host = window.location.hostname
-        port = port ?? '1234'
-        scheme = scheme ?? 'ws'
-        path = path ?? ''
-    } else {
-        port = port ?? ''
-        scheme = scheme ?? (window.location.protocol === 'https:' ? 'wss' : 'ws')
-        path = path ?? '/yjs-ws/'
-    }
-
-    const isDefaultPort = (scheme === 'wss' && port === '443') || (scheme === 'ws' && port === '80')
-    const portSuffix = isDefaultPort || !port ? '' : `:${port}`
-
-    return `${scheme}://${host}${portSuffix}${path}`
 }
 
 function randomColor(): string {
@@ -149,7 +142,7 @@ function randomColor(): string {
         '#C62828', '#AD1457', '#6A1B9A', '#4527A0',
         '#283593', '#1565C0', '#00695C', '#2E7D32',
         '#558B2F', '#E65100', '#D84315', '#4E342E',
-        '#37474F'
+        '#37474F',
     ]
     return colors[Math.floor(Math.random() * colors.length)]
 }
@@ -184,7 +177,7 @@ function generateUniqueName(usedNames: string[]): string {
         'Margaret Hamilton', 'Donald Knuth', 'César Lattes', 'Johanna Döbereiner',
         'Vital Brazil', 'Carlos Chagas', 'Mário Schenberg', 'Oswaldo Cruz',
         'Nise da Silveira', 'Milton Santos', 'Enedina Alves Marques', 'Ayrton Senna',
-        'Machado de Assis', 'Tarsila do Amaral'
+        'Machado de Assis', 'Tarsila do Amaral',
     ]
 
     const availableNames = names.filter(name => !usedNames.includes(name))

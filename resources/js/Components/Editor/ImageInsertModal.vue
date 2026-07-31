@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
-import { ImageIcon, X } from 'lucide-vue-next'
+import { computed, ref, watch, nextTick } from 'vue'
+import { ImageIcon, X } from '@lucide/vue'
 import { useImageModal } from '@/Composables/useImageModal'
 import { useI18n } from '@/Composables/useI18n'
+import { normalizeImageUrl } from '@/Lib/imageUrl'
 
 const { isOpen, confirm, cancel } = useImageModal()
 const { t } = useI18n()
@@ -13,25 +14,42 @@ const urlInput = ref<HTMLInputElement | null>(null)
 const formRef = ref<HTMLFormElement | null>(null)
 const previewError = ref(false)
 const previewLoaded = ref(false)
+const invalidUrl = ref(false)
+const previewUrl = computed(() => normalizeImageUrl(url.value))
+let previouslyFocused: HTMLElement | null = null
 
 watch(isOpen, (open) => {
     if (open) {
+        previouslyFocused = document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null
         url.value = ''
         alt.value = ''
         previewError.value = false
         previewLoaded.value = false
+        invalidUrl.value = false
         nextTick(() => urlInput.value?.focus())
+    } else {
+        const focusTarget = previouslyFocused
+        previouslyFocused = null
+        nextTick(() => focusTarget?.focus())
     }
 })
 
 watch(url, () => {
     previewError.value = false
     previewLoaded.value = false
+    invalidUrl.value = false
 })
 
 function onSubmit() {
-    const src = url.value.trim()
-    if (!src) return
+    const src = normalizeImageUrl(url.value)
+    if (!src) {
+        invalidUrl.value = true
+        urlInput.value?.focus()
+        return
+    }
+
     confirm({ src, alt: alt.value.trim() })
 }
 
@@ -131,9 +149,19 @@ function onKeydown(e: KeyboardEvent) {
                                     v-model="url"
                                     type="url"
                                     :placeholder="t('imageModal.urlPlaceholder')"
+                                    :aria-invalid="invalidUrl || undefined"
+                                    :aria-describedby="invalidUrl ? 'image-url-error' : undefined"
                                     class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder-neutral-400 dark:placeholder-neutral-500"
                                     required
                                 />
+                                <p
+                                    v-if="invalidUrl"
+                                    id="image-url-error"
+                                    class="text-xs text-danger-600 dark:text-danger-400"
+                                    role="alert"
+                                >
+                                    {{ t('imageModal.invalidUrl') }}
+                                </p>
                             </div>
 
                             <div class="space-y-1.5">
@@ -153,7 +181,7 @@ function onKeydown(e: KeyboardEvent) {
                             </div>
 
                             <div
-                                v-if="url.trim() && !previewError"
+                                v-if="previewUrl && !previewError"
                                 class="space-y-1.5"
                             >
                                 <span class="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
@@ -161,7 +189,7 @@ function onKeydown(e: KeyboardEvent) {
                                 </span>
                                 <div class="rounded-lg border border-neutral-200 dark:border-neutral-600 bg-neutral-50 dark:bg-neutral-900 p-2 flex items-center justify-center min-h-20 max-h-50 overflow-hidden">
                                     <img
-                                        :src="url.trim()"
+                                        :src="previewUrl"
                                         :alt="alt || 'Preview'"
                                         class="max-w-full max-h-45 object-contain rounded"
                                         @load="previewLoaded = true"
