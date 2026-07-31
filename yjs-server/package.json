@@ -15,7 +15,7 @@
     "dependencies": {
         "pg": "^8.22.0",
         "ws": "^8.21.1",
-        "y-websocket": "^1.5.4",
+        "y-websocket": "^3.0.0",
         "yjs": "^13.6.31"
     }
 }
