@@ -88,7 +88,6 @@ onBeforeUnmount(() => {
                         <span class="page-loader-selection">
                             <span class="page-loader-selection__text">here</span>
                             <span class="page-loader-selection__fill">here</span>
-                            <span class="page-loader-selection__caret"></span>
                         </span>
                     </div>
 
@@ -158,17 +157,6 @@ onBeforeUnmount(() => {
     clip-path: inset(0 100% 0 0);
 }
 
-.page-loader-selection__caret {
-    position: absolute;
-    z-index: 1;
-    inset-block: 0;
-    left: 0;
-    box-sizing: border-box;
-    width: 3px;
-    animation: page-loader-caret 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    background: var(--workspace-live);
-}
-
 .page-loader-status {
     display: flex;
     align-items: center;
@@ -191,8 +179,7 @@ onBeforeUnmount(() => {
     letter-spacing: 0.025em;
 }
 
-.page-loader-stage--paused .page-loader-selection__fill,
-.page-loader-stage--paused .page-loader-selection__caret {
+.page-loader-stage--paused .page-loader-selection__fill {
     animation-play-state: paused;
 }
 
@@ -225,27 +212,10 @@ onBeforeUnmount(() => {
     }
 }
 
-@keyframes page-loader-caret {
-    0%,
-    12% {
-        left: 0;
-    }
-
-    50%,
-    72%,
-    100% {
-        left: calc(100% - 3px);
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
     .page-loader-selection__fill {
         animation: none;
         clip-path: inset(0);
-    }
-
-    .page-loader-selection__caret {
-        display: none;
     }
 
     .page-loader-enter-active,

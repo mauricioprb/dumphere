@@ -11,7 +11,6 @@ describe('page loader design', () => {
         for (const source of [component, bootstrapView]) {
             expect(source).toContain('page-loader-wordmark');
             expect(source).toContain('page-loader-selection__fill');
-            expect(source).toContain('page-loader-selection__caret');
             expect(source).toContain('page-loader-status__signal');
             expect(source).toContain('dump');
             expect(source).toContain('here');
@@ -55,7 +54,7 @@ describe('page loader design', () => {
         expect(bootstrapView).toContain('background: #9fc85b');
     });
 
-    it('keeps the slash, selection, and caret optically separated and aligned', () => {
+    it('keeps the slash and selection optically separated without an extra cursor', () => {
         const component = readSource('resources/js/Components/UI/PageLoader.vue');
         const bootstrapView = readSource('resources/views/app.blade.php');
 
@@ -63,10 +62,8 @@ describe('page loader design', () => {
             expect(source).toContain('column-gap: 0.08em');
             expect(source).toContain('letter-spacing: -0.035em');
             expect(source).toContain('box-sizing: border-box');
-            expect(source).toContain('inset-block: 0');
-            expect(source).toContain('width: 3px');
-            expect(source).not.toContain('top: -0.09em');
-            expect(source).not.toContain('bottom: -0.06em');
+            expect(source).not.toContain('page-loader-selection__caret');
+            expect(source).not.toContain('loader-caret');
         }
     });
 });

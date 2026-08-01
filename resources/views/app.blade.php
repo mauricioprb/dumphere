@@ -97,21 +97,6 @@
             color: #2d1204;
         }
 
-        #app-loading .page-loader-selection__caret {
-            position: absolute;
-            z-index: 1;
-            inset-block: 0;
-            left: 0;
-            box-sizing: border-box;
-            width: 3px;
-            animation: boot-loader-caret 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            background: #587314;
-        }
-
-        html.dark #app-loading .page-loader-selection__caret {
-            background: #9fc85b;
-        }
-
         #app-loading .page-loader-status {
             display: flex;
             align-items: center;
@@ -174,28 +159,12 @@
             }
         }
 
-        @keyframes boot-loader-caret {
-            0%,
-            12% {
-                left: 0;
-            }
-
-            50%,
-            72%,
-            100% {
-                left: calc(100% - 3px);
-            }
-        }
-
         @media (prefers-reduced-motion: reduce) {
             #app-loading .page-loader-selection__fill {
                 animation: none;
                 clip-path: inset(0);
             }
 
-            #app-loading .page-loader-selection__caret {
-                display: none;
-            }
         }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
@@ -226,7 +195,6 @@
                 <span class="page-loader-selection">
                     <span class="page-loader-selection__text">here</span>
                     <span class="page-loader-selection__fill">here</span>
-                    <span class="page-loader-selection__caret"></span>
                 </span>
             </div>
 
