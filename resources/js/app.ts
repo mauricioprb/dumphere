@@ -8,7 +8,7 @@ import PageLoader from '@/Components/UI/PageLoader.vue';
 const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue');
 
 createInertiaApp({
-    title: (title: string) => (title ? `${title} - Dumphere` : 'Dumphere'),
+    title: (title: string) => title || 'Dumphere',
     resolve: (name: string) => {
         const page = pages[`./Pages/${name}.vue`];
 

@@ -8,6 +8,7 @@ use App\Actions\FindOrCreateDocument;
 use App\Actions\PersistDocumentContent;
 use App\Exceptions\DocumentTooLargeException;
 use App\Exceptions\TooManyDocumentsCreatedException;
+use App\Support\SeoMetadata;
 use App\Support\WebSocketTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class DocumentController extends Controller
         private readonly WebSocketTokenService $wsTokenService,
     ) {}
 
-    public function show(string $slug): Response
+    public function show(Request $request, string $slug): Response
     {
         try {
             $document = $this->findOrCreate->execute($slug);
@@ -41,6 +42,10 @@ class DocumentController extends Controller
                 'createdAt' => $document->created_at->toISOString(),
             ],
             'wsToken' => $this->wsTokenService->generate($document->id),
+            'seo' => SeoMetadata::forDocument(
+                $request,
+                filled($document->title) ? $document->title : $document->slug,
+            ),
         ]);
     }
 

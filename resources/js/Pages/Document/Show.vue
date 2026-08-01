@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { watch } from 'vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import TiptapEditor from '@/Components/Editor/TiptapEditor.vue';
@@ -31,7 +31,6 @@ watch(
 </script>
 
 <template>
-    <Head :title="document.title ?? document.slug" />
     <AppLayout>
         <div class="editor-page flex min-h-0 flex-1 flex-col bg-(--workspace-paper) text-(--workspace-ink)">
             <header class="editor-header z-10 shrink-0 border-b border-(--workspace-rule) bg-(--workspace-paper)">

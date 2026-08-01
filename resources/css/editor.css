@@ -51,12 +51,12 @@
 }
 
 .editor-tool--active {
-    background: var(--workspace-accent);
-    color: var(--workspace-accent-ink);
+    background: color-mix(in srgb, var(--workspace-live) 20%, var(--workspace-paper));
+    color: var(--workspace-live);
 }
 
 .editor-tool--active:hover {
-    background: color-mix(in srgb, var(--workspace-accent) 86%, var(--workspace-paper));
+    background: color-mix(in srgb, var(--workspace-live) 32%, var(--workspace-paper));
 }
 
 .editor-tool--disabled {

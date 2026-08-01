@@ -45,41 +45,41 @@
 }
 
 :root {
-    --brand-slash: #d75f2b;
+    --brand-slash: #55701a;
     --theme-lens-duration: 350ms;
     --theme-lens-easing: cubic-bezier(0, 0.55, 0.45, 1);
     --workspace-paper: #faf8f5;
-    --workspace-panel: #f1ede7;
-    --workspace-raised: #fffdf9;
-    --workspace-ink: #1f1c19;
-    --workspace-muted: #615a52;
-    --workspace-rule: #ded8d0;
-    --workspace-accent: #ed8741;
-    --workspace-accent-ink: #351504;
-    --workspace-live: #587314;
-    --workspace-live-ink: #fbfaf4;
+    --workspace-panel: #f0eee6;
+    --workspace-raised: #fffefb;
+    --workspace-ink: #1d1e1a;
+    --workspace-muted: #5d5f57;
+    --workspace-rule: #dcdcd2;
+    --workspace-accent: #dde8bf;
+    --workspace-accent-ink: #232b17;
+    --workspace-live: #55701a;
+    --workspace-live-ink: #f7f9ee;
     --workspace-danger: #a02c3a;
     --workspace-warning: #8b5a0a;
-    --workspace-code: #211e1a;
-    --workspace-code-ink: #f3efe8;
+    --workspace-code: #1d1e1a;
+    --workspace-code-ink: #f0eee6;
 }
 
 .dark {
-    --brand-slash: #ef7d4c;
-    --workspace-paper: #15130f;
-    --workspace-panel: #1e1b16;
-    --workspace-raised: #28241e;
-    --workspace-ink: #f3efe8;
-    --workspace-muted: #b1a89e;
-    --workspace-rule: #3b352e;
-    --workspace-accent: #f08a43;
-    --workspace-accent-ink: #2d1204;
-    --workspace-live: #9fc85b;
-    --workspace-live-ink: #132006;
+    --brand-slash: #a3c765;
+    --workspace-paper: #17181a;
+    --workspace-panel: #1f2124;
+    --workspace-raised: #292b2e;
+    --workspace-ink: #f1efea;
+    --workspace-muted: #a8aaa4;
+    --workspace-rule: #34373a;
+    --workspace-accent: #3c4d26;
+    --workspace-accent-ink: #e9f0d8;
+    --workspace-live: #a3c765;
+    --workspace-live-ink: #16210a;
     --workspace-danger: #f0919b;
-    --workspace-warning: #efbd6c;
-    --workspace-code: #0f0e0c;
-    --workspace-code-ink: #eee8df;
+    --workspace-warning: #e6c27a;
+    --workspace-code: #101113;
+    --workspace-code-ink: #eae8e2;
 }
 
 html.theme-transition-to-dark::after,
@@ -120,12 +120,12 @@ html.theme-transition-to-light body *::after {
     }
 
     38% {
-        background-color: #e8b86d;
+        background-color: #d7d09a;
         opacity: 0.72;
     }
 
     68% {
-        background-color: #8f7cac;
+        background-color: #7f8d6a;
         opacity: 0.34;
     }
 
@@ -142,12 +142,12 @@ html.theme-transition-to-light body *::after {
     }
 
     38% {
-        background-color: #89a889;
+        background-color: #a9bf7a;
         opacity: 0.72;
     }
 
     68% {
-        background-color: #c58a72;
+        background-color: #d6cda3;
         opacity: 0.34;
     }
 
@@ -231,7 +231,7 @@ html.theme-transition-to-light body *::after {
 }
 
 .dark .theme-toggle__thumb {
-    background: #f3d6aa;
+    background: #dfd9bd;
     translate: 1.5rem 0;
 }
 
@@ -245,24 +245,24 @@ html.theme-transition-to-light .theme-toggle__thumb {
 
 @keyframes theme-toggle-to-dark {
     from {
-        background: #587314;
+        background: #55701a;
         translate: 0 0;
     }
 
     to {
-        background: #f3d6aa;
+        background: #dfd9bd;
         translate: 1.5rem 0;
     }
 }
 
 @keyframes theme-toggle-to-light {
     from {
-        background: #f3d6aa;
+        background: #dfd9bd;
         translate: 1.5rem 0;
     }
 
     to {
-        background: #587314;
+        background: #55701a;
         translate: 0 0;
     }
 }
@@ -283,7 +283,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
     --editor-placeholder: var(--workspace-muted);
     --editor-link: var(--workspace-live);
     --editor-code-bg: var(--workspace-panel);
-    --editor-code-text: #9b3f17;
+    --editor-code-text: #414a33;
     --editor-pre-bg: var(--workspace-code);
     --editor-pre-text: var(--workspace-code-ink);
     --editor-pre-border: transparent;
@@ -300,7 +300,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
     --editor-mark-bg: var(--workspace-accent);
     --editor-mark-text: var(--workspace-accent-ink);
     --editor-task-done: var(--workspace-muted);
-    --editor-selection: color-mix(in srgb, var(--workspace-accent) 32%, transparent);
+    --editor-selection: color-mix(in srgb, var(--workspace-live) 26%, transparent);
     --editor-selected-cell: color-mix(in srgb, var(--workspace-live) 14%, transparent);
     --editor-resize-handle: var(--workspace-live);
     --editor-scrollbar-thumb: color-mix(in srgb, var(--workspace-muted) 55%, transparent);
@@ -308,7 +308,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
 }
 
 .dark {
-    --editor-code-text: #f0a17d;
+    --editor-code-text: #c8d5ad;
     --editor-pre-border: var(--workspace-rule);
 }
 

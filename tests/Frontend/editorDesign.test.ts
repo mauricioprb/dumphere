@@ -17,11 +17,11 @@ describe('editor design system', () => {
         const themeStyles = readSource('resources/css/theme.css');
 
         expect(themeStyles).toContain('--workspace-paper: #faf8f5');
-        expect(themeStyles).toContain('--workspace-ink: #1f1c19');
-        expect(themeStyles).toContain('--workspace-accent: #ed8741');
-        expect(themeStyles).toContain('--workspace-live: #587314');
+        expect(themeStyles).toContain('--workspace-ink: #1d1e1a');
+        expect(themeStyles).toContain('--workspace-accent: #dde8bf');
+        expect(themeStyles).toContain('--workspace-live: #55701a');
         expect(themeStyles).toContain('.dark {');
-        expect(themeStyles).toContain('--workspace-paper: #15130f');
+        expect(themeStyles).toContain('--workspace-paper: #17181a');
     });
 
     it('keeps the writing canvas readable without the oversized focus frame', () => {

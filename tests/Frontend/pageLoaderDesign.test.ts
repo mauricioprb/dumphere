@@ -47,11 +47,11 @@ describe('page loader design', () => {
         const bootstrapView = readSource('resources/views/app.blade.php');
 
         expect(bootstrapView).toContain('background: #faf8f5');
-        expect(bootstrapView).toContain('background: #15130f');
-        expect(bootstrapView).toContain('background: #ed8741');
-        expect(bootstrapView).toContain('background: #f08a43');
-        expect(bootstrapView).toContain('background: #587314');
-        expect(bootstrapView).toContain('background: #9fc85b');
+        expect(bootstrapView).toContain('background: #17181a');
+        expect(bootstrapView).toContain('background: #dde8bf');
+        expect(bootstrapView).toContain('background: #3c4d26');
+        expect(bootstrapView).toContain('background: #55701a');
+        expect(bootstrapView).toContain('background: #a3c765');
     });
 
     it('keeps the slash and selection optically separated without an extra cursor', () => {

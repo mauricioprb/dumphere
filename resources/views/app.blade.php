@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title data-inertia>Dumphere</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700|inter:400,500,600,700" rel="stylesheet" />
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -20,7 +19,7 @@
 
         html.dark,
         html.dark body {
-            background: #15130f;
+            background: #17181a;
         }
 
         #app-loading {
@@ -30,12 +29,12 @@
             place-items: center;
             z-index: 200;
             background: #faf8f5;
-            color: #1f1c19;
+            color: #1d1e1a;
         }
 
         html.dark #app-loading {
-            background: #15130f;
-            color: #f3efe8;
+            background: #17181a;
+            color: #f1efea;
         }
 
         #app-loading .page-loader-stage {
@@ -61,11 +60,11 @@
         #app-loading .page-loader-slash {
             display: inline-block;
             margin-left: 0.015em;
-            color: #d75f2b;
+            color: #55701a;
         }
 
         html.dark #app-loading .page-loader-slash {
-            color: #ef7d4c;
+            color: #a3c765;
         }
 
         #app-loading .page-loader-selection {
@@ -87,14 +86,14 @@
             overflow: hidden;
             padding: inherit;
             animation: boot-loader-selection 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            background: #ed8741;
-            color: #351504;
+            background: #dde8bf;
+            color: #232b17;
             clip-path: inset(0 100% 0 0);
         }
 
         html.dark #app-loading .page-loader-selection__fill {
-            background: #f08a43;
-            color: #2d1204;
+            background: #3c4d26;
+            color: #e9f0d8;
         }
 
         #app-loading .page-loader-status {
@@ -102,25 +101,25 @@
             align-items: center;
             gap: 0.65rem;
             padding-top: 0.8rem;
-            border-top: 1px solid #ded8d0;
+            border-top: 1px solid #dcdcd2;
         }
 
         html.dark #app-loading .page-loader-status {
-            border-color: #3b352e;
+            border-color: #34373a;
         }
 
         #app-loading .page-loader-status__signal {
             width: 0.5rem;
             height: 0.5rem;
-            background: #587314;
+            background: #55701a;
         }
 
         html.dark #app-loading .page-loader-status__signal {
-            background: #9fc85b;
+            background: #a3c765;
         }
 
         #app-loading .page-loader-label {
-            color: #615a52;
+            color: #5d5f57;
             font-family: 'Bricolage Grotesque', sans-serif;
             font-size: 0.75rem;
             font-weight: 600;
@@ -128,7 +127,7 @@
         }
 
         html.dark #app-loading .page-loader-label {
-            color: #b1a89e;
+            color: #a8aaa4;
         }
 
         #app-loading .page-loader-label-en {
@@ -168,7 +167,37 @@
         }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
-    @inertiaHead
+    @php($seo = $page['props']['seo'] ?? \App\Support\SeoMetadata::forRequest(request()))
+    <x-inertia::head>
+        <title>{{ $seo['title'] }}</title>
+        <meta name="description" content="{{ $seo['description'] }}">
+        <meta name="robots" content="{{ $seo['robots'] }}">
+        <meta name="theme-color" content="{{ $seo['themeColor'] }}">
+        <link rel="canonical" href="{{ $seo['canonicalUrl'] }}">
+        <link rel="sitemap" type="application/xml" href="{{ $seo['sitemapUrl'] }}">
+
+        <meta property="og:type" content="{{ $seo['type'] }}">
+        <meta property="og:site_name" content="{{ $seo['siteName'] }}">
+        <meta property="og:title" content="{{ $seo['title'] }}">
+        <meta property="og:description" content="{{ $seo['description'] }}">
+        <meta property="og:url" content="{{ $seo['canonicalUrl'] }}">
+        <meta property="og:locale" content="{{ $seo['locale'] }}">
+        <meta property="og:image" content="{{ $seo['imageUrl'] }}">
+        <meta property="og:image:type" content="{{ $seo['imageType'] }}">
+        <meta property="og:image:width" content="{{ $seo['imageWidth'] }}">
+        <meta property="og:image:height" content="{{ $seo['imageHeight'] }}">
+        <meta property="og:image:alt" content="{{ $seo['imageAlt'] }}">
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $seo['title'] }}">
+        <meta name="twitter:description" content="{{ $seo['description'] }}">
+        <meta name="twitter:image" content="{{ $seo['imageUrl'] }}">
+        <meta name="twitter:image:alt" content="{{ $seo['imageAlt'] }}">
+
+        @if (is_array($seo['structuredData']))
+            <script type="application/ld+json" nonce="{{ app('csp-nonce') }}">@json($seo['structuredData'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)</script>
+        @endif
+    </x-inertia::head>
     <script nonce="{{ app('csp-nonce') }}">
         (function() {
             const storedLocale = localStorage.getItem('md-editor-locale');

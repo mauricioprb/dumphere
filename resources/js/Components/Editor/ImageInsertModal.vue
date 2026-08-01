@@ -123,7 +123,7 @@ function onKeydown(e: KeyboardEvent) {
                     >
                         <form @submit.prevent="onSubmit">
                             <div class="flex items-center gap-3 border-b border-(--workspace-rule) px-5 py-3">
-                                <ImageIcon class="size-5 shrink-0 text-(--workspace-accent)" aria-hidden="true" />
+                                <ImageIcon class="size-5 shrink-0 text-(--workspace-live)" aria-hidden="true" />
                                 <h2
                                     id="image-modal-title"
                                     class="flex-1 font-display text-xl font-medium tracking-tight text-(--workspace-ink)"

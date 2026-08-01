@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { ArrowRight } from '@lucide/vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
@@ -90,7 +90,6 @@ function clearError() {
 </script>
 
 <template>
-    <Head :title="t('app.titleFull')" />
     <AppLayout>
         <ExternalPageShell
             eager-artwork

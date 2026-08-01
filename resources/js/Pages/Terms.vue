@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { ArrowLeft } from '@lucide/vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
@@ -148,7 +148,6 @@ const clauses = computed<Clause[]>(() => [
 </script>
 
 <template>
-    <Head :title="t('terms.pageTitle')" />
     <AppLayout>
         <ExternalPageShell class="[scroll-padding-top:2rem] scroll-smooth motion-reduce:scroll-auto">
             <div class="relative z-[2] mx-auto w-[min(100%,54rem)] px-[clamp(1.1rem,3vw,2.75rem)] pb-4">
