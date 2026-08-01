@@ -1,8 +1,5 @@
-# Install this file inside the Nginx http context, for example at:
-# /etc/nginx/conf.d/dumphere-http.conf
-#
-# It intentionally excludes client IPs, hostnames, paths, query strings,
-# referrers and user agents from access logs.
+
+
 log_format dumphere_privacy escape=json
     '{"timestamp":"$time_iso8601",'
     '"request_id":"$request_id",'

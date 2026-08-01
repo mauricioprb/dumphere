@@ -1,0 +1,17 @@
+/node_modules
+/vendor
+/public/build
+/public/hot
+/public/storage
+/storage
+/bootstrap/cache
+/yjs-server/node_modules
+/.agents
+/.claude
+/.codex
+# Owned by their package managers, so let them keep their own formatting.
+composer.json
+composer.lock
+package-lock.json
+*.min.js
+*.min.css

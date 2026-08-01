@@ -1,7 +1,6 @@
-# Require a human owner review for application and infrastructure changes.
 * @mauricioprb
 
-/app/Domain/Document/ @mauricioprb
+/app/ @mauricioprb
 /yjs-server/ @mauricioprb
 /.github/workflows/ @mauricioprb
 /deploy/ @mauricioprb

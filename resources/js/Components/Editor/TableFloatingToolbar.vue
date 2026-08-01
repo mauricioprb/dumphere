@@ -1,125 +1,117 @@
 <script setup lang="ts">
-import type { Editor } from '@tiptap/vue-3'
-import { useI18n } from '@/Composables/useI18n'
+import type { Editor } from '@tiptap/vue-3';
+import type { Component } from 'vue';
+import { useI18n, type TranslationKey } from '@/Composables/useI18n';
 import {
     Rows3 as RowsIcon,
     Columns3 as ColsIcon,
-    Plus,
-    Minus,
     Trash2,
     ArrowUp,
     ArrowDown,
     ArrowLeft,
     ArrowRight,
-} from '@lucide/vue'
+} from '@lucide/vue';
 
 const props = defineProps<{
-    editor: Editor
-}>()
+    editor: Editor;
+}>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 interface TableAction {
-    icon: any
-    secondaryIcon?: any
-    label: string
-    action: () => void
-    danger?: boolean
+    icon: Component;
+    label: TranslationKey;
+    action: () => void;
+    danger?: boolean;
 }
 
 const rowActions: TableAction[] = [
     {
         icon: ArrowUp,
-        secondaryIcon: Plus,
         label: 'table.addRowBefore',
         action: () => props.editor.chain().focus().addRowBefore().run(),
     },
     {
         icon: ArrowDown,
-        secondaryIcon: Plus,
         label: 'table.addRowAfter',
         action: () => props.editor.chain().focus().addRowAfter().run(),
     },
     {
         icon: RowsIcon,
-        secondaryIcon: Minus,
         label: 'table.deleteRow',
         action: () => props.editor.chain().focus().deleteRow().run(),
         danger: true,
     },
-]
+];
 
 const colActions: TableAction[] = [
     {
         icon: ArrowLeft,
-        secondaryIcon: Plus,
         label: 'table.addColBefore',
         action: () => props.editor.chain().focus().addColumnBefore().run(),
     },
     {
         icon: ArrowRight,
-        secondaryIcon: Plus,
         label: 'table.addColAfter',
         action: () => props.editor.chain().focus().addColumnAfter().run(),
     },
     {
         icon: ColsIcon,
-        secondaryIcon: Minus,
         label: 'table.deleteCol',
         action: () => props.editor.chain().focus().deleteColumn().run(),
         danger: true,
     },
-]
+];
 </script>
 
 <template>
-    <div class="flex items-center gap-0.5 flex-wrap">
+    <div class="flex flex-wrap items-center gap-0.5">
         <button
             v-for="act in rowActions"
             :key="act.label"
             type="button"
-            @click="act.action"
-            :aria-label="t(act.label as any)"
-            :title="t(act.label as any)"
+            :aria-label="t(act.label)"
+            :title="t(act.label)"
             :class="[
-                'relative p-1.5 rounded transition-colors duration-100 shrink-0',
+                'editor-tool editor-focus relative inline-flex size-10 shrink-0 items-center justify-center rounded-md',
                 act.danger
-                    ? 'text-neutral-500 dark:text-neutral-400 hover:bg-danger-500/10 hover:text-danger-600 dark:hover:text-danger-400'
-                    : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:text-neutral-800 dark:hover:text-neutral-200'
+                    ? 'text-(--workspace-muted) hover:bg-(--workspace-panel) hover:text-(--workspace-danger)'
+                    : 'editor-tool--idle',
             ]"
+            @click="act.action"
         >
-            <component :is="act.icon" class="w-4 h-4" :stroke-width="2" />
+            <component :is="act.icon" class="h-4 w-4" :stroke-width="2" aria-hidden="true" />
         </button>
 
-        <div class="w-px h-4 bg-neutral-300 dark:bg-neutral-600 mx-0.5" />
+        <div class="editor-toolbar__divider mx-0.5 h-4 w-px" />
 
         <button
             v-for="act in colActions"
             :key="act.label"
             type="button"
-            @click="act.action"
-            :aria-label="t(act.label as any)"
-            :title="t(act.label as any)"
+            :aria-label="t(act.label)"
+            :title="t(act.label)"
             :class="[
-                'relative p-1.5 rounded transition-colors duration-100 shrink-0',
+                'editor-tool editor-focus relative inline-flex size-10 shrink-0 items-center justify-center rounded-md',
                 act.danger
-                    ? 'text-neutral-500 dark:text-neutral-400 hover:bg-danger-500/10 hover:text-danger-600 dark:hover:text-danger-400'
-                    : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 hover:text-neutral-800 dark:hover:text-neutral-200'
+                    ? 'text-(--workspace-muted) hover:bg-(--workspace-panel) hover:text-(--workspace-danger)'
+                    : 'editor-tool--idle',
             ]"
+            @click="act.action"
         >
-            <component :is="act.icon" class="w-4 h-4" :stroke-width="2" />
+            <component :is="act.icon" class="h-4 w-4" :stroke-width="2" aria-hidden="true" />
         </button>
 
-        <div class="w-px h-4 bg-neutral-300 dark:bg-neutral-600 mx-0.5" />
+        <div class="editor-toolbar__divider mx-0.5 h-4 w-px" />
 
         <button
             type="button"
+            :aria-label="t('table.delete')"
+            :title="t('table.delete')"
+            class="editor-tool editor-focus inline-flex size-10 shrink-0 items-center justify-center rounded-md text-(--workspace-muted) hover:bg-(--workspace-panel) hover:text-(--workspace-danger)"
             @click="props.editor.chain().focus().deleteTable().run()"
-            :aria-label="t('table.delete' as any)"
-            :title="t('table.delete' as any)"
-            class="p-1.5 rounded transition-colors duration-100 shrink-0 text-neutral-500 dark:text-neutral-400 hover:bg-danger-500/10 hover:text-danger-600 dark:hover:text-danger-400"
         >
-            <Trash2 class="w-4 h-4" :stroke-width="2" />
+            <Trash2 class="h-4 w-4" :stroke-width="2" aria-hidden="true" />
         </button>
     </div>
 </template>

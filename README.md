@@ -17,6 +17,9 @@ Requisitos: PHP 8.5+, Composer 2, Node 24 LTS, npm e Docker Compose.
 Instale as dependências uma vez:
 
 ```bash
+composer install
+cp .env.example .env
+php artisan key:generate
 composer run setup
 ```
 
@@ -26,11 +29,9 @@ Depois, todo o ambiente de desenvolvimento inicia com um único comando:
 composer run dev
 ```
 
-Esse comando inicia o PostgreSQL 18 pelo Compose, aplica migrations e executa
-Laravel, Vite e o servidor Yjs diretamente no host, todos com reload automático.
-Se o `.env` não existir, ele será criado a partir do `.env.example` com uma
-`APP_KEY` e um `YJS_WS_SECRET` locais aleatórios. Segredos já configurados nunca
-são substituídos.
+Antes de iniciar, defina um `YJS_WS_SECRET` aleatório no `.env`. O comando inicia
+o PostgreSQL 18 pelo Compose, aplica migrations e executa Laravel, Vite e o
+servidor Yjs diretamente no host, todos com reload automático.
 
 Depois, acesse:
 
@@ -39,7 +40,7 @@ Depois, acesse:
 - WebSocket Yjs: `localhost:1234`
 
 O Compose usa as configurações `DB_*` do `.env` convencional e publica o
-PostgreSQL em `127.0.0.1:${DB_PORT}`. Não há `.env.testing`: PHPUnit carrega o
+PostgreSQL em `127.0.0.1:${DB_PORT}`. Não há `.env.testing`: Pest carrega o
 mesmo `.env`, mantendo apenas banco, cache, sessão e filas isolados durante os
 testes pelas opções do `phpunit.xml`.
 
@@ -49,8 +50,18 @@ Comandos úteis:
 # Executar a suíte PHP
 composer test
 
-# Verificar frontend
+# Verificar frontend (lint + formato + tipos + testes + build)
 npm run check
+
+# Estilo de código PHP (Pint)
+composer lint       # corrige
+composer lint:test  # apenas verifica, igual ao CI
+
+# Estilo e qualidade do frontend (ESLint + Prettier)
+npm run lint        # corrige
+npm run format      # corrige
+npm run lint:test   # apenas verifica, igual ao CI
+npm run format:test
 
 # Testar o servidor colaborativo
 npm --prefix yjs-server test
@@ -59,6 +70,13 @@ npm --prefix yjs-server test
 composer run services
 composer run services:stop
 ```
+
+O `npm ci` do `composer run setup` instala o hook de `pre-commit` (Husky). A cada
+commit, o `lint-staged` roda Pint nos arquivos PHP e ESLint + Prettier nos
+arquivos do frontend que estão em stage, corrigindo e re-adicionando o resultado.
+As mesmas verificações rodam no CI em modo somente-leitura. O VS Code aplica as
+mesmas correções ao salvar, com as configurações compartilhadas em
+`.vscode/settings.json` e as extensões recomendadas em `.vscode/extensions.json`.
 
 Ao migrar um volume local existente do PostgreSQL 17 para o 18, faça
 dump/restore ou `pg_upgrade`. Se os dados locais forem descartáveis, é possível
@@ -69,11 +87,10 @@ migração.
 
 ### Política de versões
 
-O projeto acompanha os majors estáveis atuais de PHP, Laravel, Inertia, Vite,
-Node LTS e PostgreSQL. Três dependências permanecem deliberadamente abaixo do
+O projeto acompanha os majors estáveis atuais de PHP, Laravel, Inertia, Pest,
+Vite, Node LTS e PostgreSQL. Duas dependências permanecem deliberadamente abaixo do
 maior número publicado:
 
-- PHPUnit 12 é a linha recomendada pelo guia oficial do Laravel 13;
 - TypeScript 6 é a versão mais nova compatível com o `vue-tsc` atual;
 - o servidor usa `y-websocket` 1.5 porque a linha 3 removeu as APIs de servidor
   embutidas; o cliente já utiliza `y-websocket` 3.
@@ -87,7 +104,7 @@ Produção é publicada pelo Deployer 8, instalado em `require-dev`.
 O servidor deve ter:
 
 - PHP 8.5 com `pdo_pgsql`, `mbstring`, `intl`, `bcmath`, `pcntl` e `zip`;
-- PHP-FPM, Nginx, Composer 2, Node 24 LTS, npm, PostgreSQL client, Git, unzip, curl, ACL e `age`;
+- PHP-FPM, Nginx, Composer 2, Node 24 LTS, npm, Git, unzip, curl e ACL;
 - um usuário de deploy com acesso SSH;
 - permissão sem senha apenas para reiniciar e consultar o serviço `md-editor-yjs`.
 
@@ -114,8 +131,6 @@ scp \
   deploy/nginx-http.conf.example \
   deploy/nginx.conf.example \
   deploy/md-editor-yjs.service.example \
-  deploy/dumphere-backup.service.example \
-  deploy/dumphere-backup.timer.example \
   deploy@editor.example.com:/tmp/
 ```
 
@@ -137,55 +152,6 @@ sudo systemctl enable md-editor-yjs
 O template aceita somente TLS 1.2/1.3, redireciona HTTP para HTTPS, ativa HSTS
 e registra metadados mínimos sem IP, URL, query string, referrer ou user-agent.
 Não ative o site antes de ajustar os caminhos do certificado.
-
-### Backups criptografados
-
-Crie uma identidade `age` em uma estação administrativa ou ambiente isolado,
-guarde a chave privada fora do servidor de produção e configure somente a chave
-pública em `BACKUP_AGE_RECIPIENT`:
-
-```bash
-age-keygen -o dumphere-backup-age-key.txt
-age-keygen -y dumphere-backup-age-key.txt
-
-# No servidor de produção:
-sudo install -d -o deploy -g www-data -m 0700 /var/backups/dumphere
-
-sudo cp /tmp/dumphere-backup.service.example /etc/systemd/system/dumphere-backup.service
-sudo cp /tmp/dumphere-backup.timer.example /etc/systemd/system/dumphere-backup.timer
-sudo systemctl daemon-reload
-sudo systemctl enable --now dumphere-backup.timer
-systemctl list-timers dumphere-backup.timer
-```
-
-O job cria um dump PostgreSQL em formato custom, cifra no próprio pipeline
-antes de gravar no destino definitivo e remove arquivos além da retenção
-configurada. A chave privada não é necessária para criar backups.
-
-Execute um backup antes de liberar produção:
-
-```bash
-sudo systemctl start dumphere-backup.service
-sudo journalctl -u dumphere-backup.service --since today
-```
-
-Copie um backup cifrado para o ambiente isolado de restauração, configure ali
-as variáveis de banco, `BACKUP_DIRECTORY`, `BACKUP_AGE_IDENTITY_FILE` e
-`RESTORE_TEST_DATABASE`, e execute:
-
-```bash
-sudo systemd-run --wait --pipe --collect \
-  --uid=deploy \
-  --gid=www-data \
-  --property=EnvironmentFile=/caminho/seguro/restore.env \
-  --setenv=CONFIRM_RESTORE_TEST=yes \
-  /caminho/md-online-editor/scripts/restore-postgres-backup.sh \
-  /caminho/backups/dumphere-AAAAMMDDTHHMMSSZ.dump.age
-```
-
-O script de restauração aceita somente o banco definido por
-`RESTORE_TEST_DATABASE`, que deve terminar em `_restore_test`; ele nunca aceita
-o nome do banco de produção. Registre e repita esse exercício periodicamente.
 
 Adicione o scheduler ao `crontab` do usuário `deploy`:
 
@@ -219,11 +185,9 @@ Variáveis opcionais:
 - `DEPLOY_BRANCH`: branch, padrão `main`;
 - `DEPLOY_REPOSITORY`: repositório Git;
 - `DEPLOY_YJS_SERVICE`: nome do serviço systemd;
-- `DEPLOY_BACKUP_TIMER`: timer systemd de backup, padrão `dumphere-backup.timer`;
 - `DEPLOY_REMOTE_PATH`: `PATH` remoto quando Node/PHP não estão no caminho padrão.
 
-`DEPLOY_HEALTHCHECK_URL` é obrigatório e deve usar HTTPS. O deploy também falha
-se o timer de backup não estiver habilitado e ativo.
+`DEPLOY_HEALTHCHECK_URL` é obrigatório e deve usar HTTPS.
 
 No GitHub Actions, cadastre `DEPLOY_SSH_KEY` e
 `DEPLOY_SSH_KNOWN_HOSTS` como secrets do environment `production`. Gere
@@ -254,14 +218,12 @@ O rollback troca o release da aplicação e reinicia o servidor Yjs. Migrations 
 
 ### Operação e alertas
 
-Envie os logs JSON de PHP/Nginx e os eventos do journal
-`dumphere-yjs`/`dumphere-backup` para a plataforma de observabilidade. Configure
-alertas, no mínimo, para:
+Envie os logs JSON de PHP/Nginx e os eventos do journal `dumphere-yjs` para a
+plataforma de observabilidade. Configure alertas, no mínimo, para:
 
 - health check indisponível e falhas de conexão com PostgreSQL;
 - mensagens `Failed to persist Yjs snapshot` ou documento acima do limite;
-- repetição de HTTP 429/5xx e reinícios do serviço Yjs;
-- falha do `dumphere-backup.service` ou ausência de backup válido nas últimas 26 horas.
+- repetição de HTTP 429/5xx e reinícios do serviço Yjs.
 
 Proteja `main` exigindo CI verde e aprovação de um code owner. As referências
 dos GitHub Actions são fixadas por SHA e o Dependabot abre atualizações semanais

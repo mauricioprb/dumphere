@@ -1,154 +1,224 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
-import AppLayout from '@/Components/Layout/AppLayout.vue'
-import ThemeToggle from '@/Components/UI/ThemeToggle.vue'
-import { useI18n, type TranslationKey } from '@/Composables/useI18n'
-import { normalizeDocumentPath } from '@/Lib/documentPath'
-import { FileEdit, Users, LockOpen, FileText } from '@lucide/vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ArrowRight } from '@lucide/vue';
+import AppLayout from '@/Components/Layout/AppLayout.vue';
+import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
+import { useI18n } from '@/Composables/useI18n';
+import { useTypewriter } from '@/Composables/useTypewriter';
+import { useAppHost } from '@/Composables/useAppUrl';
+import { normalizeDocumentPath } from '@/Lib/documentPath';
 
-const { t } = useI18n()
+const { t } = useI18n();
+const appHost = useAppHost();
 
-const slugInput = ref('')
-const inputError = ref('')
-const isNavigating = ref(false)
-const examples = computed(() => [
-    'home.example1',
-    'home.example2',
-    'home.example3'
-] as TranslationKey[])
-const year = new Date().getFullYear()
+const slugInput = ref('');
+const inputError = ref('');
+const isNavigating = ref(false);
+const year = new Date().getFullYear();
+
+const examples = computed(() => [t('home.example1'), t('home.example2'), t('home.example3')]);
+
+const GUEST_ARRIVAL_DELAY = 1500;
+const GUEST_TYPING_DELAY = 420;
+const GUEST_CHARACTER_INTERVAL = 28;
+
+const heroObject = computed(() => t('home.heroObject'));
+const headline = useTypewriter(heroObject, {
+    startDelay: 340,
+    interval: 78,
+    immediate: true,
+});
+const typedHeroObject = headline.typed;
+const hasFinishedTyping = headline.isDone;
+
+const disclosureAccess = computed(() => t('home.disclosureAccess'));
+const disclosureExpiry = computed(() => t('home.disclosureExpiry'));
+const disclosureText = computed(() => disclosureAccess.value + disclosureExpiry.value);
+const guest = useTypewriter(disclosureText, {
+    startDelay: GUEST_TYPING_DELAY,
+    interval: GUEST_CHARACTER_INTERVAL,
+});
+
+const guestArrived = ref(guest.prefersReducedMotion);
+const typedAccess = computed(() => guest.typed.value.slice(0, disclosureAccess.value.length));
+const typedExpiry = computed(() => guest.typed.value.slice(disclosureAccess.value.length));
+const accessComplete = computed(() => guest.typed.value.length >= disclosureAccess.value.length);
+const guestIsIdle = computed(() => guest.isDone.value);
+
+let arrivalTimer: number | undefined;
+
+watch(
+    hasFinishedTyping,
+    (done) => {
+        if (!done || guest.prefersReducedMotion || guestArrived.value) {
+            return;
+        }
+
+        arrivalTimer = window.setTimeout(() => {
+            guestArrived.value = true;
+            guest.start();
+        }, GUEST_ARRIVAL_DELAY);
+    },
+    { immediate: true },
+);
+
+onBeforeUnmount(() => window.clearTimeout(arrivalTimer));
 
 function goToDocument() {
-    const slug = normalizeDocumentPath(slugInput.value)
+    const slug = normalizeDocumentPath(slugInput.value);
 
     if (!slug) {
-        inputError.value = t('home.inputError')
-        return
+        inputError.value = t('home.inputError');
+        return;
     }
 
-    inputError.value = ''
+    inputError.value = '';
     router.visit(`/${slug}`, {
         onStart: () => {
-            isNavigating.value = true
+            isNavigating.value = true;
         },
         onFinish: () => {
-            isNavigating.value = false
+            isNavigating.value = false;
         },
-    })
+    });
 }
 
+function clearError() {
+    inputError.value = '';
+}
 </script>
 
 <template>
     <Head :title="t('app.titleFull')" />
     <AppLayout>
-        <div class="flex-1 flex flex-col items-center px-4 sm:px-6 py-6 sm:py-0 sm:justify-center overflow-y-auto relative">
-            <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
-                <ThemeToggle />
-            </div>
-
-            <div class="max-w-4xl w-full text-center space-y-5 sm:space-y-8">
-                <div class="space-y-2 sm:space-y-4 pt-8 sm:pt-0">
-                    <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center justify-center gap-3">
-                        <FileText class="w-8 h-8 sm:w-12 sm:h-12 text-primary-600 dark:text-primary-400" :stroke-width="1.75" />
-                        {{ t('home.heading') }}
-                    </h1>
-                    <p class="text-sm sm:text-xl text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                        {{ t('home.subheading') }}
-                    </p>
-                </div>
-
-                <div class="bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 p-5 sm:p-8 space-y-4 sm:space-y-6">
-                    <p class="text-base text-neutral-500 dark:text-neutral-400">
-                        {{ t('home.inputHint') }}
-                    </p>
-                    <form
-                        class="space-y-2"
-                        @submit.prevent="goToDocument"
+        <ExternalPageShell
+            eager-artwork
+            class="entry-surface grid min-h-dvh grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden"
+            aria-labelledby="entry-title"
+        >
+            <div
+                class="relative z-2 mx-auto grid w-[min(100%,96rem)] grid-cols-[minmax(0,2.25fr)_minmax(17rem,0.75fr)] items-center gap-[clamp(3rem,7vw,8rem)] px-[clamp(1.1rem,3vw,2.75rem)] py-[clamp(4rem,10vh,8rem)] max-[760px]:grid-cols-[minmax(0,1fr)] max-[760px]:content-center max-[760px]:gap-10 max-[760px]:py-16 max-[760px]:pb-10"
+            >
+                <div class="min-w-0">
+                    <h1
+                        id="entry-title"
+                        class="mb-[clamp(3.25rem,7vh,5.75rem)] flex max-w-[9ch] flex-col items-start font-display text-[clamp(3.6rem,7vw,6rem)] leading-[0.92] font-[560] tracking-[-0.04em] text-balance text-(--external-ink) max-[760px]:mb-14 max-[760px]:max-w-[8ch] max-[760px]:text-[clamp(3.4rem,15.5vw,5.1rem)]"
                     >
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <label for="document-path" class="sr-only">
-                                {{ t('home.inputLabel') }}
-                            </label>
+                        <span>{{ t('home.heroLead') }}</span>
+                        <span class="selection-word" :class="{ 'selection-word--filled': hasFinishedTyping }">
+                            <span class="selection-word__text" aria-hidden="true"
+                                ><span class="selection-word__ghost">{{ heroObject }}</span
+                                >{{ typedHeroObject }}</span
+                            >
+                            <span class="selection-word__fill" aria-hidden="true">{{ heroObject }}</span>
+                            <span class="sr-only">{{ heroObject }}</span>
+                            <span
+                                class="collaboration-carets__caret selection-word__caret"
+                                :class="{
+                                    'selection-word__caret--idle': hasFinishedTyping,
+                                }"
+                                aria-hidden="true"
+                            >
+                                <span class="collaboration-carets__label">{{ t('home.presenceYou') }}</span>
+                            </span>
+                        </span>
+                    </h1>
+
+                    <form class="entry-form w-full" :aria-busy="isNavigating" @submit.prevent="goToDocument">
+                        <label
+                            for="document-path"
+                            class="mb-[0.7rem] block text-[0.82rem] leading-[1.3] font-[650] text-(--external-muted)"
+                        >
+                            {{ t('home.inputLabel') }}
+                        </label>
+                        <div class="entry-form__control" :class="{ 'has-error': inputError }">
+                            <span class="entry-form__origin" aria-hidden="true">{{ appHost }}/</span>
                             <input
                                 id="document-path"
                                 v-model="slugInput"
                                 type="text"
+                                list="document-examples"
                                 :placeholder="t('home.inputPlaceholder')"
                                 autocomplete="off"
                                 autocapitalize="none"
                                 spellcheck="false"
                                 :aria-invalid="inputError ? 'true' : undefined"
-                                aria-describedby="document-path-help"
-                                class="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-4 py-2.5 sm:py-3 text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent placeholder-neutral-400 dark:placeholder-neutral-500"
-                                @input="inputError = ''"
+                                aria-describedby="document-path-feedback access-note"
+                                @input="clearError"
                             />
-                            <button
-                                type="submit"
-                                :disabled="isNavigating || !slugInput.trim()"
-                                class="px-6 py-2.5 sm:py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
-                            >
-                                {{ isNavigating ? t('home.opening') : t('home.openButton') }}
+                            <button type="submit" :disabled="isNavigating || !slugInput.trim()">
+                                <span>{{ isNavigating ? t('home.opening') : t('home.openButton') }}</span>
+                                <ArrowRight :size="19" aria-hidden="true" />
                             </button>
                         </div>
+                        <datalist id="document-examples">
+                            <option v-for="example in examples" :key="example" :value="example" />
+                        </datalist>
                         <p
-                            id="document-path-help"
-                            class="min-h-5 text-left text-sm text-danger-600 dark:text-danger-400"
+                            id="document-path-feedback"
+                            class="mt-[0.55rem] min-h-5 text-[0.86rem] font-semibold text-(--external-error)"
                             role="alert"
                         >
                             {{ inputError }}
                         </p>
                     </form>
-                    <div class="flex flex-wrap gap-2 justify-center">
-                        <Link
-                            v-for="example in examples"
-                            :key="example"
-                            :href="`/${t(example)}`"
-                            prefetch
-                            class="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-600 dark:text-neutral-300 rounded-full text-sm transition-colors"
-                        >
-                            /{{ t(example) }}
-                        </Link>
-                    </div>
-                </div>
 
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left pb-2 sm:pb-0">
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
-                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
-                            <FileEdit class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.markdown') }}</h3>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.markdownDesc') }}</p>
-                    </div>
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
-                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
-                            <Users class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.realtime') }}</h3>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.realtimeDesc') }}</p>
-                    </div>
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 p-4 sm:p-5 space-y-1.5 sm:space-y-2">
-                        <div class="w-9 h-9 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center">
-                            <LockOpen class="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                        </div>
-                        <h3 class="text-base font-semibold text-neutral-800 dark:text-neutral-100">{{ t('features.noLogin') }}</h3>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400">{{ t('features.noLoginDesc') }}</p>
-                    </div>
-                </div>
-                <p class="text-xs text-neutral-400 dark:text-neutral-600 text-center pb-4 sm:pb-0">
-                    &copy; {{ year }} Dumphere
-                    &nbsp;&middot;&nbsp;
-                    <Link
-                        href="/terms"
-                        prefetch
-                        class="text-neutral-500 dark:text-neutral-400 underline underline-offset-2 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                    <p
+                        id="access-note"
+                        class="mt-[1.15rem] flex flex-wrap items-center gap-3 text-[0.82rem] leading-[1.3] font-[650] text-(--external-muted) max-[760px]:flex-col max-[760px]:items-start max-[760px]:gap-[0.3rem]"
                     >
-                        {{ t('terms.heading') }}
-                    </Link>
-                </p>
+                        <span class="typed-clause">
+                            <span class="typed-clause__ghost" aria-hidden="true">{{ disclosureAccess }}</span>
+                            <span class="typed-clause__value" aria-hidden="true"
+                                >{{ typedAccess
+                                }}<span
+                                    v-if="guestArrived && !accessComplete"
+                                    class="collaboration-carets__caret collaborator-caret"
+                                    :class="{ 'collaborator-caret--idle': guestIsIdle }"
+                                    ><span class="collaboration-carets__label">{{
+                                        t('home.presenceGuest')
+                                    }}</span></span
+                                ></span
+                            >
+                        </span>
+                        <span
+                            class="external-divider max-[760px]:hidden"
+                            :class="{ invisible: !accessComplete }"
+                            aria-hidden="true"
+                        />
+                        <span class="typed-clause">
+                            <span class="typed-clause__ghost" aria-hidden="true">{{ disclosureExpiry }}</span>
+                            <span class="typed-clause__value" aria-hidden="true"
+                                >{{ typedExpiry
+                                }}<span
+                                    v-if="guestArrived && accessComplete"
+                                    class="collaboration-carets__caret collaborator-caret"
+                                    :class="{ 'collaborator-caret--idle': guestIsIdle }"
+                                    ><span class="collaboration-carets__label">{{
+                                        t('home.presenceGuest')
+                                    }}</span></span
+                                ></span
+                            >
+                        </span>
+                        <span class="sr-only">{{ disclosureAccess }}. {{ disclosureExpiry }}.</span>
+                    </p>
+                </div>
             </div>
-        </div>
+
+            <footer
+                class="relative z-2 mx-auto flex w-[min(100%,96rem)] items-center gap-[0.85rem] px-[clamp(1.1rem,3vw,2.75rem)] pt-4 pb-[clamp(1.1rem,3vw,2.75rem)] text-[0.78rem] text-(--external-muted)"
+            >
+                <span>&copy; {{ year }} Dumphere</span>
+                <span class="external-divider" aria-hidden="true" />
+                <Link
+                    href="/terms"
+                    prefetch
+                    class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
+                >
+                    {{ t('terms.heading') }}
+                </Link>
+            </footer>
+        </ExternalPageShell>
     </AppLayout>
 </template>

@@ -12,11 +12,7 @@ services:
     ports:
       - "127.0.0.1:${DB_PORT:-5432}:5432"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${DB_USERNAME:-md_editor} -d ${DB_DATABASE:-md_editor}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-md_editor} -d ${DB_DATABASE:-md_editor}"]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -59,11 +59,11 @@ class ContentSecurityPolicy
 
         $csp = implode('; ', [
             "default-src 'self'",
-            'script-src '.implode(' ', array_unique($scriptSources)),
-            'style-src '.implode(' ', array_unique($styleSources)),
+            'script-src ' . implode(' ', array_unique($scriptSources)),
+            'style-src ' . implode(' ', array_unique($styleSources)),
             "font-src 'self' https://fonts.bunny.net",
             "img-src 'self' data: blob: https:",
-            'connect-src '.implode(' ', array_unique($connectSources)),
+            'connect-src ' . implode(' ', array_unique($connectSources)),
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
@@ -75,9 +75,6 @@ class ContentSecurityPolicy
         return $response;
     }
 
-    /**
-     * @param  list<string>  $allowedSchemes
-     */
     private function origin(string $url, array $allowedSchemes): ?string
     {
         $parts = parse_url($url);
@@ -92,7 +89,7 @@ class ContentSecurityPolicy
         }
 
         $formattedHost = str_contains($host, ':') ? "[{$host}]" : $host;
-        $port = isset($parts['port']) ? ':'.$parts['port'] : '';
+        $port = isset($parts['port']) ? ':' . $parts['port'] : '';
 
         return "{$scheme}://{$formattedHost}{$port}";
     }

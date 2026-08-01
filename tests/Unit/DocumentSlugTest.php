@@ -2,47 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit;
+use App\Support\DocumentSlug;
 
-use App\Domain\Document\Support\DocumentSlug;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+dataset('valid document slugs', [
+    'single segment' => ['notes'],
+    'hyphenated segment' => ['configuration-notes'],
+    'nested path' => ['team/weekly/notes'],
+    'maximum length' => [str_repeat('a', DocumentSlug::MAX_LENGTH)],
+]);
 
-class DocumentSlugTest extends TestCase
-{
-    #[DataProvider('validSlugs')]
-    public function test_it_accepts_valid_slugs(string $slug): void
-    {
-        $this->assertTrue(DocumentSlug::isValid($slug));
-    }
+dataset('invalid document slugs', [
+    'empty value' => [''],
+    'reserved segment' => ['admin'],
+    'reserved nested segment' => ['terms/privacy'],
+    'trailing hyphen before separator' => ['leading-/segment'],
+    'leading hyphen after separator' => ['segment-/next'],
+    'empty segment' => ['one//two'],
+    'too many segments' => ['one/two/three/four/five'],
+    'above maximum length' => [str_repeat('a', DocumentSlug::MAX_LENGTH + 1)],
+]);
 
-    #[DataProvider('invalidSlugs')]
-    public function test_it_rejects_invalid_slugs(string $slug): void
-    {
-        $this->assertFalse(DocumentSlug::isValid($slug));
-    }
+it('accepts valid slugs', function (string $slug): void {
+    expect(DocumentSlug::isValid($slug))->toBeTrue();
+})->with('valid document slugs');
 
-    public static function validSlugs(): array
-    {
-        return [
-            ['notes'],
-            ['configuration-notes'],
-            ['team/weekly/notes'],
-            [str_repeat('a', DocumentSlug::MAX_LENGTH)],
-        ];
-    }
-
-    public static function invalidSlugs(): array
-    {
-        return [
-            [''],
-            ['admin'],
-            ['terms/privacy'],
-            ['leading-/segment'],
-            ['segment-/next'],
-            ['one//two'],
-            ['one/two/three/four/five'],
-            [str_repeat('a', DocumentSlug::MAX_LENGTH + 1)],
-        ];
-    }
-}
+it('rejects invalid slugs', function (string $slug): void {
+    expect(DocumentSlug::isValid($slug))->toBeFalse();
+})->with('invalid document slugs');

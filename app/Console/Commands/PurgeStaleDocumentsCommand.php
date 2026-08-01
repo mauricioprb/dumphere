@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Domain\Document\Actions\PurgeStaleDocuments;
+use App\Actions\PurgeStaleDocuments;
 use Illuminate\Console\Command;
 
 class PurgeStaleDocumentsCommand extends Command

@@ -20,11 +20,6 @@
         },
         "lib": ["ESNext", "DOM", "DOM.Iterable"]
     },
-    "include": [
-        "resources/js/**/*.ts",
-        "resources/js/**/*.d.ts",
-        "resources/js/**/*.vue",
-        "tests/Frontend/**/*.ts"
-    ],
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.vue", "tests/Frontend/**/*.ts"],
     "exclude": ["node_modules", "public"]
 }

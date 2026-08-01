@@ -1,5 +1,5 @@
-const MAX_LENGTH = 100
-const MAX_SEGMENTS = 4
+const MAX_LENGTH = 100;
+const MAX_SEGMENTS = 4;
 
 const RESERVED_FIRST_SEGMENTS = new Set([
     'admin',
@@ -19,7 +19,7 @@ const RESERVED_FIRST_SEGMENTS = new Set([
     'terms',
     'up',
     'vendor',
-])
+]);
 
 export function normalizeDocumentPath(value: string): string | null {
     const segments = value
@@ -29,24 +29,25 @@ export function normalizeDocumentPath(value: string): string | null {
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
         .split('/')
-        .map(segment => segment
-            .trim()
-            .replace(/[\s_]+/g, '-')
-            .replace(/[^a-z0-9-]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '')
-        )
+        .map((segment) =>
+            segment
+                .trim()
+                .replace(/[\s_]+/g, '-')
+                .replace(/[^a-z0-9-]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, ''),
+        );
 
     if (
-        segments.length === 0
-        || segments.length > MAX_SEGMENTS
-        || segments.some(segment => segment.length === 0)
-        || RESERVED_FIRST_SEGMENTS.has(segments[0])
+        segments.length === 0 ||
+        segments.length > MAX_SEGMENTS ||
+        segments.some((segment) => segment.length === 0) ||
+        RESERVED_FIRST_SEGMENTS.has(segments[0])
     ) {
-        return null
+        return null;
     }
 
-    const path = segments.join('/')
+    const path = segments.join('/');
 
-    return path.length <= MAX_LENGTH ? path : null
+    return path.length <= MAX_LENGTH ? path : null;
 }

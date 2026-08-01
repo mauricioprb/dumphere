@@ -1,43 +1,38 @@
-export default {
-    // App
-    'app.title': 'Dumphere',
-    'app.titleFull': 'Dumphere - Collaborative Markdown',
+import type ptBR from './pt-BR';
 
-    // Home page
-    'home.heading': 'Dumphere',
-    'home.subheading': 'Collaborative Markdown editing in real-time.',
-    'home.inputPlaceholder': 'my-note',
-    'home.inputLabel': 'Document path',
+const en = {
+    'app.title': 'Dumphere',
+    'app.titleFull': 'Collaborative Markdown editor',
+
+    'home.heroLead': 'Open a',
+    'home.heroObject': 'page.',
+    'home.inputPlaceholder': 'my-page',
+    'home.inputLabel': 'Page address',
     'home.inputError': 'Enter a valid path with up to four parts.',
     'home.openButton': 'Open',
     'home.opening': 'Opening...',
-    'home.inputHint': 'Type any URL path to create or open a document. For example:',
-    'home.example1': 'meeting-notes',
-    'home.example2': 'shopping-list',
-    'home.example3': 'project-ideas',
-
-
-    // Features
-    'features.markdown': 'Markdown',
-    'features.markdownDesc': 'Full Markdown formatting with live preview in the editor.',
-    'features.realtime': 'Real-time',
-    'features.realtimeDesc': 'Multiple users can edit simultaneously. See others\' cursors live.',
-    'features.noLogin': 'No Login',
-    'features.noLoginDesc': 'Zero authentication. Anyone with the URL can read and edit.',
-
-    // Editor
+    'home.disclosureAccess': 'Public to anyone with the link',
+    'home.disclosureExpiry': 'Removed after 30 days without visits',
+    'home.presenceYou': 'you',
+    'home.presenceGuest': 'guest',
+    'home.example1': 'my-room',
+    'home.example2': 'project/review',
+    'home.example3': 'team/decisions',
     'editor.placeholder': 'Start typing... Use / for commands, **bold**, *italic*, # headings...',
+    'editor.visualLabel': 'Document content',
     'editor.wordCount': '{count} words',
     'editor.characterCount': '{count} characters',
-    'editor.untitled': 'Untitled',
     'editor.sourcePlaceholder': 'Write your Markdown here...',
     'editor.sourceLabel': 'Document Markdown source',
     'editor.loading': 'Preparing the editor...',
+    'editor.inlineSourceLabel': 'Edit block as Markdown',
+    'editor.inlineSourceHelp': 'Press Enter to apply a single line, Shift+Enter for a new line, or Escape to cancel.',
 
-    // Navigation
     'navigation.home': 'Back to home',
+    'navigation.skip': 'Skip to main content',
 
-    // Toolbar
+    'loader.loading': 'Loading page...',
+
     'toolbar.ariaLabel': 'Formatting toolbar',
     'toolbar.bold': 'Bold (Ctrl+B)',
     'toolbar.italic': 'Italic (Ctrl+I)',
@@ -56,38 +51,31 @@ export default {
     'toolbar.codeBlock': 'Code Block',
     'toolbar.table': 'Table',
     'toolbar.image': 'Image',
-    'toolbar.imagePrompt': 'Image URL:',
-    'toolbar.link': 'Link',
-    'toolbar.undo': 'Undo',
-    'toolbar.redo': 'Redo',
     'toolbar.sourceOn': 'Edit Markdown source',
     'toolbar.sourceOff': 'Back to visual mode',
+    'toolbar.more': 'More formatting options',
+    'toolbar.less': 'Hide additional options',
 
-    // Time ago
     'time.now': 'just now',
     'time.seconds': '{count}s ago',
     'time.minutes': '{count}min ago',
     'time.hours': '{count}h ago',
     'time.days': '{count}d ago',
 
-    // Connection status
     'status.saving': 'Saving...',
-    'status.savedAt': 'Saved at {time}',
     'status.savedAgo': 'Saved {time}',
     'status.notSaved': 'Not saved yet',
     'status.connected': 'Connected',
     'status.disconnected': 'Disconnected',
     'status.failedToSave': 'Failed to save. Will retry...',
 
-    // Presence
     'presence.more': '+{count} more',
+    'presence.ariaLabel': 'Other people in this document',
+    'presence.online': '{count} online',
 
-    // Theme
-    'theme.light': 'Light',
-    'theme.dark': 'Dark',
-    'theme.toggle': 'Toggle theme',
+    'theme.useLight': 'Use light theme',
+    'theme.useDark': 'Use dark theme',
 
-    // Slash command menu
     'slash.heading1': 'Heading 1',
     'slash.heading1Desc': 'Large heading',
     'slash.heading2': 'Heading 2',
@@ -113,96 +101,174 @@ export default {
     'slash.ariaLabel': 'Editor commands',
     'slash.noResults': 'No results',
 
-    // Emoji slash commands
-    'slash.emoji.regular_smile': 'Smile',
-    'slash.emoji.regular_smileDesc': 'smile emoji',
-    'slash.emoji.wink_smile': 'Wink',
-    'slash.emoji.wink_smileDesc': 'wink emoji',
-    'slash.emoji.sad_smile': 'Sad',
-    'slash.emoji.sad_smileDesc': 'sad emoji',
-    'slash.emoji.cry_smile': 'Crying',
-    'slash.emoji.cry_smileDesc': 'crying emoji',
-    'slash.emoji.angry_smile': 'Angry',
-    'slash.emoji.angry_smileDesc': 'angry emoji',
-    'slash.emoji.tongue_smile': 'Tongue',
-    'slash.emoji.tongue_smileDesc': 'tongue emoji',
-    'slash.emoji.omg_smile': 'Surprised',
-    'slash.emoji.omg_smileDesc': 'surprised emoji',
-    'slash.emoji.what_smile': 'Neutral',
-    'slash.emoji.what_smileDesc': 'neutral emoji',
-    'slash.emoji.red_smile': 'Embarrassed',
-    'slash.emoji.red_smileDesc': 'embarrassed emoji',
-    'slash.emoji.teeth_smile': 'Big Grin',
-    'slash.emoji.teeth_smileDesc': 'big grin emoji',
-    'slash.emoji.confused_smile': 'Confused',
-    'slash.emoji.confused_smileDesc': 'confused emoji',
-    'slash.emoji.angel_smile': 'Angel',
-    'slash.emoji.angel_smileDesc': 'angel emoji',
-    'slash.emoji.devil_smile': 'Devil',
-    'slash.emoji.devil_smileDesc': 'devil emoji',
-    'slash.emoji.heart': 'Heart',
-    'slash.emoji.heartDesc': 'heart emoji',
-    'slash.emoji.broken_heart': 'Broken Heart',
-    'slash.emoji.broken_heartDesc': 'broken heart emoji',
-    'slash.emoji.thumbs_up': 'Thumbs Up',
-    'slash.emoji.thumbs_upDesc': 'thumbs up emoji',
-    'slash.emoji.thumbs_down': 'Thumbs Down',
-    'slash.emoji.thumbs_downDesc': 'thumbs down emoji',
-    'slash.emoji.rose': 'Rose',
-    'slash.emoji.roseDesc': 'rose emoji',
-    'slash.emoji.wilted_rose': 'Wilted Rose',
-    'slash.emoji.wilted_roseDesc': 'wilted rose emoji',
-    'slash.emoji.coffee': 'Coffee',
-    'slash.emoji.coffeeDesc': 'coffee emoji',
-    'slash.emoji.cake': 'Cake',
-    'slash.emoji.cakeDesc': 'birthday cake emoji',
-    'slash.emoji.moon': 'Moon',
-    'slash.emoji.moonDesc': 'moon emoji',
-    'slash.emoji.star': 'Star',
-    'slash.emoji.starDesc': 'star emoji',
-    'slash.emoji.kiss': 'Kiss',
-    'slash.emoji.kissDesc': 'kiss emoji',
-    'slash.emoji.girl': 'Girl',
-    'slash.emoji.girlDesc': 'girl emoji',
-
-    // Image modal
     'imageModal.title': 'Insert Image',
     'imageModal.urlLabel': 'Image URL',
     'imageModal.urlPlaceholder': 'https://example.com/image.png',
     'imageModal.altLabel': 'Alt text (optional)',
     'imageModal.altPlaceholder': 'Image description',
+    'imageModal.altHelp': 'Describe informative images. Leave this empty only when the image is decorative.',
     'imageModal.preview': 'Preview',
     'imageModal.loading': 'Loading...',
     'imageModal.previewError': 'Could not load preview. The image will still be inserted.',
     'imageModal.invalidUrl': 'Enter a valid HTTP or HTTPS URL.',
     'imageModal.cancel': 'Cancel',
+    'imageModal.close': 'Close image insertion dialog',
     'imageModal.insert': 'Insert image',
 
-    // Export
+    'code.copy': 'Copy code',
+    'code.copied': 'Code copied',
+    'code.copyFailed': 'Could not copy code',
+
     'export.markdown': 'Export as Markdown',
     'export.html': 'Export as HTML',
 
-    // Expiration notice
     'expiration.notice': 'This page is automatically deleted after 30 days without visits.',
     'expiration.dismiss': 'Got it',
 
-    // Terms page
-    'terms.pageTitle': 'Terms & Privacy · Dumphere',
+    'terms.pageTitle': 'Terms & Privacy',
     'terms.back': 'Back',
     'terms.heading': 'Terms & Privacy',
-    'terms.lastUpdated': '04/24/2026',
-    'terms.banner': 'Dumphere is a public platform. Anyone with the link can read and edit content. Do not store personal or confidential information.',
-    'terms.public.title': 'Fully public platform',
-    'terms.public.body': 'All documents created on this platform are public by default. There is no access control or authentication: anyone who knows the URL can view and modify the content. Do not use this platform to store private documents.',
-    'terms.noResponsibility.title': 'No responsibility for content',
-    'terms.noResponsibility.body': 'Dumphere is not responsible for content stored by users. Use of this platform is entirely at the user\'s own risk. Illegal, offensive, or third-party rights-infringing content is the sole responsibility of whoever publishes it.',
-    'terms.retention.title': 'Data retention and deletion',
-    'terms.retention.body': 'Documents are automatically deleted after 30 days without access. There is no guarantee of continuous availability or data backup. Do not use this platform as a permanent repository for important information.',
-    'terms.noSensitive.title': 'Do not store sensitive data',
-    'terms.noSensitive.body': 'Avoid storing passwords, financial data, personally identifiable information, medical data, or any other sensitive information. The platform does not offer content encryption or confidentiality guarantees.',
-    'terms.footer': 'Use at your own risk.',
+    'terms.effectiveLabel': 'In effect since',
+    'terms.effectiveDate': '08/01/2026',
 
-    // Table toolbar
+    'terms.truth1.word': 'public',
+    'terms.truth1.body': 'Anyone with the address can read the document. There is no login, no owner, no permission.',
+    'terms.truth2.word': 'editable',
+    'terms.truth2.body': 'Anyone with the address can also write, change and delete whatever is there.',
+    'terms.truth3.word': 'temporary',
+    'terms.truth3.body': 'Thirty days without a single visit and the document is deleted. Nothing is backed up, ever.',
+    'terms.truthClose':
+        'Do not write anything here that cannot be read, changed or lost by anyone. The whole service may end at any moment, without prior notice.',
+
+    'terms.indexTitle': 'On this page',
+
+    'terms.s1.title': 'Accepting these terms',
+    'terms.s1.summary': 'Using Dumphere means accepting these rules.',
+    'terms.s1.p1':
+        'By opening, creating or editing any Dumphere page you agree to these terms. If you disagree with any part of them, do not use the service. They apply to anyone who visits the site, whether or not they intend to edit.',
+    'terms.s1.p2':
+        'The service is intended for people aged 18 or over. Minors should only use it with the supervision of a guardian, who is answerable for that use. Dumphere is not directed at children and does not knowingly collect their data.',
+
+    'terms.s2.title': 'What Dumphere is',
+    'terms.s2.summary': 'A shared scratchpad that begins at its address.',
+    'terms.s2.p1':
+        'Dumphere is a collaborative Markdown editor that works by address. You choose a path in the URL and the page exists. There is no sign-up, account, owner, private folder or permission control.',
+    'terms.s2.p2':
+        'The service is offered free of charge, as is, and may be changed, limited or shut down at any time.',
+
+    'terms.s3.title': 'Everything is public',
+    'terms.s3.summary': 'There is no access control. No document is private.',
+    'terms.s3.p1':
+        'Anyone who knows or guesses a page address can read, edit and delete its content, including search crawlers and automated scrapers. A hard-to-guess address is not protection.',
+    'terms.s3.p2':
+        'Treat everything written here as published on the open internet. That holds for anything deleted later too, because it may already have been read, copied or indexed.',
+
+    'terms.s4.title': 'Do not write sensitive data',
+    'terms.s4.summary': 'Passwords, identity documents and personal data do not belong here.',
+    'terms.s4.p1':
+        "Do not publish passwords, API keys, tokens, banking data, identity documents, home addresses, health data, data about children and teenagers, or any personal information, yours or anyone else's, that you would not publish on an open page.",
+    'terms.s4.p2':
+        "Content travels over encrypted channels, but it is stored without encryption and behind no access barrier. Publishing someone else's personal data is the responsibility of whoever publishes it and may break the law.",
+
+    'terms.s5.title': 'How long content lasts',
+    'terms.s5.summary': '30 days without visits and the page is deleted. There is no backup.',
+    'terms.s5.p1':
+        'Every document records the date it was last accessed. After 30 days without a single visit it is deleted automatically and permanently. There is no trash and no recoverable history.',
+    'terms.s5.p2':
+        'No data is backed up. We keep no safety copy, neither for you nor for ourselves. Once lost or deleted, content cannot be recovered by anyone, under any circumstances.',
+    'terms.s5.p3':
+        'We may also delete, interrupt or migrate any content at any time for technical, cost or abuse reasons. Do not use Dumphere to keep anything you cannot afford to lose.',
+
+    'terms.s6.title': 'Acceptable use',
+    'terms.s6.summary': 'What may not be published or done here.',
+    'terms.s6.i1':
+        'Illegal content, including child sexual abuse material, terrorism apology and incitement to violence.',
+    'terms.s6.i2': 'Content that infringes copyright, trademarks, trade secrets or third-party image rights.',
+    'terms.s6.i3':
+        'Third-party personal data without a legal basis, deliberate exposure (doxxing), harassment, threats or hate speech.',
+    'terms.s6.i4': 'Malware, phishing, fraud pages, spam, parasite SEO or deceptive redirection.',
+    'terms.s6.i5':
+        'Attacks on the service, such as abusive automation, attempts to overload it, circumventing rate limits or exploiting flaws.',
+    'terms.s6.i6':
+        "Deleting or defacing other people's work in bad faith. Since every document is open, respect is the only access control there is.",
+
+    'terms.s7.title': 'Your content is yours',
+    'terms.s7.summary': 'You keep your rights. We only need to store and display.',
+    'terms.s7.p1':
+        'You remain the owner of what you write. By publishing on a Dumphere page you grant a non-exclusive, royalty-free, worldwide licence to store, reproduce and publicly display that content for the sole purpose of operating the service. It ends when the content is deleted.',
+    'terms.s7.p2':
+        "Because anyone can edit, there is no guarantee of authorship, integrity or permanence of what you wrote. Dumphere's software, name and visual identity are not part of that licence.",
+
+    'terms.s8.title': 'Moderation and removal',
+    'terms.s8.summary': 'We may remove any content, at any time.',
+    'terms.s8.p1':
+        'We do not monitor, review or pre-approve what is published, and we take on no obligation to do so. Even so, we may remove, block or make unavailable any document, with or without notice, when it breaches these terms or the law, or puts the service at risk.',
+    'terms.s8.p2': 'We may also limit or block network addresses that are abusing the service.',
+
+    'terms.s9.title': 'Reports and takedown requests',
+    'terms.s9.summary': 'Write to the contact at the end of this page.',
+    'terms.s9.p1':
+        'If a Dumphere page contains illegal content, your personal data, copyrighted material or any breach of these terms, write to the email at the end of this page with the full page address, a description of the problem and, where relevant, your relationship to the content.',
+    'terms.s9.p2':
+        'We review requests within a reasonable time and may remove content on our own initiative. Court orders and requests from competent authorities are complied with as the law requires. You can also delete the content yourself, because the page is open and you only have to edit it.',
+
+    'terms.s10.title': 'Data we handle',
+    'terms.s10.summary': 'Very little, and almost none of it identifies you.',
+    'terms.s10.p1':
+        'There is no sign-up, so we ask for no name, no email and no identification. What exists is listed below.',
+    'terms.s10.k1': 'Document content',
+    'terms.s10.v1': 'Text, code and images you publish. It is public and is deleted along with the document.',
+    'terms.s10.k2': 'IP address',
+    'terms.s10.v2': 'Used at request time to limit abuse and simultaneous connections. It is not linked to documents.',
+    'terms.s10.k3': 'Technical logs',
+    'terms.s10.v3': 'Server errors and events, kept for a short period for operation and security.',
+    'terms.s10.k4': 'Collaboration name',
+    'terms.s10.v4':
+        'The nickname shown on your cursor. It stays in your browser and is sent to whoever is on the same page while you are there.',
+    'terms.s10.k5': 'Local preferences',
+    'terms.s10.v5': "Language, theme and dismissed notices, kept in your device's local storage.",
+    'terms.s10.k6': 'Cookies',
+    'terms.s10.v6':
+        'Only the ones strictly needed for the session and CSRF protection. There are no advertising, tracking or analytics cookies.',
+    'terms.s10.p2':
+        "We do not sell, rent or share data with third parties for commercial purposes. The service runs on hosting providers' infrastructure, and they handle this data solely on our behalf and instructions.",
+
+    'terms.s11.title': 'Your rights over personal data',
+    'terms.s11.summary': 'Access, correction, deletion and objection, through the contact email.',
+    'terms.s11.p1':
+        'You may request access to, correction, deletion, anonymisation or portability of the personal data under our control, and object to a given use of it. Just write to the contact at the end of this page.',
+    'terms.s11.p2':
+        'There are two honest limits. Since there is no sign-up, in most cases we cannot link a piece of data to you or verify your identity. And content on a public page can be deleted by you, immediately, by editing the page.',
+
+    'terms.s12.title': 'Security',
+    'terms.s12.summary': 'Encrypted in transit, open at rest.',
+    'terms.s12.p1':
+        'Access to the site and the real-time collaboration connection use encrypted channels. The content, however, is stored without end-to-end encryption and without authentication. The safety of what you publish depends entirely on you not publishing what you should not.',
+    'terms.s12.p2':
+        'No internet service is immune to failure. We do not guarantee the absence of incidents, downtime or data loss.',
+
+    'terms.s13.title': 'Warranties and liability',
+    'terms.s13.summary': 'The service is offered as is, at your own risk.',
+    'terms.s13.p1':
+        'Dumphere is provided as is, with no guarantee of availability, performance, integrity, fitness for a particular purpose or preservation of content. It may go offline or lose data at any time.',
+    'terms.s13.p3':
+        'The service may be shut down for good at any moment, without prior notice, without a transition period and with no obligation to export, return or preserve any content. If something here matters to you, keep your own copy.',
+    'terms.s13.p2':
+        'To the fullest extent permitted by law, we are not liable for lost content, lost profits, indirect damages or content published by users. Responsibility for each publication lies with whoever made it. Nothing here excludes liabilities the law does not allow to be excluded.',
+
+    'terms.s14.title': 'Changes and applicable law',
+    'terms.s14.summary': 'Changes take effect on publication. Brazilian law applies.',
+    'terms.s14.p1':
+        'These terms may be updated at any time. The version in force is always the one published on this page, with the date shown at the top. Continuing to use the service after a change means accepting it.',
+    'terms.s14.p2':
+        "The service is operated from Brazil and is governed by Brazilian law, with the courts of the operator's domicile chosen for anything that cannot be settled through the contact below. If any clause is held invalid, the rest remain in force.",
+
+    'terms.contact.title': 'Contact',
+    'terms.contact.body':
+        'Reports, takedown requests, personal data and questions about these terms can be sent to the address below.',
+    'terms.footer': 'Use at your own risk.',
+    'terms.footerHome': 'Home',
+
     'table.addRowBefore': 'Add row above',
     'table.addRowAfter': 'Add row below',
     'table.deleteRow': 'Delete row',
@@ -210,4 +276,6 @@ export default {
     'table.addColAfter': 'Add column right',
     'table.deleteCol': 'Delete column',
     'table.delete': 'Delete table',
-} as const
+} as const satisfies Record<keyof typeof ptBR, string>;
+
+export default en;

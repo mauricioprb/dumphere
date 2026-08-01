@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'ssr' => [
         'enabled' => (bool) env('INERTIA_SSR_ENABLED', false),

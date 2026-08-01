@@ -1,0 +1,768 @@
+.editor-page {
+    background: var(--workspace-paper);
+    color: var(--workspace-ink);
+}
+
+.editor-focus:focus-visible,
+.editor-dialog button:focus-visible {
+    outline: 2px solid var(--workspace-live);
+    outline-offset: 2px;
+}
+
+.editor-workspace,
+.editor-canvas,
+.editor-source-canvas {
+    background: var(--workspace-paper);
+}
+
+.editor-canvas,
+.editor-source-canvas {
+    min-height: 0;
+}
+
+.editor-canvas:focus-within,
+.editor-source-canvas:focus-within {
+    box-shadow: inset 0 2px 0 var(--workspace-live);
+}
+
+.editor-toolbar {
+    background: var(--workspace-panel);
+    color: var(--workspace-muted);
+}
+
+.editor-toolbar__secondary {
+    background: color-mix(in srgb, var(--workspace-paper) 76%, var(--workspace-panel));
+}
+
+.editor-toolbar__divider {
+    background: var(--workspace-rule);
+}
+
+.editor-tool {
+    color: var(--workspace-muted);
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.editor-tool--idle:hover {
+    background: var(--workspace-paper);
+    color: var(--workspace-ink);
+}
+
+.editor-tool--active {
+    background: var(--workspace-accent);
+    color: var(--workspace-accent-ink);
+}
+
+.editor-tool--active:hover {
+    background: color-mix(in srgb, var(--workspace-accent) 86%, var(--workspace-paper));
+}
+
+.editor-tool--disabled {
+    color: color-mix(in srgb, var(--workspace-muted) 42%, transparent);
+}
+
+.editor-source {
+    display: block;
+    width: 100%;
+    max-width: 76ch;
+    margin-inline: auto;
+    padding: clamp(2rem, 7vh, 5rem) clamp(1.25rem, 5vw, 3.5rem) 6rem;
+    background: transparent;
+    color: var(--workspace-ink);
+    caret-color: var(--workspace-live);
+    font-size: 1rem;
+    line-height: 1.75;
+    outline: none;
+    resize: none;
+    tab-size: 4;
+}
+
+.editor-source::placeholder {
+    color: var(--workspace-muted);
+}
+
+.editor-meta {
+    min-height: 2.5rem;
+    background: var(--workspace-paper);
+    color: var(--workspace-muted);
+}
+
+.editor-meta-action {
+    transition: color 120ms ease;
+}
+
+.editor-meta-action:hover {
+    color: var(--workspace-ink);
+}
+
+.editor-expiration {
+    min-height: 3rem;
+    background: color-mix(in srgb, var(--workspace-warning) 7%, var(--workspace-paper));
+}
+
+.editor-popover,
+.editor-menu,
+.editor-dialog {
+    border: 1px solid var(--workspace-rule);
+    background: var(--workspace-raised);
+    color: var(--workspace-ink);
+    box-shadow: none;
+}
+
+.editor-menu__item {
+    min-height: 2.75rem;
+    transition:
+        background-color 120ms ease,
+        color 120ms ease;
+}
+
+.editor-menu__item--idle:hover {
+    background: var(--workspace-panel);
+}
+
+.editor-menu__item--selected {
+    background: var(--workspace-accent);
+    color: var(--workspace-accent-ink);
+}
+
+.editor-field {
+    border: 1px solid var(--workspace-rule);
+    background: var(--workspace-paper);
+    color: var(--workspace-ink);
+    caret-color: var(--workspace-live);
+}
+
+.editor-field::placeholder {
+    color: var(--workspace-muted);
+}
+
+.editor-field:focus {
+    border-color: var(--workspace-live);
+    outline: none;
+}
+
+.editor-preview {
+    border: 1px solid var(--workspace-rule);
+    background: var(--workspace-panel);
+}
+
+.editor-inline-source {
+    border: 1px solid var(--workspace-live);
+    background: var(--workspace-raised);
+    color: var(--workspace-ink);
+    caret-color: var(--workspace-live);
+    box-shadow: none;
+}
+
+.editor-inline-source:focus {
+    outline: none;
+}
+
+.tiptap {
+    min-height: 100%;
+    width: 100%;
+    max-width: 76ch;
+    margin-inline: auto;
+    padding: clamp(2rem, 7vh, 5rem) clamp(1.25rem, 5vw, 3.5rem) 6rem;
+    font-size: 1.0625rem;
+    line-height: 1.72;
+    color: var(--editor-body);
+    caret-color: var(--workspace-live);
+}
+
+.tiptap:focus-visible {
+    outline: none;
+}
+
+.ProseMirror {
+    min-height: 100%;
+}
+
+[data-node-view-wrapper],
+.tiptap-editor-wrapper {
+    height: 100%;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: var(--editor-placeholder);
+    pointer-events: none;
+    height: 0;
+}
+
+.tiptap h1 {
+    margin: 1.6em 0 0.45em;
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+    font-size: clamp(2.1rem, 5vw, 3rem);
+    font-weight: 560;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    color: var(--editor-heading-1);
+}
+
+.tiptap h2 {
+    margin: 1.7em 0 0.45em;
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 560;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--editor-heading-2);
+}
+
+.tiptap h3 {
+    margin: 1.65em 0 0.4em;
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--editor-heading-3);
+}
+
+.tiptap p {
+    margin: 0.7em 0;
+}
+
+.tiptap ul {
+    list-style: disc;
+    padding-left: 1.5em;
+    margin: 0.5em 0;
+}
+
+.tiptap ol {
+    list-style: decimal;
+    padding-left: 1.5em;
+    margin: 0.5em 0;
+}
+
+.tiptap li {
+    margin: 0.25em 0;
+}
+
+.tiptap li::marker {
+    color: var(--workspace-muted);
+}
+
+.tiptap li p {
+    margin: 0;
+}
+
+.tiptap ul[data-type='taskList'] {
+    list-style: none;
+    padding-left: 0;
+    margin: 0.5em 0;
+}
+
+.tiptap ul[data-type='taskList'] li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+    margin: 0.25em 0;
+}
+
+.tiptap ul[data-type='taskList'] li > label {
+    flex-shrink: 0;
+    margin-top: 0.25em;
+    user-select: none;
+}
+
+.tiptap ul[data-type='taskList'] li > label input[type='checkbox'] {
+    appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid var(--editor-checkbox-border);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    display: block;
+    transition: all 150ms;
+    background: transparent;
+}
+
+.tiptap ul[data-type='taskList'] li > label input[type='checkbox']:checked {
+    background-color: var(--editor-checkbox-checked);
+    border-color: var(--editor-checkbox-checked);
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+}
+
+.tiptap ul[data-type='taskList'] li > label input[type='checkbox']:hover {
+    border-color: var(--editor-checkbox-hover);
+}
+
+.tiptap ul[data-type='taskList'] li > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.tiptap ul[data-type='taskList'] li[data-checked='true'] > div {
+    text-decoration: line-through;
+    color: var(--editor-task-done);
+}
+
+.tiptap ul[data-type='taskList'] ul[data-type='taskList'] {
+    padding-left: 1.5em;
+}
+
+.tiptap blockquote {
+    border-inline-start: 1px solid var(--editor-blockquote-border);
+    padding-inline-start: 1.25em;
+    color: var(--editor-blockquote-text);
+    margin: 1.25em 0;
+    font-style: italic;
+}
+
+.tiptap code {
+    background: var(--editor-code-bg);
+    border-radius: 0.25em;
+    padding: 0.125em 0.375em;
+    font-size: 0.875em;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    color: var(--editor-code-text);
+}
+
+.tiptap .code-block-wrapper {
+    position: relative;
+    margin: 0.75em 0;
+}
+
+.tiptap .code-block-copy-btn {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 0.375em;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--editor-pre-text);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        background 0.15s ease;
+}
+
+.tiptap .code-block-wrapper:hover .code-block-copy-btn {
+    opacity: 1;
+}
+
+.tiptap .code-block-wrapper:focus-within .code-block-copy-btn,
+.tiptap .code-block-copy-btn:focus-visible {
+    opacity: 1;
+}
+
+.tiptap .code-block-copy-btn:focus-visible {
+    outline: 2px solid var(--workspace-live);
+    outline-offset: 2px;
+}
+
+.tiptap .code-block-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tiptap .code-block-copy-btn:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tiptap pre {
+    background: var(--editor-pre-bg);
+    color: var(--editor-pre-text);
+    border: 1px solid var(--editor-pre-border);
+    border-radius: 0.5em;
+    padding: 1em;
+    overflow-x: auto;
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.875em;
+    line-height: 1.6;
+}
+
+.tiptap pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+    font-size: inherit;
+}
+
+.tiptap pre .hljs-comment,
+.tiptap pre .hljs-quote {
+    color: #6a737d;
+    font-style: italic;
+}
+
+.tiptap pre .hljs-keyword,
+.tiptap pre .hljs-selector-tag {
+    color: #d73a49;
+    font-weight: 600;
+}
+
+.tiptap pre .hljs-built_in,
+.tiptap pre .hljs-type {
+    color: #6f42c1;
+}
+
+.tiptap pre .hljs-string,
+.tiptap pre .hljs-addition {
+    color: #22863a;
+}
+
+.tiptap pre .hljs-number,
+.tiptap pre .hljs-literal {
+    color: #005cc5;
+}
+
+.tiptap pre .hljs-title,
+.tiptap pre .hljs-title\.class_,
+.tiptap pre .hljs-title\.function_ {
+    color: #6f42c1;
+    font-weight: 600;
+}
+
+.tiptap pre .hljs-variable,
+.tiptap pre .hljs-template-variable {
+    color: #e36209;
+}
+
+.tiptap pre .hljs-attr,
+.tiptap pre .hljs-attribute {
+    color: #005cc5;
+}
+
+.tiptap pre .hljs-symbol,
+.tiptap pre .hljs-bullet {
+    color: #005cc5;
+}
+
+.tiptap pre .hljs-meta {
+    color: #6a737d;
+}
+
+.tiptap pre .hljs-regexp {
+    color: #032f62;
+}
+
+.tiptap pre .hljs-deletion {
+    color: #b31d28;
+    background-color: #ffeef0;
+}
+
+.tiptap pre .hljs-addition {
+    background-color: #f0fff4;
+}
+
+.tiptap pre .hljs-selector-class,
+.tiptap pre .hljs-selector-id {
+    color: #6f42c1;
+}
+
+.tiptap pre .hljs-tag {
+    color: #22863a;
+}
+
+.tiptap pre .hljs-name {
+    color: #22863a;
+    font-weight: 600;
+}
+
+.tiptap pre .hljs-params {
+    color: #24292e;
+}
+
+.tiptap pre .hljs-property {
+    color: #005cc5;
+}
+
+.tiptap pre .hljs-operator {
+    color: #d73a49;
+}
+
+.tiptap pre .hljs-punctuation {
+    color: #24292e;
+}
+
+.dark .tiptap pre .hljs-comment,
+.dark .tiptap pre .hljs-quote {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.dark .tiptap pre .hljs-keyword,
+.dark .tiptap pre .hljs-selector-tag {
+    color: #c586c0;
+    font-weight: 600;
+}
+
+.dark .tiptap pre .hljs-built_in,
+.dark .tiptap pre .hljs-type {
+    color: #4ec9b0;
+}
+
+.dark .tiptap pre .hljs-string,
+.dark .tiptap pre .hljs-addition {
+    color: #ce9178;
+}
+
+.dark .tiptap pre .hljs-number,
+.dark .tiptap pre .hljs-literal {
+    color: #b5cea8;
+}
+
+.dark .tiptap pre .hljs-title,
+.dark .tiptap pre .hljs-title\.class_,
+.dark .tiptap pre .hljs-title\.function_ {
+    color: #dcdcaa;
+    font-weight: 600;
+}
+
+.dark .tiptap pre .hljs-variable,
+.dark .tiptap pre .hljs-template-variable {
+    color: #9cdcfe;
+}
+
+.dark .tiptap pre .hljs-attr,
+.dark .tiptap pre .hljs-attribute {
+    color: #9cdcfe;
+}
+
+.dark .tiptap pre .hljs-symbol,
+.dark .tiptap pre .hljs-bullet {
+    color: #569cd6;
+}
+
+.dark .tiptap pre .hljs-meta {
+    color: #6a9955;
+}
+
+.dark .tiptap pre .hljs-regexp {
+    color: #d16969;
+}
+
+.dark .tiptap pre .hljs-deletion {
+    color: #ce9178;
+    background-color: rgba(206, 145, 120, 0.1);
+}
+
+.dark .tiptap pre .hljs-addition {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.dark .tiptap pre .hljs-selector-class,
+.dark .tiptap pre .hljs-selector-id {
+    color: #d7ba7d;
+}
+
+.dark .tiptap pre .hljs-tag {
+    color: #569cd6;
+}
+
+.dark .tiptap pre .hljs-name {
+    color: #569cd6;
+    font-weight: 600;
+}
+
+.dark .tiptap pre .hljs-params {
+    color: #9cdcfe;
+}
+
+.dark .tiptap pre .hljs-property {
+    color: #9cdcfe;
+}
+
+.dark .tiptap pre .hljs-operator {
+    color: #d4d4d4;
+}
+
+.dark .tiptap pre .hljs-punctuation {
+    color: #d4d4d4;
+}
+
+.tiptap hr {
+    border: none;
+    border-top: 1px solid var(--editor-hr);
+    margin: 2.5em 0;
+}
+
+.tiptap a {
+    color: var(--editor-link);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.tiptap img:not(.emoji-img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.75em 0;
+    border-radius: 0.375em;
+}
+
+.emoji-inline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: middle;
+    line-height: 1;
+
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    color: var(--editor-body);
+    -webkit-text-fill-color: transparent;
+    caret-color: var(--editor-body) !important;
+
+    user-select: text;
+    cursor: text;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+.tiptap img.ProseMirror-selectednode {
+    outline: 2px solid var(--editor-resize-handle);
+    outline-offset: 2px;
+    border-radius: 0.375em;
+}
+
+.tiptap mark {
+    background-color: var(--editor-mark-bg);
+    color: var(--editor-mark-text);
+    border-radius: 0.125em;
+    padding: 0.0625em 0.125em;
+}
+
+.tiptap table {
+    border-collapse: collapse;
+    margin: 0.75em 0;
+    overflow: hidden;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.tiptap td,
+.tiptap th {
+    border: 1px solid var(--editor-table-border);
+    min-width: 1em;
+    padding: 0.5em 0.75em;
+    position: relative;
+    vertical-align: top;
+    text-align: left;
+}
+
+.tiptap th {
+    background-color: var(--editor-th-bg);
+    font-weight: 600;
+    color: var(--editor-th-text);
+}
+
+.tiptap td {
+    color: var(--editor-td-text);
+}
+
+.tiptap .selectedCell::after {
+    background-color: var(--editor-selected-cell);
+    content: '';
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 2;
+}
+
+.tiptap .column-resize-handle {
+    background-color: var(--editor-resize-handle);
+    bottom: -2px;
+    pointer-events: none;
+    position: absolute;
+    right: -2px;
+    top: 0;
+    width: 4px;
+}
+
+.tiptap .tableWrapper {
+    overflow-x: auto;
+    margin: 0.75em 0;
+}
+
+.tiptap .resize-cursor {
+    cursor: col-resize;
+}
+
+.tiptap ::selection {
+    background-color: var(--editor-selection);
+}
+
+.collaboration-carets__caret {
+    border-left: 2px solid var(--collaboration-caret-line, var(--collaboration-ink, currentColor));
+    margin-left: -1px;
+    margin-right: -1px;
+    pointer-events: none;
+    position: relative;
+    word-break: normal;
+}
+
+.collaboration-carets__label {
+    border-radius: 3px 3px 3px 0;
+    background: var(--collaboration-color, #b0bec5);
+    color: var(--collaboration-ink, #263238);
+    font-size: 0.7rem;
+    font-weight: 600;
+    left: -1px;
+    line-height: normal;
+    padding: 0.1rem 0.3rem;
+    position: absolute;
+    top: -1.4em;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.tippy-box[data-theme~='slash-menu'] {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.tippy-box[data-theme~='slash-menu'] .tippy-content {
+    padding: 0;
+}
+
+.tippy-box[data-theme~='slash-menu'] .tippy-arrow {
+    display: none;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--editor-scrollbar-thumb);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--editor-scrollbar-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .code-block-copy-btn,
+    .editor-tool,
+    .editor-menu__item,
+    .editor-meta-action {
+        transition: none;
+    }
+}

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deployer;
 
+use RuntimeException;
+
 require 'recipe/laravel.php';
 
 set('application', 'dumphere');
@@ -12,7 +14,6 @@ set('branch', getenv('DEPLOY_BRANCH') ?: 'main');
 set('keep_releases', 5);
 set('default_timeout', 900);
 set('yjs_service', getenv('DEPLOY_YJS_SERVICE') ?: 'md-editor-yjs');
-set('backup_timer', getenv('DEPLOY_BACKUP_TIMER') ?: 'dumphere-backup.timer');
 set('healthcheck_url', getenv('DEPLOY_HEALTHCHECK_URL') ?: '');
 
 if (($remotePath = getenv('DEPLOY_REMOTE_PATH')) !== false && $remotePath !== '') {
@@ -35,22 +36,22 @@ if (($identityFile = getenv('DEPLOY_IDENTITY_FILE')) !== false && $identityFile 
 
 desc('Validates the production host and shared environment');
 task('deploy:check:environment', function (): void {
-    foreach (['age', 'curl', 'node', 'npm', 'pg_dump', 'pg_restore', 'php'] as $binary) {
+    foreach (['curl', 'node', 'npm', 'php'] as $binary) {
         if (! commandExist($binary)) {
-            throw new \RuntimeException("Required remote binary not found: {$binary}");
+            throw new RuntimeException("Required remote binary not found: {$binary}");
         }
     }
 
     if (! test('[ -s {{deploy_path}}/shared/.env ]')) {
-        throw new \RuntimeException('Create {{deploy_path}}/shared/.env before the first deploy.');
+        throw new RuntimeException('Create {{deploy_path}}/shared/.env before the first deploy.');
     }
 
     if (! test("grep -Eq '^APP_ENV=production$' {{deploy_path}}/shared/.env")) {
-        throw new \RuntimeException('The production .env must contain APP_ENV=production.');
+        throw new RuntimeException('The production .env must contain APP_ENV=production.');
     }
 
     if (! test("grep -Eq '^APP_DEBUG=(false|\\(false\\)|0)$' {{deploy_path}}/shared/.env")) {
-        throw new \RuntimeException('The production .env must disable APP_DEBUG.');
+        throw new RuntimeException('The production .env must disable APP_DEBUG.');
     }
 
     $securityValidation = <<<'SH'
@@ -76,7 +77,7 @@ task('deploy:check:environment', function (): void {
             fi
         }
 
-        for key in APP_KEY YJS_WS_SECRET YJS_ALLOWED_ORIGINS BACKUP_AGE_RECIPIENT BACKUP_DIRECTORY; do
+        for key in APP_KEY YJS_WS_SECRET YJS_ALLOWED_ORIGINS; do
             require_value "$key"
         done
 
@@ -104,28 +105,9 @@ task('deploy:check:environment', function (): void {
             exit 1
         fi
 
-        backup_directory=$(sed -n 's/^BACKUP_DIRECTORY=//p' "$env_file" | head -n 1)
-
-        if [ ! -d "$backup_directory" ] || [ ! -w "$backup_directory" ]; then
-            echo "BACKUP_DIRECTORY must exist and be writable by the deploy user." >&2
-            exit 1
-        fi
         SH;
 
     run($securityValidation);
-});
-
-desc('Validates that encrypted database backups are scheduled');
-task('deploy:check:backup', function (): void {
-    $timer = (string) get('backup_timer');
-
-    if (preg_match('/^[A-Za-z0-9@_.-]+\.timer$/', $timer) !== 1) {
-        throw new \RuntimeException('Invalid systemd backup timer name.');
-    }
-
-    $timer = escapeshellarg($timer);
-    run("systemctl is-enabled --quiet {$timer}");
-    run("systemctl is-active --quiet {$timer}");
 });
 
 desc('Builds the production frontend');
@@ -159,7 +141,7 @@ task('deploy:restart:yjs', function (): void {
     $service = (string) get('yjs_service');
 
     if (preg_match('/^[A-Za-z0-9@_.-]+$/', $service) !== 1) {
-        throw new \RuntimeException('Invalid systemd service name.');
+        throw new RuntimeException('Invalid systemd service name.');
     }
 
     $service = escapeshellarg($service);
@@ -175,10 +157,10 @@ task('deploy:health', function (): void {
         filter_var($url, FILTER_VALIDATE_URL) === false
         || parse_url($url, PHP_URL_SCHEME) !== 'https'
     ) {
-        throw new \RuntimeException('DEPLOY_HEALTHCHECK_URL must be a valid HTTPS URL.');
+        throw new RuntimeException('DEPLOY_HEALTHCHECK_URL must be a valid HTTPS URL.');
     }
 
-    run('curl --fail --silent --show-error --retry 5 --retry-delay 2 '.escapeshellarg($url));
+    run('curl --fail --silent --show-error --retry 5 --retry-delay 2 ' . escapeshellarg($url));
 });
 
 desc('Unlocks deployment and removes maintenance mode after a failure');
@@ -194,7 +176,6 @@ desc('Deploys Dumphere to production');
 task('deploy', [
     'deploy:prepare',
     'deploy:check:environment',
-    'deploy:check:backup',
     'deploy:vendors',
     'deploy:assets',
     'deploy:yjs:vendors',

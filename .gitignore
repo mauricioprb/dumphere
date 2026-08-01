@@ -9,9 +9,16 @@
 /.idea
 /.nova
 /.dep
+/.agents
+/.claude
+/.codex
+/.impeccable
 /.phpunit.cache
-/.vscode
 /.zed
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/extensions.json
+!/.vscode/tailwind.css-data.json
 /auth.json
 /node_modules
 /public/build

@@ -1,0 +1,317 @@
+@theme {
+    --font-sans:
+        'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque', 'Inter', sans-serif;
+
+    --color-neutral-50: #f4f4f5;
+    --color-neutral-100: #e4e4e7;
+    --color-neutral-200: #d4d4d8;
+    --color-neutral-300: #a1a1aa;
+    --color-neutral-400: #71717a;
+    --color-neutral-500: #52525b;
+    --color-neutral-600: #3f3f46;
+    --color-neutral-700: #27272a;
+    --color-neutral-800: #18181b;
+    --color-neutral-900: #0e0e11;
+    --color-neutral-950: #08080a;
+
+    --color-primary-50: #f7f9ee;
+    --color-primary-100: #ebf1d3;
+    --color-primary-200: #d6e2ad;
+    --color-primary-300: #bcd277;
+    --color-primary-400: #9eb846;
+    --color-primary-500: #657b18;
+    --color-primary-600: #566b14;
+    --color-primary-700: #485a13;
+    --color-primary-800: #3a4814;
+    --color-primary-900: #303b15;
+    --color-primary-950: #1a220a;
+
+    --color-success-400: #34d399;
+    --color-success-500: #10b981;
+
+    --color-warning-300: #fcd34d;
+    --color-warning-400: #fbbf24;
+    --color-warning-500: #f59e0b;
+    --color-warning-700: #a54807;
+
+    --color-danger-400: #f87171;
+    --color-danger-500: #ef4444;
+    --color-danger-600: #dc2626;
+
+    --color-highlight-200: #fef08a;
+    --color-highlight-800: #854d0e;
+}
+
+:root {
+    --brand-slash: #d75f2b;
+    --theme-lens-duration: 350ms;
+    --theme-lens-easing: cubic-bezier(0, 0.55, 0.45, 1);
+    --workspace-paper: #faf8f5;
+    --workspace-panel: #f1ede7;
+    --workspace-raised: #fffdf9;
+    --workspace-ink: #1f1c19;
+    --workspace-muted: #615a52;
+    --workspace-rule: #ded8d0;
+    --workspace-accent: #ed8741;
+    --workspace-accent-ink: #351504;
+    --workspace-live: #587314;
+    --workspace-live-ink: #fbfaf4;
+    --workspace-danger: #a02c3a;
+    --workspace-warning: #8b5a0a;
+    --workspace-code: #211e1a;
+    --workspace-code-ink: #f3efe8;
+}
+
+.dark {
+    --brand-slash: #ef7d4c;
+    --workspace-paper: #15130f;
+    --workspace-panel: #1e1b16;
+    --workspace-raised: #28241e;
+    --workspace-ink: #f3efe8;
+    --workspace-muted: #b1a89e;
+    --workspace-rule: #3b352e;
+    --workspace-accent: #f08a43;
+    --workspace-accent-ink: #2d1204;
+    --workspace-live: #9fc85b;
+    --workspace-live-ink: #132006;
+    --workspace-danger: #f0919b;
+    --workspace-warning: #efbd6c;
+    --workspace-code: #0f0e0c;
+    --workspace-code-ink: #eee8df;
+}
+
+html.theme-transition-to-dark::after,
+html.theme-transition-to-light::after {
+    position: fixed;
+    z-index: 2147483647;
+    inset: 0;
+    pointer-events: none;
+    content: '';
+    background: #fff;
+    mix-blend-mode: difference;
+}
+
+html.theme-transition-to-dark::after {
+    animation: theme-lens-to-dark var(--theme-lens-duration) var(--theme-lens-easing) both;
+}
+
+html.theme-transition-to-light::after {
+    animation: theme-lens-to-light var(--theme-lens-duration) var(--theme-lens-easing) both;
+}
+
+html.theme-transition-to-dark body,
+html.theme-transition-to-dark body *,
+html.theme-transition-to-dark body *::before,
+html.theme-transition-to-dark body *::after,
+html.theme-transition-to-light body,
+html.theme-transition-to-light body *,
+html.theme-transition-to-light body *::before,
+html.theme-transition-to-light body *::after {
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
+}
+
+@keyframes theme-lens-to-dark {
+    0% {
+        background-color: #fff;
+        opacity: 1;
+    }
+
+    38% {
+        background-color: #e8b86d;
+        opacity: 0.72;
+    }
+
+    68% {
+        background-color: #8f7cac;
+        opacity: 0.34;
+    }
+
+    100% {
+        background-color: #fff;
+        opacity: 0;
+    }
+}
+
+@keyframes theme-lens-to-light {
+    0% {
+        background-color: #fff;
+        opacity: 1;
+    }
+
+    38% {
+        background-color: #89a889;
+        opacity: 0.72;
+    }
+
+    68% {
+        background-color: #c58a72;
+        opacity: 0.34;
+    }
+
+    100% {
+        background-color: #fff;
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.theme-transition-to-dark::after,
+    html.theme-transition-to-light::after {
+        content: none;
+        animation: none;
+    }
+}
+
+.wordmark {
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+}
+
+.wordmark__slash {
+    margin-inline: -0.028em;
+    color: var(--brand-slash);
+}
+
+.theme-toggle {
+    color: color-mix(in srgb, var(--workspace-live) 78%, var(--workspace-ink));
+    box-shadow: none;
+}
+
+.theme-toggle__track {
+    border-color: color-mix(in srgb, var(--workspace-live) 58%, var(--workspace-rule));
+    background: color-mix(in srgb, var(--workspace-panel) 72%, var(--workspace-paper));
+    pointer-events: none;
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease;
+}
+
+.theme-toggle:hover .theme-toggle__track {
+    border-color: var(--workspace-live);
+    background: var(--workspace-panel);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--workspace-live);
+    outline-offset: 3px;
+}
+
+.theme-toggle__icon {
+    z-index: 1;
+    pointer-events: none;
+}
+
+.theme-toggle__thumb {
+    z-index: 2;
+    background: var(--workspace-live);
+    translate: 0 0;
+    transition:
+        translate 220ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 220ms ease;
+}
+
+.dark .theme-toggle {
+    color: var(--workspace-muted);
+}
+
+.dark .theme-toggle__track {
+    border-color: color-mix(in srgb, var(--workspace-muted) 52%, var(--workspace-rule));
+    background: color-mix(in srgb, var(--workspace-panel) 74%, var(--workspace-paper));
+}
+
+.dark .theme-toggle:hover .theme-toggle__track {
+    border-color: var(--workspace-muted);
+    background: var(--workspace-panel);
+}
+
+.dark .theme-toggle__thumb {
+    background: #f3d6aa;
+    translate: 1.5rem 0;
+}
+
+html.theme-transition-to-dark .theme-toggle__thumb {
+    animation: theme-toggle-to-dark var(--theme-lens-duration) var(--theme-lens-easing) both;
+}
+
+html.theme-transition-to-light .theme-toggle__thumb {
+    animation: theme-toggle-to-light var(--theme-lens-duration) var(--theme-lens-easing) both;
+}
+
+@keyframes theme-toggle-to-dark {
+    from {
+        background: #587314;
+        translate: 0 0;
+    }
+
+    to {
+        background: #f3d6aa;
+        translate: 1.5rem 0;
+    }
+}
+
+@keyframes theme-toggle-to-light {
+    from {
+        background: #f3d6aa;
+        translate: 1.5rem 0;
+    }
+
+    to {
+        background: #587314;
+        translate: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle,
+    .theme-toggle__track,
+    .theme-toggle__thumb {
+        transition: none;
+    }
+}
+
+:root {
+    --editor-body: var(--workspace-ink);
+    --editor-heading-1: var(--workspace-ink);
+    --editor-heading-2: var(--workspace-ink);
+    --editor-heading-3: var(--workspace-ink);
+    --editor-placeholder: var(--workspace-muted);
+    --editor-link: var(--workspace-live);
+    --editor-code-bg: var(--workspace-panel);
+    --editor-code-text: #9b3f17;
+    --editor-pre-bg: var(--workspace-code);
+    --editor-pre-text: var(--workspace-code-ink);
+    --editor-pre-border: transparent;
+    --editor-blockquote-border: var(--workspace-rule);
+    --editor-blockquote-text: var(--workspace-muted);
+    --editor-hr: var(--workspace-rule);
+    --editor-table-border: var(--workspace-rule);
+    --editor-th-bg: var(--workspace-panel);
+    --editor-th-text: var(--workspace-ink);
+    --editor-td-text: var(--workspace-ink);
+    --editor-checkbox-border: var(--workspace-muted);
+    --editor-checkbox-checked: var(--workspace-live);
+    --editor-checkbox-hover: var(--workspace-live);
+    --editor-mark-bg: var(--workspace-accent);
+    --editor-mark-text: var(--workspace-accent-ink);
+    --editor-task-done: var(--workspace-muted);
+    --editor-selection: color-mix(in srgb, var(--workspace-accent) 32%, transparent);
+    --editor-selected-cell: color-mix(in srgb, var(--workspace-live) 14%, transparent);
+    --editor-resize-handle: var(--workspace-live);
+    --editor-scrollbar-thumb: color-mix(in srgb, var(--workspace-muted) 55%, transparent);
+    --editor-scrollbar-hover: var(--workspace-muted);
+}
+
+.dark {
+    --editor-code-text: #f0a17d;
+    --editor-pre-border: var(--workspace-rule);
+}
+
+#app {
+    height: 100%;
+}

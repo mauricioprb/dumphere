@@ -1,6 +1,8 @@
 <?php
 
-use App\Http\Controllers\Document\DocumentController;
+declare(strict_types=1);
+
+use App\Http\Controllers\DocumentController;
 use App\Http\Middleware\SanitizeSlug;
 use App\Http\Middleware\ThrottleByIp;
 use Illuminate\Support\Facades\DB;

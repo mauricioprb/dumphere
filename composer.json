@@ -14,11 +14,13 @@
     "require-dev": {
         "deployer/deployer": "^8.0",
         "fakerphp/faker": "^1.23",
+        "laravel/boost": "^2.4",
         "laravel/pint": "^1.24",
         "laravel/tinker": "^3.0",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^12.0"
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-laravel": "^4.1"
     },
     "autoload": {
         "psr-4": {
@@ -34,28 +36,25 @@
     },
     "scripts": {
         "setup": [
-            "composer install",
-            "@env",
             "@services",
             "@php artisan migrate --force",
             "npm ci",
             "npm --prefix yjs-server ci --omit=optional",
             "npm run build"
         ],
-        "env": "@php scripts/ensure-local-env.php",
         "services": "docker compose up -d --wait --remove-orphans",
         "services:stop": "docker compose down --remove-orphans",
+        "lint": "@php vendor/bin/pint",
+        "lint:test": "@php vendor/bin/pint --test",
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "@env",
             "@services",
             "@php artisan migrate --graceful",
             "npx concurrently -c \"#93c5fd,#86efac,#fdba74\" \"php artisan serve --no-reload --port=${APP_PORT:-8000}\" \"npm run dev -- --port ${VITE_PORT:-5173}\" \"npm --prefix yjs-server run dev\" --names=laravel,vite,yjs --kill-others"
         ],
         "test": [
-            "@env",
             "@php artisan config:clear --ansi",
-            "@php artisan test"
+            "@php vendor/bin/pest"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

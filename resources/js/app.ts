@@ -1,35 +1,34 @@
-import '../css/app.css'
-import { createApp, h } from 'vue'
-import { createInertiaApp } from '@inertiajs/vue3'
-import { createPinia } from 'pinia'
-import type { DefineComponent } from 'vue'
+import '../css/app.css';
+import { createApp, Fragment, h } from 'vue';
+import { createInertiaApp } from '@inertiajs/vue3';
+import { createPinia } from 'pinia';
+import type { DefineComponent } from 'vue';
+import PageLoader from '@/Components/UI/PageLoader.vue';
 
-const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue')
+const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue');
 
 createInertiaApp({
-    title: (title: string) => title ? `${title} - Dumphere` : 'Dumphere',
+    title: (title: string) => (title ? `${title} - Dumphere` : 'Dumphere'),
     resolve: (name: string) => {
-        const page = pages[`./Pages/${name}.vue`]
+        const page = pages[`./Pages/${name}.vue`];
 
         if (!page) {
-            throw new Error(`Unknown Inertia page: ${name}`)
+            throw new Error(`Unknown Inertia page: ${name}`);
         }
 
-        return page()
+        return page();
     },
     setup({ el, App, props, plugin }) {
-        const pinia = createPinia()
+        const pinia = createPinia();
 
-        createApp({ render: () => h(App, props) })
+        createApp({
+            render: () => h(Fragment, [h(App, props), h(PageLoader)]),
+        })
             .use(plugin)
             .use(pinia)
-            .mount(el)
+            .mount(el);
 
-        document.getElementById('app-loading')?.remove()
+        document.getElementById('app-loading')?.remove();
     },
-    progress: {
-        color: '#4B5563',
-        delay: 100,
-        showSpinner: false,
-    },
-})
+    progress: false,
+});

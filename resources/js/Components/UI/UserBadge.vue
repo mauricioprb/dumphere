@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { PresenceUser } from '@/types/document'
+import type { PresenceUser } from '@/types/document';
+import { collaboratorInkColor } from '@/Lib/collaboratorIdentity';
 
-const props = defineProps<{
-    user: PresenceUser
-}>()
+defineProps<{
+    user: PresenceUser;
+}>();
 </script>
 
 <template>
-    <div
-        class="w-7 h-7 rounded-full border-2 border-white dark:border-neutral-900 flex items-center justify-center text-xs font-bold text-white shadow-sm cursor-default"
-        :style="{ backgroundColor: user.color }"
-        :title="user.name"
+    <li
+        class="flex size-7 cursor-default items-center justify-center rounded-full border border-(--workspace-paper) text-[0.7rem] font-bold"
+        :style="{ backgroundColor: user.color, color: collaboratorInkColor(user.color) }"
+        :aria-label="user.name"
     >
-        {{ user.name.charAt(0).toUpperCase() }}
-    </div>
+        <span aria-hidden="true">{{ user.name.charAt(0).toUpperCase() }}</span>
+    </li>
 </template>

@@ -17,7 +17,7 @@ class ThrottleByIp
 
     public function handle(Request $request, Closure $next, int $maxAttempts = 60, int $decayMinutes = 1): Response
     {
-        $key = 'throttle:'.$request->ip();
+        $key = 'throttle:' . $request->ip();
 
         if ($this->limiter->tooManyAttempts($key, $maxAttempts)) {
             return response()->json([

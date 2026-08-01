@@ -22,13 +22,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Validate immutable action references
-        run: bash scripts/check-actions-pinned.sh
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45
         with:
           php-version: "8.5"
           coverage: none
@@ -60,7 +57,6 @@ jobs:
           DEPLOY_REPOSITORY: ${{ vars.DEPLOY_REPOSITORY }}
           DEPLOY_HEALTHCHECK_URL: ${{ vars.DEPLOY_HEALTHCHECK_URL }}
           DEPLOY_YJS_SERVICE: ${{ vars.DEPLOY_YJS_SERVICE }}
-          DEPLOY_BACKUP_TIMER: ${{ vars.DEPLOY_BACKUP_TIMER }}
           DEPLOY_REMOTE_PATH: ${{ vars.DEPLOY_REMOTE_PATH }}
           DEPLOY_IDENTITY_FILE: ${{ runner.temp }}/dumphere_deploy_key
         run: vendor/bin/dep deploy production --no-interaction

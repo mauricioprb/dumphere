@@ -1,0 +1,117 @@
+{
+    "version": 1.1,
+    "atDirectives": [
+        {
+            "name": "@import",
+            "description": "Inlines another stylesheet. Tailwind v4 extends it with `theme(...)`, `prefix(...)` and `source(...)` options.",
+            "references": [
+                {
+                    "name": "Tailwind functions & directives",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#import-directive"
+                }
+            ]
+        },
+        {
+            "name": "@theme",
+            "description": "Defines the project's design tokens (colors, fonts, breakpoints, …) as CSS variables that Tailwind turns into utility classes.",
+            "references": [
+                {
+                    "name": "Tailwind @theme",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#theme-directive"
+                }
+            ]
+        },
+        {
+            "name": "@source",
+            "description": "Registers extra files for Tailwind's class detection when they cannot be found by automatic source detection.",
+            "references": [
+                {
+                    "name": "Tailwind @source",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#source-directive"
+                }
+            ]
+        },
+        {
+            "name": "@custom-variant",
+            "description": "Declares a custom variant (e.g. `dark`, `hocus`) usable as a utility prefix.",
+            "references": [
+                {
+                    "name": "Tailwind @custom-variant",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#custom-variant-directive"
+                }
+            ]
+        },
+        {
+            "name": "@variant",
+            "description": "Applies a Tailwind variant to styles inside your own CSS.",
+            "references": [
+                {
+                    "name": "Tailwind @variant",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#variant-directive"
+                }
+            ]
+        },
+        {
+            "name": "@utility",
+            "description": "Registers a custom utility class that works with Tailwind's variants.",
+            "references": [
+                {
+                    "name": "Tailwind @utility",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#utility-directive"
+                }
+            ]
+        },
+        {
+            "name": "@apply",
+            "description": "Inlines existing utility classes into your own custom CSS rule.",
+            "references": [
+                {
+                    "name": "Tailwind @apply",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#apply-directive"
+                }
+            ]
+        },
+        {
+            "name": "@reference",
+            "description": "Imports a stylesheet for reference only (e.g. in a Vue `<style>` block) so `@apply` and `theme()` resolve without duplicating CSS.",
+            "references": [
+                {
+                    "name": "Tailwind @reference",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#reference-directive"
+                }
+            ]
+        },
+        {
+            "name": "@plugin",
+            "description": "Loads a JavaScript Tailwind plugin.",
+            "references": [
+                {
+                    "name": "Tailwind @plugin",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#plugin-directive"
+                }
+            ]
+        },
+        {
+            "name": "@config",
+            "description": "Loads a legacy JavaScript `tailwind.config.js` file.",
+            "references": [
+                {
+                    "name": "Tailwind @config",
+                    "url": "https://tailwindcss.com/docs/functions-and-directives#config-directive"
+                }
+            ]
+        },
+        {
+            "name": "@tailwind",
+            "description": "Legacy (v3) directive that injects Tailwind's base, components and utilities layers. In v4 use `@import 'tailwindcss'` instead.",
+            "references": [
+                { "name": "Tailwind @tailwind", "url": "https://tailwindcss.com/docs/functions-and-directives" }
+            ]
+        },
+        {
+            "name": "@layer",
+            "description": "Standard CSS cascade layer. Tailwind also uses `base`, `components` and `utilities` layer names.",
+            "references": [{ "name": "MDN @layer", "url": "https://developer.mozilla.org/docs/Web/CSS/@layer" }]
+        }
+    ]
+}

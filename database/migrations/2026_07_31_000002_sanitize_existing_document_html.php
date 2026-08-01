@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Domain\Document\Services\DocumentHtmlSanitizer;
+use App\Support\DocumentHtmlSanitizer;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -31,8 +31,5 @@ return new class extends Migration
             });
     }
 
-    public function down(): void
-    {
-        // Sanitization is intentionally irreversible.
-    }
+    public function down(): void {}
 };

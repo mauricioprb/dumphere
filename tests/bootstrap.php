@@ -6,4 +6,4 @@ putenv('APP_ENV=testing');
 $_ENV['APP_ENV'] = 'testing';
 $_SERVER['APP_ENV'] = 'testing';
 
-require dirname(__DIR__).'/vendor/autoload.php';
+require dirname(__DIR__) . '/vendor/autoload.php';

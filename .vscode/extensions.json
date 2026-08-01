@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "vue.volar",
+        "bradlc.vscode-tailwindcss",
+        "laravel.vscode-laravel",
+        "open-southeners.laravel-pint",
+        "bmewburn.vscode-intelephense-client",
+        "onecentlin.laravel-blade",
+        "github.vscode-github-actions"
+    ],
+    "unwantedRecommendations": ["octref.vetur", "hookyqr.beautify"]
+}
