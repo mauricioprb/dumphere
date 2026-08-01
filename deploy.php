@@ -9,7 +9,7 @@ use RuntimeException;
 require 'recipe/laravel.php';
 
 set('application', 'dumphere');
-set('repository', getenv('DEPLOY_REPOSITORY') ?: 'https://github.com/mauricioprb/md-online-editor.git');
+set('repository', getenv('DEPLOY_REPOSITORY') ?: 'git@github.com:mauricioprb/dumphere.git');
 set('branch', getenv('DEPLOY_BRANCH') ?: 'main');
 set('keep_releases', 5);
 set('default_timeout', 900);
