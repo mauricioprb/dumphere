@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
 import test from 'node:test';
-import * as Y from 'yjs';
 import { createPostgresPersistence, documentIdFromRoom } from '../persistence.mjs';
+
+const require = createRequire(import.meta.url);
+const Y = require('yjs');
 
 const documentId = '0198f37a-21b4-7d6c-8a9b-123456789abc';
 const room = `document-${documentId}`;
@@ -37,6 +40,35 @@ test('loads and writes Yjs snapshots through PostgreSQL', async () => {
     const restored = new Y.Doc();
     Y.applyUpdate(restored, Buffer.from(update.parameters[0], 'base64'));
     assert.equal(restored.getText('content').toString(), 'persisted state');
+});
+
+test('restores Tiptap XML with the same Yjs constructors used by the websocket server', async () => {
+    const source = new Y.Doc();
+    const paragraph = new Y.XmlElement('paragraph');
+    const text = new Y.XmlText();
+    text.insert(0, 'persisted');
+    paragraph.insert(0, [text]);
+    source.getXmlFragment('document').insert(0, [paragraph]);
+
+    const storedState = Buffer.from(Y.encodeStateAsUpdate(source)).toString('base64');
+    const pool = {
+        async query(sql) {
+            if (sql.startsWith('SELECT yjs_state_base64')) {
+                return { rowCount: 1, rows: [{ yjs_state_base64: storedState }] };
+            }
+
+            return { rowCount: 1, rows: [] };
+        },
+    };
+    const persistence = createPostgresPersistence(pool, { debounceMs: 60_000 });
+    const target = new Y.Doc();
+    const fragment = target.getXmlFragment('document');
+
+    await persistence.bindState(room, target);
+
+    assert.ok(fragment.get(0) instanceof Y.XmlElement);
+    assert.ok(fragment.get(0).get(0) instanceof Y.XmlText);
+    assert.equal(fragment.toString(), '<paragraph>persisted</paragraph>');
 });
 
 test('extracts a document UUID only from a canonical room', () => {

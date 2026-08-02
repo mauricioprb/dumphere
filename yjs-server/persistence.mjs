@@ -1,4 +1,7 @@
-import * as Y from 'yjs';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const Y = require('yjs');
 
 const ROOM_PATTERN = /^document-([0-9a-f-]{36})$/i;
 
