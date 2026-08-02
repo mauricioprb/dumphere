@@ -3,8 +3,12 @@
 declare(strict_types=1);
 
 use App\Models\Document;
+use Illuminate\Support\Facades\URL;
 
 beforeEach(function (): void {
+    config()->set('app.url', 'https://dumphere.test');
+    URL::forceRootUrl('https://dumphere.test');
+    URL::forceScheme('https');
     $this->withoutVite();
 });
 
@@ -18,8 +22,8 @@ it('renders indexable metadata and open graph tags on the home page', function (
         ->toContain('<meta name="description" content="Crie e edite documentos Markdown')
         ->toContain('<meta name="robots" content="index, follow, max-image-preview:large')
         ->toContain('rel="canonical"')
-        ->toContain('href="http://localhost:8000"')
-        ->toContain('<meta property="og:image" content="http://localhost:8000/images/og/dumphere.png">')
+        ->toContain('href="https://dumphere.test"')
+        ->toContain('<meta property="og:image" content="https://dumphere.test/images/og/dumphere.png">')
         ->toContain('<meta property="og:image:width" content="1200">')
         ->toContain('<meta property="og:image:height" content="630">')
         ->toContain('<meta name="twitter:card" content="summary_large_image">')
@@ -33,7 +37,7 @@ it('uses page-specific metadata for the terms page', function (): void {
 
     expect($html)
         ->toContain('<title>Termos e Privacidade — Dumphere</title>')
-        ->toContain('href="http://localhost:8000/terms"')
+        ->toContain('href="https://dumphere.test/terms"')
         ->toContain('"@type":"WebPage"');
 });
 
@@ -51,7 +55,7 @@ it('prevents collaborative documents from being indexed', function (): void {
     expect($html)
         ->toContain('<title>Private Draft — Dumphere</title>')
         ->toContain('<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">')
-        ->toContain('href="http://localhost:8000/private-draft"')
+        ->toContain('href="https://dumphere.test/private-draft"')
         ->not->toContain('application/ld+json');
 });
 
@@ -59,13 +63,13 @@ it('publishes robots and sitemap discovery files', function (): void {
     $this->get('/robots.txt')
         ->assertOk()
         ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
-        ->assertSeeText('Sitemap: http://localhost:8000/sitemap.xml');
+        ->assertSeeText('Sitemap: https://dumphere.test/sitemap.xml');
 
     $this->get('/sitemap.xml')
         ->assertOk()
         ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
-        ->assertSee('<loc>http://localhost:8000</loc>', false)
-        ->assertSee('<loc>http://localhost:8000/terms</loc>', false)
+        ->assertSee('<loc>https://dumphere.test</loc>', false)
+        ->assertSee('<loc>https://dumphere.test/terms</loc>', false)
         ->assertDontSee('private-draft');
 });
 
