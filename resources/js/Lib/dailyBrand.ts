@@ -12,8 +12,8 @@ const MARK_LETTERS = { lightness: 0.95, chroma: 0.01 };
 const MARK_SLASH = { lightness: 0.77, chroma: 0.12 };
 
 const PAPER = {
-    light: { lightness: 0.982, chroma: 0.008 },
-    dark: { lightness: 0.19, chroma: 0.012 },
+    light: { lightness: 0.985, chroma: 0.012, hueOffset: 0 },
+    dark: { lightness: 0.145, chroma: 0.03, hueOffset: 180 },
 } as const;
 
 const MARK_LETTERS_PATH =
@@ -45,9 +45,10 @@ export function oklchToHex(lightness: number, chroma: number, hue: number): stri
 }
 
 export function dailyPaperHex(hue: number, isDark: boolean): string {
-    const { lightness, chroma } = isDark ? PAPER.dark : PAPER.light;
+    const { lightness, chroma, hueOffset } = isDark ? PAPER.dark : PAPER.light;
+    const themeHue = (hue + hueOffset) % 360;
 
-    return oklchToHex(lightness, chroma, hue);
+    return oklchToHex(lightness, chroma, themeHue);
 }
 
 export function buildMarkSvg(hue: number): string {

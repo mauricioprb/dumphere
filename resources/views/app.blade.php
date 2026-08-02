@@ -49,23 +49,25 @@
     </script>
     <style nonce="{{ app('csp-nonce') }}">
         :root {
-            --workspace-paper: oklch(0.982 0.008 var(--daily-hue));
-            --workspace-ink: oklch(0.205 0.018 var(--daily-hue));
-            --workspace-muted: oklch(0.43 0.022 var(--daily-hue));
-            --workspace-rule: oklch(0.85 0.014 var(--daily-hue));
-            --workspace-accent: oklch(0.9 0.055 var(--daily-hue));
-            --workspace-accent-ink: oklch(0.25 0.05 var(--daily-hue));
-            --workspace-live: oklch(0.44 0.13 var(--daily-hue));
+            --workspace-theme-hue: var(--daily-hue);
+            --workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue));
+            --workspace-ink: oklch(0.19 0.025 var(--workspace-theme-hue));
+            --workspace-muted: oklch(0.42 0.032 var(--workspace-theme-hue));
+            --workspace-rule: oklch(0.83 0.028 var(--workspace-theme-hue));
+            --workspace-accent: oklch(0.9 0.075 var(--workspace-theme-hue));
+            --workspace-accent-ink: oklch(0.24 0.07 var(--workspace-theme-hue));
+            --workspace-live: oklch(0.44 0.14 var(--workspace-theme-hue));
         }
 
         html.dark {
-            --workspace-paper: oklch(0.19 0.012 var(--daily-hue));
-            --workspace-ink: oklch(0.94 0.008 var(--daily-hue));
-            --workspace-muted: oklch(0.7 0.018 var(--daily-hue));
-            --workspace-rule: oklch(0.33 0.016 var(--daily-hue));
-            --workspace-accent: oklch(0.31 0.07 var(--daily-hue));
-            --workspace-accent-ink: oklch(0.91 0.04 var(--daily-hue));
-            --workspace-live: oklch(0.77 0.12 var(--daily-hue));
+            --workspace-theme-hue: calc(var(--daily-hue) + 180deg);
+            --workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue));
+            --workspace-ink: oklch(0.95 0.01 var(--workspace-theme-hue));
+            --workspace-muted: oklch(0.72 0.025 var(--workspace-theme-hue));
+            --workspace-rule: oklch(0.34 0.035 var(--workspace-theme-hue));
+            --workspace-accent: oklch(0.3 0.085 var(--workspace-theme-hue));
+            --workspace-accent-ink: oklch(0.92 0.03 var(--workspace-theme-hue));
+            --workspace-live: oklch(0.78 0.13 var(--workspace-theme-hue));
         }
 
         html,

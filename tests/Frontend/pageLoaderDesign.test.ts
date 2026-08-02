@@ -48,8 +48,10 @@ describe('page loader design', () => {
 
         expect(bootstrapView).toContain("timeZone: 'America/Sao_Paulo'");
         expect(bootstrapView).toContain("root.style.setProperty('--daily-hue'");
-        expect(bootstrapView).toContain('--workspace-paper: oklch(0.982 0.008 var(--daily-hue))');
-        expect(bootstrapView).toContain('--workspace-paper: oklch(0.19 0.012 var(--daily-hue))');
+        expect(bootstrapView).toContain('--workspace-theme-hue: var(--daily-hue)');
+        expect(bootstrapView).toContain('--workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue))');
+        expect(bootstrapView).toContain('--workspace-theme-hue: calc(var(--daily-hue) + 180deg)');
+        expect(bootstrapView).toContain('--workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue))');
         expect(bootstrapView).toContain('background: var(--workspace-paper)');
         expect(bootstrapView).toContain('background: var(--workspace-accent)');
         expect(bootstrapView).toContain('background: var(--workspace-live)');

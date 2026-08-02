@@ -45,6 +45,7 @@ function installBrowserGlobals(options: { reducedMotion?: boolean; storedTheme?:
 }
 
 afterEach(() => {
+    vi.useRealTimers();
     vi.resetModules();
     vi.unstubAllGlobals();
 });
@@ -68,26 +69,31 @@ describe('theme', () => {
         expect(themeStyles).toContain('.theme-toggle__thumb');
         expect(themeStyles).toContain('translate: 1.5rem 0');
         expect(themeStyles).toContain('box-shadow: none');
-        expect(themeStyles).toContain(
-            'animation: theme-toggle-to-dark var(--theme-lens-duration) var(--theme-lens-easing) both',
-        );
+        expect(themeStyles).toContain('translate 160ms cubic-bezier(0.16, 1, 0.3, 1)');
+        expect(themeStyles).toContain('html.theme-transition-to-dark .theme-toggle__thumb');
+        expect(themeStyles).toContain('html.theme-transition-to-light .theme-toggle__thumb');
+        expect(themeStyles).not.toContain('@keyframes theme-toggle-to-dark');
+        expect(themeStyles).not.toContain('@keyframes theme-toggle-to-light');
     });
 
-    it('uses the lens as the only transition clock while theme colors swap', () => {
+    it('defines two temporary palettes between the permanent themes', () => {
         const themeStyles = readFileSync(new URL('../../resources/css/theme.css', import.meta.url), 'utf8');
 
-        expect(themeStyles).toContain('--theme-lens-duration: 350ms');
-        expect(themeStyles).toContain(
-            'animation: theme-lens-to-dark var(--theme-lens-duration) var(--theme-lens-easing) both',
-        );
-        expect(themeStyles).toContain(
-            'animation: theme-lens-to-light var(--theme-lens-duration) var(--theme-lens-easing) both',
-        );
+        expect(themeStyles).toContain('--theme-lens-duration: 720ms');
+        expect(themeStyles).toContain('--theme-phase-duration: 240ms');
+        expect(themeStyles).toContain('html.theme-phase-light');
+        expect(themeStyles).toContain('html.theme-phase-dark');
+        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--daily-hue) + 250deg)');
+        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--daily-hue) + 72deg)');
         expect(themeStyles).toContain('transition-delay: 0s !important');
-        expect(themeStyles).toContain('transition-duration: 0s !important');
+        expect(themeStyles).toContain('transition-duration: var(--theme-phase-duration) !important');
+        expect(
+            readFileSync(new URL('../../resources/js/Composables/useTheme.ts', import.meta.url), 'utf8'),
+        ).not.toContain('flashPalette');
     });
 
-    it('adds the directional lens effect when the theme changes', async () => {
+    it('crosses the light and dark temporary palettes in order', async () => {
+        vi.useFakeTimers();
         const { classes, setItem } = installBrowserGlobals();
         const { useTheme } = await import('../../resources/js/Composables/useTheme');
         const { setTheme } = useTheme();
@@ -95,17 +101,24 @@ describe('theme', () => {
         setTheme('dark');
         await nextTick();
 
-        expect(classes).toContain('dark');
+        expect(classes).not.toContain('dark');
         expect(classes).toContain('theme-transition-to-dark');
+        expect(classes).toContain('theme-phase-light');
         expect(setItem).toHaveBeenLastCalledWith('md-editor-theme', 'dark');
 
-        setTheme('light');
-        await nextTick();
+        vi.advanceTimersByTime(240);
 
-        expect(classes).not.toContain('dark');
+        expect(classes).toContain('dark');
+        expect(classes).not.toContain('theme-phase-light');
+        expect(classes).toContain('theme-phase-dark');
+
+        vi.advanceTimersByTime(240);
+
+        expect(classes).not.toContain('theme-phase-dark');
+
+        vi.advanceTimersByTime(240);
+
         expect(classes).not.toContain('theme-transition-to-dark');
-        expect(classes).toContain('theme-transition-to-light');
-        expect(setItem).toHaveBeenLastCalledWith('md-editor-theme', 'light');
     });
 
     it('changes theme without the lens effect when reduced motion is preferred', async () => {
@@ -120,18 +133,27 @@ describe('theme', () => {
         expect(classes).not.toContain('theme-transition-to-light');
     });
 
-    it('removes the temporary lens class when its animation finishes', async () => {
-        const { classes, documentElement, listeners } = installBrowserGlobals();
+    it('cleans the active palette sequence when the theme changes again', async () => {
+        vi.useFakeTimers();
+        const { classes } = installBrowserGlobals();
         const { useTheme } = await import('../../resources/js/Composables/useTheme');
 
         useTheme().setTheme('dark');
         await nextTick();
+        vi.advanceTimersByTime(240);
 
-        const finishTransition = listeners.get('animationend') as (event: AnimationEvent) => void;
-        finishTransition({ animationName: 'theme-lens-to-dark', target: documentElement } as unknown as AnimationEvent);
+        useTheme().setTheme('light');
+        await nextTick();
 
         expect(classes).not.toContain('theme-transition-to-dark');
-        expect(listeners.has('animationend')).toBe(false);
-        expect(listeners.has('animationcancel')).toBe(false);
+        expect(classes).toContain('theme-transition-to-light');
+        expect(classes).toContain('theme-phase-dark');
+
+        vi.advanceTimersByTime(720);
+
+        expect(classes).not.toContain('dark');
+        expect(classes).not.toContain('theme-transition-to-light');
+        expect(classes).not.toContain('theme-phase-light');
+        expect(classes).not.toContain('theme-phase-dark');
     });
 });

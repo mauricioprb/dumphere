@@ -22,10 +22,12 @@ describe('daily brand assets', () => {
         }
     });
 
-    it('derives a light or dark browser chrome color from the same hue', () => {
+    it('derives complementary light and dark browser chrome colors', () => {
         const light = dailyPaperHex(200, false);
         const dark = dailyPaperHex(200, true);
 
+        expect(light).toBe(oklchToHex(0.985, 0.012, 200));
+        expect(dark).toBe(oklchToHex(0.145, 0.03, 20));
         expect(light).not.toBe(dark);
         expect(Number.parseInt(light.slice(1, 3), 16)).toBeGreaterThan(Number.parseInt(dark.slice(1, 3), 16));
     });

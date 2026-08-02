@@ -52,8 +52,10 @@ describe('daily theme', () => {
         );
 
         expect(theme).toContain('--daily-hue: 87deg');
-        expect(theme).toMatch(/:root\s*{[^}]*--workspace-live: oklch\([^;]+var\(--daily-hue\)/s);
-        expect(theme).toMatch(/\.dark\s*{[^}]*--workspace-live: oklch\([^;]+var\(--daily-hue\)/s);
+        expect(theme).toMatch(/:root\s*{[^}]*--workspace-theme-hue: var\(--daily-hue\)/s);
+        expect(theme).toMatch(/:root\s*{[^}]*--workspace-live: oklch\([^;]+var\(--workspace-theme-hue\)/s);
+        expect(theme).toMatch(/\.dark\s*{[^}]*--workspace-theme-hue: calc\(var\(--daily-hue\) \+ 180deg\)/s);
+        expect(theme).toMatch(/\.dark\s*{[^}]*--workspace-live: oklch\([^;]+var\(--workspace-theme-hue\)/s);
         expect(external).toContain('--external-paper: var(--workspace-paper)');
         expect(external).toContain('--external-live: var(--workspace-live)');
         expect(layout).toContain('bg-(--workspace-paper)');

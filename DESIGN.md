@@ -121,12 +121,12 @@ O sistema é editorial quando apresenta conteúdo e utilitário quando oferece c
 - Conteúdo editorial com controles compactos e previsíveis.
 - Cor diária expressiva, mas disciplinada por papéis semânticos estáveis.
 - Colaboração visível por cursores, seleção, presença e estado.
-- Paridade intencional entre temas claro e escuro.
+- Tema claro luminoso e tema escuro profundo, com atmosferas cromáticas distintas e hierarquia equivalente.
 - Textura sutil nas páginas externas e canvas limpo no editor.
 
 ## Colors
 
-A paleta nasce de um único matiz diário calculado no fuso de São Paulo. A tonalidade muda, mas luminosidade, croma, contraste e função permanecem estáveis. Os tokens no frontmatter são semânticos e resolvem automaticamente os valores dos temas claro e escuro definidos em `resources/css/theme.css`.
+A paleta nasce de um único matiz diário calculado no fuso de São Paulo. O tema claro usa esse matiz em superfícies luminosas; o tema escuro usa o complementar em superfícies profundas. Assim, alternar o tema muda a atmosfera cromática de verdade sem perder a relação diária da marca. Luminosidade, croma, contraste e função permanecem controlados separadamente em cada composição. Os tokens no frontmatter são semânticos e resolvem automaticamente os valores definidos em `resources/css/theme.css`.
 
 ### Primary
 
@@ -264,7 +264,7 @@ O raio totalmente arredondado é reservado a avatares, indicadores circulares e 
 
 - **Shape.** Trilho e indicador totalmente arredondados dentro de um alvo de 44px.
 - **Color.** O trilho permanece tonal; o indicador usa `live` no tema claro e mantém contraste equivalente no escuro.
-- **Motion.** O indicador percorre 1.5rem com easing rápido e suave. A transição de tema usa um flash cromático de 350ms e desaparece por completo com movimento reduzido.
+- **Motion.** O indicador percorre 1.5rem em 160ms assim que o controle é acionado. A transição da página permanece independente: dura 720ms e aplica, em sequência, uma paleta clara temporária e uma paleta escura temporária antes de revelar o destino. Na direção inversa, a ordem também se inverte. Todo movimento desaparece com movimento reduzido.
 
 ### Wordmark and Selection Motif
 

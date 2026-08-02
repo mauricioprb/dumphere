@@ -13,16 +13,18 @@ describe('editor design system', () => {
         expect(applicationStyles).toContain('cursor: not-allowed');
     });
 
-    it('uses the daily palette as semantic workspace tokens', () => {
+    it('composes distinct light and dark palettes from the daily hue', () => {
         const themeStyles = readSource('resources/css/theme.css');
 
         expect(themeStyles).toContain('--daily-hue: 87deg');
-        expect(themeStyles).toContain('--workspace-paper: oklch(0.982 0.008 var(--daily-hue))');
-        expect(themeStyles).toContain('--workspace-ink: oklch(0.205 0.018 var(--daily-hue))');
-        expect(themeStyles).toContain('--workspace-accent: oklch(0.9 0.055 var(--daily-hue))');
-        expect(themeStyles).toContain('--workspace-live: oklch(0.44 0.13 var(--daily-hue))');
+        expect(themeStyles).toContain('--workspace-theme-hue: var(--daily-hue)');
+        expect(themeStyles).toContain('--workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue))');
+        expect(themeStyles).toContain('--workspace-ink: oklch(0.19 0.025 var(--workspace-theme-hue))');
+        expect(themeStyles).toContain('--workspace-accent: oklch(0.9 0.075 var(--workspace-theme-hue))');
+        expect(themeStyles).toContain('--workspace-live: oklch(0.44 0.14 var(--workspace-theme-hue))');
         expect(themeStyles).toContain('.dark {');
-        expect(themeStyles).toContain('--workspace-paper: oklch(0.19 0.012 var(--daily-hue))');
+        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--daily-hue) + 180deg)');
+        expect(themeStyles).toContain('--workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue))');
     });
 
     it('keeps the writing canvas readable without the oversized focus frame', () => {

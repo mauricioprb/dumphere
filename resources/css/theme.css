@@ -46,59 +46,75 @@
 
 :root {
     --daily-hue: 87deg;
+    --workspace-theme-hue: var(--daily-hue);
     --brand-slash: var(--workspace-live);
-    --theme-lens-duration: 350ms;
-    --theme-lens-easing: cubic-bezier(0, 0.55, 0.45, 1);
-    --workspace-paper: oklch(0.982 0.008 var(--daily-hue));
-    --workspace-panel: oklch(0.945 0.012 var(--daily-hue));
-    --workspace-raised: oklch(0.995 0.004 var(--daily-hue));
-    --workspace-ink: oklch(0.205 0.018 var(--daily-hue));
-    --workspace-muted: oklch(0.43 0.022 var(--daily-hue));
-    --workspace-rule: oklch(0.85 0.014 var(--daily-hue));
-    --workspace-accent: oklch(0.9 0.055 var(--daily-hue));
-    --workspace-accent-ink: oklch(0.25 0.05 var(--daily-hue));
-    --workspace-live: oklch(0.44 0.13 var(--daily-hue));
-    --workspace-live-ink: oklch(0.985 0.006 var(--daily-hue));
+    --theme-lens-duration: 720ms;
+    --theme-lens-easing: linear;
+    --theme-phase-duration: 240ms;
+    --workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.94 0.02 var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.998 0.004 var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.19 0.025 var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.42 0.032 var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.83 0.028 var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.9 0.075 var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.24 0.07 var(--workspace-theme-hue));
+    --workspace-live: oklch(0.44 0.14 var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.985 0.006 var(--workspace-theme-hue));
     --workspace-danger: #a02c3a;
     --workspace-warning: #8b5a0a;
-    --workspace-code: oklch(0.2 0.018 var(--daily-hue));
-    --workspace-code-ink: oklch(0.94 0.012 var(--daily-hue));
+    --workspace-code: oklch(0.18 0.026 var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.94 0.012 var(--workspace-theme-hue));
 }
 
 .dark {
-    --workspace-paper: oklch(0.19 0.012 var(--daily-hue));
-    --workspace-panel: oklch(0.235 0.014 var(--daily-hue));
-    --workspace-raised: oklch(0.285 0.016 var(--daily-hue));
-    --workspace-ink: oklch(0.94 0.008 var(--daily-hue));
-    --workspace-muted: oklch(0.7 0.018 var(--daily-hue));
-    --workspace-rule: oklch(0.33 0.016 var(--daily-hue));
-    --workspace-accent: oklch(0.31 0.07 var(--daily-hue));
-    --workspace-accent-ink: oklch(0.91 0.04 var(--daily-hue));
-    --workspace-live: oklch(0.77 0.12 var(--daily-hue));
-    --workspace-live-ink: oklch(0.18 0.035 var(--daily-hue));
+    --workspace-theme-hue: calc(var(--daily-hue) + 180deg);
+    --workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.195 0.035 var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.245 0.04 var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.95 0.01 var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.72 0.025 var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.34 0.035 var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.3 0.085 var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.92 0.03 var(--workspace-theme-hue));
+    --workspace-live: oklch(0.78 0.13 var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.15 0.03 var(--workspace-theme-hue));
     --workspace-danger: #f0919b;
     --workspace-warning: #e6c27a;
-    --workspace-code: oklch(0.145 0.01 var(--daily-hue));
-    --workspace-code-ink: oklch(0.9 0.01 var(--daily-hue));
+    --workspace-code: oklch(0.115 0.02 var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.9 0.01 var(--workspace-theme-hue));
 }
 
-html.theme-transition-to-dark::after,
-html.theme-transition-to-light::after {
-    position: fixed;
-    z-index: 2147483647;
-    inset: 0;
-    pointer-events: none;
-    content: '';
-    background: #fff;
-    mix-blend-mode: difference;
+html.theme-phase-light {
+    --workspace-theme-hue: calc(var(--daily-hue) + 250deg);
+    --workspace-paper: oklch(0.955 0.04 var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.91 0.05 var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.98 0.025 var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.22 0.035 var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.45 0.04 var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.76 0.05 var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.84 0.095 var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.24 0.07 var(--workspace-theme-hue));
+    --workspace-live: oklch(0.49 0.14 var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.97 0.015 var(--workspace-theme-hue));
+    --workspace-code: oklch(0.19 0.035 var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.93 0.025 var(--workspace-theme-hue));
 }
 
-html.theme-transition-to-dark::after {
-    animation: theme-lens-to-dark var(--theme-lens-duration) var(--theme-lens-easing) both;
-}
-
-html.theme-transition-to-light::after {
-    animation: theme-lens-to-light var(--theme-lens-duration) var(--theme-lens-easing) both;
+html.theme-phase-dark {
+    --workspace-theme-hue: calc(var(--daily-hue) + 72deg);
+    --workspace-paper: oklch(0.16 0.045 var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.205 0.05 var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.255 0.055 var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.91 0.025 var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.68 0.035 var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.31 0.05 var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.27 0.1 var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.91 0.035 var(--workspace-theme-hue));
+    --workspace-live: oklch(0.72 0.14 var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.13 0.04 var(--workspace-theme-hue));
+    --workspace-code: oklch(0.12 0.03 var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.88 0.025 var(--workspace-theme-hue));
 }
 
 html.theme-transition-to-dark body,
@@ -110,58 +126,16 @@ html.theme-transition-to-light body *,
 html.theme-transition-to-light body *::before,
 html.theme-transition-to-light body *::after {
     transition-delay: 0s !important;
-    transition-duration: 0s !important;
-}
-
-@keyframes theme-lens-to-dark {
-    0% {
-        background-color: #fff;
-        opacity: 1;
-    }
-
-    38% {
-        background-color: color-mix(in oklch, var(--workspace-live) 42%, #fff);
-        opacity: 0.72;
-    }
-
-    68% {
-        background-color: var(--workspace-live);
-        opacity: 0.34;
-    }
-
-    100% {
-        background-color: #fff;
-        opacity: 0;
-    }
-}
-
-@keyframes theme-lens-to-light {
-    0% {
-        background-color: #fff;
-        opacity: 1;
-    }
-
-    38% {
-        background-color: color-mix(in oklch, var(--workspace-live) 48%, #fff);
-        opacity: 0.72;
-    }
-
-    68% {
-        background-color: var(--workspace-accent);
-        opacity: 0.34;
-    }
-
-    100% {
-        background-color: #fff;
-        opacity: 0;
-    }
+    transition-duration: var(--theme-phase-duration) !important;
+    transition-property:
+        color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, filter !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    html.theme-transition-to-dark::after,
-    html.theme-transition-to-light::after {
-        content: none;
-        animation: none;
+    html.theme-transition-to-dark body,
+    html.theme-transition-to-light body {
+        transition: none;
     }
 }
 
@@ -212,8 +186,8 @@ html.theme-transition-to-light body *::after {
     background: var(--workspace-live);
     translate: 0 0;
     transition:
-        translate 220ms cubic-bezier(0.16, 1, 0.3, 1),
-        background-color 220ms ease;
+        translate 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 160ms ease;
 }
 
 .dark .theme-toggle {
@@ -235,31 +209,17 @@ html.theme-transition-to-light body *::after {
 }
 
 html.theme-transition-to-dark .theme-toggle__thumb {
-    animation: theme-toggle-to-dark var(--theme-lens-duration) var(--theme-lens-easing) both;
+    translate: 1.5rem 0;
+    transition-duration: 160ms !important;
+    transition-property: translate, background-color !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 html.theme-transition-to-light .theme-toggle__thumb {
-    animation: theme-toggle-to-light var(--theme-lens-duration) var(--theme-lens-easing) both;
-}
-
-@keyframes theme-toggle-to-dark {
-    from {
-        translate: 0 0;
-    }
-
-    to {
-        translate: 1.5rem 0;
-    }
-}
-
-@keyframes theme-toggle-to-light {
-    from {
-        translate: 1.5rem 0;
-    }
-
-    to {
-        translate: 0 0;
-    }
+    translate: 0 0;
+    transition-duration: 160ms !important;
+    transition-property: translate, background-color !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -267,6 +227,11 @@ html.theme-transition-to-light .theme-toggle__thumb {
     .theme-toggle__track,
     .theme-toggle__thumb {
         transition: none;
+    }
+
+    html.theme-transition-to-dark .theme-toggle__thumb,
+    html.theme-transition-to-light .theme-toggle__thumb {
+        transition: none !important;
     }
 }
 
@@ -278,7 +243,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
     --editor-placeholder: var(--workspace-muted);
     --editor-link: var(--workspace-live);
     --editor-code-bg: var(--workspace-panel);
-    --editor-code-text: oklch(0.36 0.07 var(--daily-hue));
+    --editor-code-text: oklch(0.36 0.07 var(--workspace-theme-hue));
     --editor-pre-bg: var(--workspace-code);
     --editor-pre-text: var(--workspace-code-ink);
     --editor-pre-border: transparent;
@@ -303,7 +268,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
 }
 
 .dark {
-    --editor-code-text: oklch(0.82 0.07 var(--daily-hue));
+    --editor-code-text: oklch(0.82 0.07 var(--workspace-theme-hue));
     --editor-pre-border: var(--workspace-rule);
 }
 

@@ -1,14 +1,17 @@
 import { computed, ref, watch } from 'vue';
 import { applyDailyThemeColor } from '@/Lib/dailyBrand';
 import { dailyHue } from '@/Lib/dailyTheme';
-import { flashPalette } from '@/Lib/paletteFlash';
 
 export type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'md-editor-theme';
 const TRANSITION_CLASSES = ['theme-transition-to-dark', 'theme-transition-to-light'] as const;
+const PHASE_CLASSES = ['theme-phase-light', 'theme-phase-dark'] as const;
+const THEME_PHASE_DURATION_MS = 240;
+const THEME_TRANSITION_DURATION_MS = THEME_PHASE_DURATION_MS * 3;
 
 let clearActiveTransition: (() => void) | null = null;
+let transitionTimers: Array<ReturnType<typeof setTimeout>> = [];
 
 function getSystemPreference(): Theme {
     if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
@@ -39,35 +42,42 @@ function applyTheme(nextTheme: Theme, animate = false): void {
     const root = document.documentElement;
 
     clearActiveTransition?.();
-    root.classList.remove(...TRANSITION_CLASSES);
-    root.classList.toggle('dark', nextTheme === 'dark');
+    root.classList.remove(...TRANSITION_CLASSES, ...PHASE_CLASSES);
     applyDailyThemeColor(dailyHue.value, nextTheme === 'dark', document);
 
     if (!animate || typeof window === 'undefined' || prefersReducedMotion()) {
+        root.classList.toggle('dark', nextTheme === 'dark');
+
         return;
     }
 
-    flashPalette(root, dailyHue.value);
-
     const transitionClass = nextTheme === 'dark' ? TRANSITION_CLASSES[0] : TRANSITION_CLASSES[1];
-    const transitionAnimation = `theme-lens-to-${nextTheme}`;
-
-    const finishTransition = (event: AnimationEvent): void => {
-        if (event.target === root && event.animationName === transitionAnimation) {
-            clearActiveTransition?.();
-        }
-    };
+    const firstPhase = nextTheme === 'dark' ? PHASE_CLASSES[0] : PHASE_CLASSES[1];
+    const secondPhase = nextTheme === 'dark' ? PHASE_CLASSES[1] : PHASE_CLASSES[0];
 
     clearActiveTransition = () => {
-        root.classList.remove(transitionClass);
-        root.removeEventListener('animationend', finishTransition);
-        root.removeEventListener('animationcancel', finishTransition);
+        transitionTimers.forEach((timer) => clearTimeout(timer));
+        transitionTimers = [];
+        root.classList.toggle('dark', nextTheme === 'dark');
+        root.classList.remove(transitionClass, ...PHASE_CLASSES);
         clearActiveTransition = null;
     };
 
-    root.classList.add(transitionClass);
-    root.addEventListener('animationend', finishTransition);
-    root.addEventListener('animationcancel', finishTransition);
+    root.classList.add(transitionClass, firstPhase);
+
+    transitionTimers.push(
+        setTimeout(() => {
+            root.classList.toggle('dark', nextTheme === 'dark');
+            root.classList.remove(firstPhase);
+            root.classList.add(secondPhase);
+        }, THEME_PHASE_DURATION_MS),
+        setTimeout(() => {
+            root.classList.remove(secondPhase);
+        }, THEME_PHASE_DURATION_MS * 2),
+        setTimeout(() => {
+            clearActiveTransition?.();
+        }, THEME_TRANSITION_DURATION_MS),
+    );
 }
 
 applyTheme(theme.value);
