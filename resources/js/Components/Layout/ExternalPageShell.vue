@@ -46,7 +46,6 @@ const { t } = useI18n();
         >
             <Link
                 href="/"
-                prefetch
                 class="external-wordmark text-[1.08rem] text-(--external-ink) no-underline"
                 :aria-label="t('app.title')"
             >

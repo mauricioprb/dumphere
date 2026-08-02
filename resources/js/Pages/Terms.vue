@@ -154,7 +154,6 @@ const clauses = computed<Clause[]>(() => [
                 <div class="pt-[clamp(1.5rem,5vh,3.5rem)]">
                     <Link
                         href="/"
-                        prefetch
                         class="external-focus inline-flex min-h-11 items-center gap-[0.45rem] text-[0.82rem] leading-[1.3] font-[650] text-[var(--external-muted)] no-underline transition-colors duration-[160ms] hover:text-[var(--external-ink)] motion-reduce:transition-none"
                     >
                         <ArrowLeft :size="16" aria-hidden="true" />
@@ -286,7 +285,6 @@ const clauses = computed<Clause[]>(() => [
                     <span class="external-divider" aria-hidden="true" />
                     <Link
                         href="/"
-                        prefetch
                         class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-[var(--external-ink)]"
                         >{{ t('terms.footerHome') }}</Link
                     >

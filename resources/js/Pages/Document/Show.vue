@@ -38,7 +38,6 @@ watch(
                     <div class="flex min-w-0 items-center gap-2.5 text-sm text-(--workspace-muted)">
                         <Link
                             href="/"
-                            prefetch
                             :aria-label="t('navigation.home')"
                             class="editor-focus inline-flex min-h-11 shrink-0 items-center rounded-md px-1 text-[0.95rem] text-(--workspace-ink) transition-colors hover:text-(--workspace-live) focus:outline-none motion-reduce:transition-none"
                         >

@@ -212,7 +212,6 @@ function clearError() {
                 <span class="external-divider" aria-hidden="true" />
                 <Link
                     href="/terms"
-                    prefetch
                     class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
                 >
                     {{ t('terms.heading') }}
