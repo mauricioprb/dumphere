@@ -149,25 +149,25 @@ const clauses = computed<Clause[]>(() => [
 
 <template>
     <AppLayout>
-        <ExternalPageShell class="[scroll-padding-top:2rem] scroll-smooth motion-reduce:scroll-auto">
-            <div class="relative z-[2] mx-auto w-[min(100%,54rem)] px-[clamp(1.1rem,3vw,2.75rem)] pb-4">
+        <ExternalPageShell class="scroll-pt-8 scroll-smooth motion-reduce:scroll-auto">
+            <div class="relative z-2 mx-auto w-[min(100%,54rem)] px-[clamp(1.1rem,3vw,2.75rem)] pb-4">
                 <div class="pt-[clamp(1.5rem,5vh,3.5rem)]">
                     <Link
                         href="/"
-                        class="external-focus inline-flex min-h-11 items-center gap-[0.45rem] text-[0.82rem] leading-[1.3] font-[650] text-[var(--external-muted)] no-underline transition-colors duration-[160ms] hover:text-[var(--external-ink)] motion-reduce:transition-none"
+                        class="external-focus inline-flex min-h-11 items-center gap-[0.45rem] text-[0.82rem] leading-[1.3] font-[650] text-(--external-muted) no-underline transition-colors duration-160 hover:text-(--external-ink) motion-reduce:transition-none"
                     >
                         <ArrowLeft :size="16" aria-hidden="true" />
                         {{ t('terms.back') }}
                     </Link>
 
                     <h1
-                        class="mt-[0.65rem] font-display text-[clamp(2.6rem,6vw,4.2rem)] leading-[0.95] font-[560] tracking-[-0.035em] text-balance text-[var(--external-ink)]"
+                        class="mt-[0.65rem] font-display text-[clamp(2.6rem,6vw,4.2rem)] leading-[0.95] font-[560] tracking-[-0.035em] text-balance text-(--external-ink)"
                     >
                         {{ t('terms.heading') }}
                     </h1>
 
                     <p
-                        class="mt-[1.1rem] flex flex-wrap items-center gap-[0.6rem] font-mono text-[0.82rem] leading-[1.4] text-[var(--external-muted)]"
+                        class="mt-[1.1rem] flex flex-wrap items-center gap-[0.6rem] font-mono text-[0.82rem] leading-[1.4] text-(--external-muted)"
                     >
                         <span>{{ t('terms.effectiveLabel') }}</span>
                         <time datetime="2026-08-01">{{ t('terms.effectiveDate') }}</time>
@@ -178,22 +178,22 @@ const clauses = computed<Clause[]>(() => [
                     <div
                         v-for="truth in truths"
                         :key="truth.word"
-                        class="grid grid-cols-[minmax(0,12.5rem)_minmax(0,1fr)] items-baseline gap-x-8 gap-y-[0.35rem] border-t border-[var(--external-rule)] py-[1.35rem] max-[760px]:grid-cols-[minmax(0,1fr)] max-[760px]:gap-y-2"
+                        class="grid grid-cols-[minmax(0,12.5rem)_minmax(0,1fr)] items-baseline gap-x-8 gap-y-[0.35rem] border-t border-(--external-rule) py-[1.35rem] max-[760px]:grid-cols-[minmax(0,1fr)] max-[760px]:gap-y-2"
                     >
                         <p
-                            class="font-display text-[clamp(1.75rem,4vw,2.4rem)] leading-[1.05] font-[560] tracking-[-0.03em] text-[var(--external-ink)]"
+                            class="font-display text-[clamp(1.75rem,4vw,2.4rem)] leading-[1.05] font-[560] tracking-[-0.03em] text-(--external-ink)"
                         >
                             <span class="reading-mark">
                                 <span>{{ truth.word }}</span>
                                 <span class="reading-mark__fill" aria-hidden="true">{{ truth.word }}</span>
                             </span>
                         </p>
-                        <p class="max-w-[46ch] text-[0.98rem] leading-[1.55] text-[var(--external-muted)]">
+                        <p class="max-w-[46ch] text-[0.98rem] leading-[1.55] text-(--external-muted)">
                             {{ truth.body }}
                         </p>
                     </div>
                     <p
-                        class="max-w-[52ch] border-t border-[var(--external-rule)] py-[1.6rem] text-[clamp(1.05rem,2vw,1.22rem)] leading-[1.45] font-[650] text-[var(--external-ink)]"
+                        class="max-w-[52ch] border-t border-(--external-rule) py-[1.6rem] text-[clamp(1.05rem,2vw,1.22rem)] leading-[1.45] font-[650] text-(--external-ink)"
                     >
                         {{ t('terms.truthClose') }}
                     </p>
@@ -202,7 +202,7 @@ const clauses = computed<Clause[]>(() => [
                 <nav class="pt-[clamp(2.5rem,6vh,3.75rem)]" aria-labelledby="clause-index-title">
                     <h2
                         id="clause-index-title"
-                        class="mb-[1.1rem] text-[0.82rem] leading-[1.3] font-[650] text-[var(--external-muted)]"
+                        class="mb-[1.1rem] text-[0.82rem] leading-[1.3] font-[650] text-(--external-muted)"
                     >
                         {{ t('terms.indexTitle') }}
                     </h2>
@@ -210,10 +210,10 @@ const clauses = computed<Clause[]>(() => [
                         <li v-for="clause in clauses" :key="clause.id">
                             <a
                                 :href="`#${clause.id}`"
-                                class="external-focus group grid grid-cols-[1.75rem_minmax(0,1fr)] gap-[0.6rem] py-2 text-[0.95rem] leading-[1.4] text-[var(--external-ink)] no-underline"
+                                class="external-focus group grid grid-cols-[1.75rem_minmax(0,1fr)] gap-[0.6rem] py-2 text-[0.95rem] leading-[1.4] text-(--external-ink) no-underline"
                             >
                                 <span
-                                    class="font-mono text-[0.82rem] text-[var(--external-muted)] transition-colors duration-[160ms] group-hover:text-[var(--external-live)] motion-reduce:transition-none"
+                                    class="font-mono text-[0.82rem] text-(--external-muted) transition-colors duration-160 group-hover:text-(--external-live) motion-reduce:transition-none"
                                     aria-hidden="true"
                                     >{{ clause.number }}</span
                                 >
@@ -230,11 +230,11 @@ const clauses = computed<Clause[]>(() => [
                         v-for="clause in clauses"
                         :id="clause.id"
                         :key="clause.id"
-                        class="grid grid-cols-[3.5rem_minmax(0,1fr)] border-t border-[var(--external-rule)] py-[clamp(2rem,4vh,2.75rem)] max-[760px]:grid-cols-[minmax(0,1fr)]"
+                        class="grid grid-cols-[3.5rem_minmax(0,1fr)] border-t border-(--external-rule) py-[clamp(2rem,4vh,2.75rem)] max-[760px]:grid-cols-[minmax(0,1fr)]"
                         :aria-labelledby="`${clause.id}-title`"
                     >
                         <p
-                            class="pt-[0.35rem] font-mono text-[0.82rem] leading-[1.4] text-[var(--external-muted)] max-[760px]:mb-2 max-[760px]:pt-0"
+                            class="pt-[0.35rem] font-mono text-[0.82rem] leading-[1.4] text-(--external-muted) max-[760px]:mb-2 max-[760px]:pt-0"
                             aria-hidden="true"
                         >
                             {{ clause.number }}
@@ -258,34 +258,34 @@ const clauses = computed<Clause[]>(() => [
                 </div>
 
                 <section
-                    class="border-t border-[var(--external-rule)] py-[clamp(2.25rem,5vh,3rem)]"
+                    class="border-t border-(--external-rule) py-[clamp(2.25rem,5vh,3rem)]"
                     aria-labelledby="contact-title"
                 >
                     <h2
                         id="contact-title"
-                        class="mb-[0.55rem] font-display text-[clamp(1.3rem,2.6vw,1.62rem)] leading-[1.15] font-[560] tracking-[-0.025em] text-[var(--external-ink)]"
+                        class="mb-[0.55rem] font-display text-[clamp(1.3rem,2.6vw,1.62rem)] leading-[1.15] font-[560] tracking-tight text-(--external-ink)"
                     >
                         {{ t('terms.contact.title') }}
                     </h2>
-                    <p class="max-w-[60ch] text-[0.95rem] leading-[1.62] text-[var(--external-muted)]">
+                    <p class="max-w-[60ch] text-[0.95rem] leading-[1.62] text-(--external-muted)">
                         {{ t('terms.contact.body') }}
                     </p>
                     <a
                         :href="`mailto:${contactEmail}`"
-                        class="external-focus mt-[1.15rem] inline-block border-b-2 border-[var(--external-ink)] pb-[0.35rem] font-mono text-[clamp(1.02rem,2.4vw,1.3rem)] leading-[1.4] [overflow-wrap:anywhere] text-[var(--external-ink)] no-underline transition-colors duration-[160ms] hover:border-[var(--external-live)] hover:text-[var(--external-live)] motion-reduce:transition-none"
+                        class="external-focus mt-[1.15rem] inline-block border-b-2 border-(--external-ink) pb-[0.35rem] font-mono text-[clamp(1.02rem,2.4vw,1.3rem)] leading-[1.4] wrap-anywhere text-(--external-ink) no-underline transition-colors duration-160 hover:border-(--external-live) hover:text-(--external-live) motion-reduce:transition-none"
                     >
                         {{ contactEmail }}
                     </a>
                 </section>
 
                 <footer
-                    class="flex flex-wrap items-center gap-[0.85rem] border-t border-[var(--external-rule)] py-[1.4rem] pb-10 text-[0.78rem] text-[var(--external-muted)]"
+                    class="flex flex-wrap items-center gap-[0.85rem] border-t border-(--external-rule) py-[1.4rem] pb-10 text-[0.78rem] text-(--external-muted)"
                 >
                     <span>&copy; {{ year }} Dumphere</span>
                     <span class="external-divider" aria-hidden="true" />
                     <Link
                         href="/"
-                        class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-[var(--external-ink)]"
+                        class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
                         >{{ t('terms.footerHome') }}</Link
                     >
                     <span class="external-divider" aria-hidden="true" />
