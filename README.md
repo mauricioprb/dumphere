@@ -1,4 +1,4 @@
-# Dumphere
+![Dumphere](public/images/readme/dumphere-header.png)
 
 Editor público e colaborativo construído com Laravel, Inertia, Vue, Tiptap e Yjs.
 
