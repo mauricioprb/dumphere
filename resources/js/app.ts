@@ -4,8 +4,11 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { createPinia } from 'pinia';
 import type { DefineComponent } from 'vue';
 import PageLoader from '@/Components/UI/PageLoader.vue';
+import { startDailyTheme } from '@/Lib/dailyTheme';
 
 const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue');
+
+startDailyTheme(document.documentElement);
 
 createInertiaApp({
     title: (title: string) => title || 'Dumphere',

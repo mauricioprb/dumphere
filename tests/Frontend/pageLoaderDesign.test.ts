@@ -46,12 +46,13 @@ describe('page loader design', () => {
     it('matches the initial surface to the workspace palette in both themes', () => {
         const bootstrapView = readSource('resources/views/app.blade.php');
 
-        expect(bootstrapView).toContain('background: #faf8f5');
-        expect(bootstrapView).toContain('background: #17181a');
-        expect(bootstrapView).toContain('background: #dde8bf');
-        expect(bootstrapView).toContain('background: #3c4d26');
-        expect(bootstrapView).toContain('background: #55701a');
-        expect(bootstrapView).toContain('background: #a3c765');
+        expect(bootstrapView).toContain("timeZone: 'America/Sao_Paulo'");
+        expect(bootstrapView).toContain("root.style.setProperty('--daily-hue'");
+        expect(bootstrapView).toContain('--workspace-paper: oklch(0.982 0.008 var(--daily-hue))');
+        expect(bootstrapView).toContain('--workspace-paper: oklch(0.19 0.012 var(--daily-hue))');
+        expect(bootstrapView).toContain('background: var(--workspace-paper)');
+        expect(bootstrapView).toContain('background: var(--workspace-accent)');
+        expect(bootstrapView).toContain('background: var(--workspace-live)');
     });
 
     it('keeps the slash and selection optically separated without an extra cursor', () => {

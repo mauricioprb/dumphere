@@ -9,7 +9,7 @@ const { t } = useI18n();
 
 <template>
     <div
-        class="app-shell flex h-dvh min-h-screen flex-col bg-white font-sans text-neutral-900 transition-colors duration-200 motion-reduce:transition-none dark:bg-neutral-900 dark:text-neutral-100"
+        class="app-shell flex h-dvh min-h-screen flex-col bg-(--workspace-paper) font-sans text-(--workspace-ink) transition-colors duration-200 motion-reduce:transition-none"
     >
         <SeoHead />
         <a

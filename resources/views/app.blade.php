@@ -10,16 +10,68 @@
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/images/logo/dumphere-mark.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/images/logo/dumphere-apple-touch-icon.png">
+    <script nonce="{{ app('csp-nonce') }}">
+        (function() {
+            const root = document.documentElement;
+
+            try {
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'America/Sao_Paulo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                }).formatToParts(new Date());
+                const datePart = (type) => Number(parts.find((part) => part.type === type)?.value);
+                const year = datePart('year');
+                const month = datePart('month');
+                const day = datePart('day');
+                const ordinal = Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+                const hue = Number((((ordinal * 137.508) % 360) + 360).toFixed(3)) % 360;
+
+                root.dataset.dailyThemeDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                root.style.setProperty('--daily-hue', `${hue}deg`);
+            } catch {
+                root.style.setProperty('--daily-hue', '87deg');
+            }
+
+            const storedLocale = localStorage.getItem('md-editor-locale');
+            const locale = storedLocale === 'pt-BR' || storedLocale === 'en'
+                ? storedLocale
+                : (navigator.language.toLowerCase().startsWith('pt') ? 'pt-BR' : 'en');
+            root.lang = locale;
+            root.dir = 'ltr';
+
+            const storedTheme = localStorage.getItem('md-editor-theme');
+            if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                root.classList.add('dark');
+            }
+        })();
+    </script>
     <style nonce="{{ app('csp-nonce') }}">
+        :root {
+            --workspace-paper: oklch(0.982 0.008 var(--daily-hue));
+            --workspace-ink: oklch(0.205 0.018 var(--daily-hue));
+            --workspace-muted: oklch(0.43 0.022 var(--daily-hue));
+            --workspace-rule: oklch(0.85 0.014 var(--daily-hue));
+            --workspace-accent: oklch(0.9 0.055 var(--daily-hue));
+            --workspace-accent-ink: oklch(0.25 0.05 var(--daily-hue));
+            --workspace-live: oklch(0.44 0.13 var(--daily-hue));
+        }
+
+        html.dark {
+            --workspace-paper: oklch(0.19 0.012 var(--daily-hue));
+            --workspace-ink: oklch(0.94 0.008 var(--daily-hue));
+            --workspace-muted: oklch(0.7 0.018 var(--daily-hue));
+            --workspace-rule: oklch(0.33 0.016 var(--daily-hue));
+            --workspace-accent: oklch(0.31 0.07 var(--daily-hue));
+            --workspace-accent-ink: oklch(0.91 0.04 var(--daily-hue));
+            --workspace-live: oklch(0.77 0.12 var(--daily-hue));
+        }
+
         html,
         body {
             min-height: 100%;
-            background: #faf8f5;
-        }
-
-        html.dark,
-        html.dark body {
-            background: #17181a;
+            background: var(--workspace-paper);
         }
 
         #app-loading {
@@ -28,13 +80,8 @@
             display: grid;
             place-items: center;
             z-index: 200;
-            background: #faf8f5;
-            color: #1d1e1a;
-        }
-
-        html.dark #app-loading {
-            background: #17181a;
-            color: #f1efea;
+            background: var(--workspace-paper);
+            color: var(--workspace-ink);
         }
 
         #app-loading .page-loader-stage {
@@ -60,11 +107,7 @@
         #app-loading .page-loader-slash {
             display: inline-block;
             margin-left: 0.015em;
-            color: #55701a;
-        }
-
-        html.dark #app-loading .page-loader-slash {
-            color: #a3c765;
+            color: var(--workspace-live);
         }
 
         #app-loading .page-loader-selection {
@@ -86,14 +129,9 @@
             overflow: hidden;
             padding: inherit;
             animation: boot-loader-selection 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            background: #dde8bf;
-            color: #232b17;
+            background: var(--workspace-accent);
+            color: var(--workspace-accent-ink);
             clip-path: inset(0 100% 0 0);
-        }
-
-        html.dark #app-loading .page-loader-selection__fill {
-            background: #3c4d26;
-            color: #e9f0d8;
         }
 
         #app-loading .page-loader-status {
@@ -101,33 +139,21 @@
             align-items: center;
             gap: 0.65rem;
             padding-top: 0.8rem;
-            border-top: 1px solid #dcdcd2;
-        }
-
-        html.dark #app-loading .page-loader-status {
-            border-color: #34373a;
+            border-top: 1px solid var(--workspace-rule);
         }
 
         #app-loading .page-loader-status__signal {
             width: 0.5rem;
             height: 0.5rem;
-            background: #55701a;
-        }
-
-        html.dark #app-loading .page-loader-status__signal {
-            background: #a3c765;
+            background: var(--workspace-live);
         }
 
         #app-loading .page-loader-label {
-            color: #5d5f57;
+            color: var(--workspace-muted);
             font-family: 'Bricolage Grotesque', sans-serif;
             font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 0.025em;
-        }
-
-        html.dark #app-loading .page-loader-label {
-            color: #a8aaa4;
         }
 
         #app-loading .page-loader-label-en {
@@ -198,21 +224,6 @@
             <script type="application/ld+json" nonce="{{ app('csp-nonce') }}">@json($seo['structuredData'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)</script>
         @endif
     </x-inertia::head>
-    <script nonce="{{ app('csp-nonce') }}">
-        (function() {
-            const storedLocale = localStorage.getItem('md-editor-locale');
-            const locale = storedLocale === 'pt-BR' || storedLocale === 'en'
-                ? storedLocale
-                : (navigator.language.toLowerCase().startsWith('pt') ? 'pt-BR' : 'en');
-            document.documentElement.lang = locale;
-            document.documentElement.dir = 'ltr';
-
-            const t = localStorage.getItem('md-editor-theme');
-            if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
 </head>
 
 <body class="h-full antialiased">

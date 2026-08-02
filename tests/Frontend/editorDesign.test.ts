@@ -13,15 +13,16 @@ describe('editor design system', () => {
         expect(applicationStyles).toContain('cursor: not-allowed');
     });
 
-    it('uses the external-page palette as semantic workspace tokens', () => {
+    it('uses the daily palette as semantic workspace tokens', () => {
         const themeStyles = readSource('resources/css/theme.css');
 
-        expect(themeStyles).toContain('--workspace-paper: #faf8f5');
-        expect(themeStyles).toContain('--workspace-ink: #1d1e1a');
-        expect(themeStyles).toContain('--workspace-accent: #dde8bf');
-        expect(themeStyles).toContain('--workspace-live: #55701a');
+        expect(themeStyles).toContain('--daily-hue: 87deg');
+        expect(themeStyles).toContain('--workspace-paper: oklch(0.982 0.008 var(--daily-hue))');
+        expect(themeStyles).toContain('--workspace-ink: oklch(0.205 0.018 var(--daily-hue))');
+        expect(themeStyles).toContain('--workspace-accent: oklch(0.9 0.055 var(--daily-hue))');
+        expect(themeStyles).toContain('--workspace-live: oklch(0.44 0.13 var(--daily-hue))');
         expect(themeStyles).toContain('.dark {');
-        expect(themeStyles).toContain('--workspace-paper: #17181a');
+        expect(themeStyles).toContain('--workspace-paper: oklch(0.19 0.012 var(--daily-hue))');
     });
 
     it('keeps the writing canvas readable without the oversized focus frame', () => {

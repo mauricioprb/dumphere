@@ -14,7 +14,6 @@ const structuredData = computed(() =>
     <Head :title="seo.title">
         <meta head-key="description" name="description" :content="seo.description" />
         <meta head-key="robots" name="robots" :content="seo.robots" />
-        <meta head-key="theme-color" name="theme-color" :content="seo.themeColor" />
         <link head-key="canonical" rel="canonical" :href="seo.canonicalUrl" />
         <link head-key="sitemap" rel="sitemap" type="application/xml" :href="seo.sitemapUrl" />
 

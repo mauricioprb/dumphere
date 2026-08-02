@@ -1,4 +1,7 @@
 import { computed, ref, watch } from 'vue';
+import { applyDailyThemeColor } from '@/Lib/dailyBrand';
+import { dailyHue } from '@/Lib/dailyTheme';
+import { flashPalette } from '@/Lib/paletteFlash';
 
 export type Theme = 'light' | 'dark';
 
@@ -38,10 +41,13 @@ function applyTheme(nextTheme: Theme, animate = false): void {
     clearActiveTransition?.();
     root.classList.remove(...TRANSITION_CLASSES);
     root.classList.toggle('dark', nextTheme === 'dark');
+    applyDailyThemeColor(dailyHue.value, nextTheme === 'dark', document);
 
     if (!animate || typeof window === 'undefined' || prefersReducedMotion()) {
         return;
     }
+
+    flashPalette(root, dailyHue.value);
 
     const transitionClass = nextTheme === 'dark' ? TRANSITION_CLASSES[0] : TRANSITION_CLASSES[1];
     const transitionAnimation = `theme-lens-to-${nextTheme}`;

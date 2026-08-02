@@ -1,43 +1,36 @@
 .external-page {
-    --external-paper: #faf8f5;
-    --external-ink: #1d1e1a;
-    --external-muted: #5d5f57;
-    --external-rule: #dcdcd2;
-    --external-selection: #dde8bf;
-    --external-selection-ink: #232b17;
-    --external-live: #55701a;
-    --external-live-ink: #f7f9ee;
-    --external-error: #a02c3a;
+    --external-paper: var(--workspace-paper);
+    --external-ink: var(--workspace-ink);
+    --external-muted: var(--workspace-muted);
+    --external-rule: var(--workspace-rule);
+    --external-selection: var(--workspace-accent);
+    --external-selection-ink: var(--workspace-accent-ink);
+    --external-live: var(--workspace-live);
+    --external-live-ink: var(--workspace-live-ink);
+    --external-error: var(--workspace-danger);
     --external-art-opacity: 0.05;
     --external-art-blend: multiply;
-    --external-art-filter: grayscale(1) sepia(0.22) hue-rotate(30deg) contrast(1.06);
-    --external-noise-ink: rgb(29 30 26 / 0.13);
+    /* sepia lands around 70deg, so the rotation is measured from there to reach the daily hue */
+    --external-art-filter: grayscale(1) sepia(0.3) hue-rotate(calc(var(--daily-hue) - 70deg)) contrast(1.06);
+    --external-noise-ink: oklch(0.24 0.02 var(--daily-hue) / 0.13);
     --external-noise-blend: multiply;
-    --external-focus-edge: #1d1e1a;
-    --external-presence-line: #8c4f66;
-    --external-presence-chip: #dfaebf;
-    --external-presence-chip-ink: #40182a;
+    --external-focus-edge: var(--workspace-ink);
+    --external-presence-line: oklch(0.48 0.11 calc(var(--daily-hue) + 145deg));
+    --external-presence-chip: oklch(0.82 0.08 calc(var(--daily-hue) + 145deg));
+    --external-presence-chip-ink: oklch(0.26 0.08 calc(var(--daily-hue) + 145deg));
 }
 
 .dark .external-page {
-    --external-paper: #17181a;
-    --external-ink: #f1efea;
-    --external-muted: #a8aaa4;
-    --external-rule: #34373a;
-    --external-selection: #3c4d26;
-    --external-selection-ink: #e9f0d8;
-    --external-live: #a3c765;
-    --external-live-ink: #16210a;
-    --external-error: #f0919b;
     --external-art-opacity: 0.022;
     --external-art-blend: screen;
-    --external-art-filter: grayscale(1) invert(1) sepia(0.18) hue-rotate(35deg) contrast(1.04);
-    --external-noise-ink: rgb(129 129 129 / 0.3);
+    --external-art-filter: grayscale(1) invert(1) sepia(0.24) hue-rotate(calc(var(--daily-hue) - 70deg)) contrast(1.04);
+    /* color-dodge needs a mid tone: deriving this from the near-white ink blows the canvas out */
+    --external-noise-ink: oklch(0.62 0.015 var(--daily-hue) / 0.3);
     --external-noise-blend: color-dodge;
     --external-focus-edge: transparent;
-    --external-presence-line: #d8a2b6;
-    --external-presence-chip: #c98fa6;
-    --external-presence-chip-ink: #2c1220;
+    --external-presence-line: oklch(0.76 0.08 calc(var(--daily-hue) + 145deg));
+    --external-presence-chip: oklch(0.69 0.09 calc(var(--daily-hue) + 145deg));
+    --external-presence-chip-ink: oklch(0.18 0.06 calc(var(--daily-hue) + 145deg));
 }
 
 .external-backdrop__art {

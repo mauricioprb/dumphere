@@ -16,17 +16,17 @@
     --color-neutral-900: #0e0e11;
     --color-neutral-950: #08080a;
 
-    --color-primary-50: #f7f9ee;
-    --color-primary-100: #ebf1d3;
-    --color-primary-200: #d6e2ad;
-    --color-primary-300: #bcd277;
-    --color-primary-400: #9eb846;
-    --color-primary-500: #657b18;
-    --color-primary-600: #566b14;
-    --color-primary-700: #485a13;
-    --color-primary-800: #3a4814;
-    --color-primary-900: #303b15;
-    --color-primary-950: #1a220a;
+    --color-primary-50: oklch(0.98 0.018 var(--daily-hue));
+    --color-primary-100: oklch(0.95 0.035 var(--daily-hue));
+    --color-primary-200: oklch(0.89 0.06 var(--daily-hue));
+    --color-primary-300: oklch(0.8 0.1 var(--daily-hue));
+    --color-primary-400: oklch(0.69 0.13 var(--daily-hue));
+    --color-primary-500: oklch(0.56 0.15 var(--daily-hue));
+    --color-primary-600: oklch(0.47 0.14 var(--daily-hue));
+    --color-primary-700: oklch(0.39 0.12 var(--daily-hue));
+    --color-primary-800: oklch(0.32 0.09 var(--daily-hue));
+    --color-primary-900: oklch(0.26 0.065 var(--daily-hue));
+    --color-primary-950: oklch(0.18 0.045 var(--daily-hue));
 
     --color-success-400: #34d399;
     --color-success-500: #10b981;
@@ -45,41 +45,41 @@
 }
 
 :root {
-    --brand-slash: #55701a;
+    --daily-hue: 87deg;
+    --brand-slash: var(--workspace-live);
     --theme-lens-duration: 350ms;
     --theme-lens-easing: cubic-bezier(0, 0.55, 0.45, 1);
-    --workspace-paper: #faf8f5;
-    --workspace-panel: #f0eee6;
-    --workspace-raised: #fffefb;
-    --workspace-ink: #1d1e1a;
-    --workspace-muted: #5d5f57;
-    --workspace-rule: #dcdcd2;
-    --workspace-accent: #dde8bf;
-    --workspace-accent-ink: #232b17;
-    --workspace-live: #55701a;
-    --workspace-live-ink: #f7f9ee;
+    --workspace-paper: oklch(0.982 0.008 var(--daily-hue));
+    --workspace-panel: oklch(0.945 0.012 var(--daily-hue));
+    --workspace-raised: oklch(0.995 0.004 var(--daily-hue));
+    --workspace-ink: oklch(0.205 0.018 var(--daily-hue));
+    --workspace-muted: oklch(0.43 0.022 var(--daily-hue));
+    --workspace-rule: oklch(0.85 0.014 var(--daily-hue));
+    --workspace-accent: oklch(0.9 0.055 var(--daily-hue));
+    --workspace-accent-ink: oklch(0.25 0.05 var(--daily-hue));
+    --workspace-live: oklch(0.44 0.13 var(--daily-hue));
+    --workspace-live-ink: oklch(0.985 0.006 var(--daily-hue));
     --workspace-danger: #a02c3a;
     --workspace-warning: #8b5a0a;
-    --workspace-code: #1d1e1a;
-    --workspace-code-ink: #f0eee6;
+    --workspace-code: oklch(0.2 0.018 var(--daily-hue));
+    --workspace-code-ink: oklch(0.94 0.012 var(--daily-hue));
 }
 
 .dark {
-    --brand-slash: #a3c765;
-    --workspace-paper: #17181a;
-    --workspace-panel: #1f2124;
-    --workspace-raised: #292b2e;
-    --workspace-ink: #f1efea;
-    --workspace-muted: #a8aaa4;
-    --workspace-rule: #34373a;
-    --workspace-accent: #3c4d26;
-    --workspace-accent-ink: #e9f0d8;
-    --workspace-live: #a3c765;
-    --workspace-live-ink: #16210a;
+    --workspace-paper: oklch(0.19 0.012 var(--daily-hue));
+    --workspace-panel: oklch(0.235 0.014 var(--daily-hue));
+    --workspace-raised: oklch(0.285 0.016 var(--daily-hue));
+    --workspace-ink: oklch(0.94 0.008 var(--daily-hue));
+    --workspace-muted: oklch(0.7 0.018 var(--daily-hue));
+    --workspace-rule: oklch(0.33 0.016 var(--daily-hue));
+    --workspace-accent: oklch(0.31 0.07 var(--daily-hue));
+    --workspace-accent-ink: oklch(0.91 0.04 var(--daily-hue));
+    --workspace-live: oklch(0.77 0.12 var(--daily-hue));
+    --workspace-live-ink: oklch(0.18 0.035 var(--daily-hue));
     --workspace-danger: #f0919b;
     --workspace-warning: #e6c27a;
-    --workspace-code: #101113;
-    --workspace-code-ink: #eae8e2;
+    --workspace-code: oklch(0.145 0.01 var(--daily-hue));
+    --workspace-code-ink: oklch(0.9 0.01 var(--daily-hue));
 }
 
 html.theme-transition-to-dark::after,
@@ -120,12 +120,12 @@ html.theme-transition-to-light body *::after {
     }
 
     38% {
-        background-color: #d7d09a;
+        background-color: color-mix(in oklch, var(--workspace-live) 42%, #fff);
         opacity: 0.72;
     }
 
     68% {
-        background-color: #7f8d6a;
+        background-color: var(--workspace-live);
         opacity: 0.34;
     }
 
@@ -142,12 +142,12 @@ html.theme-transition-to-light body *::after {
     }
 
     38% {
-        background-color: #a9bf7a;
+        background-color: color-mix(in oklch, var(--workspace-live) 48%, #fff);
         opacity: 0.72;
     }
 
     68% {
-        background-color: #d6cda3;
+        background-color: var(--workspace-accent);
         opacity: 0.34;
     }
 
@@ -231,7 +231,6 @@ html.theme-transition-to-light body *::after {
 }
 
 .dark .theme-toggle__thumb {
-    background: #dfd9bd;
     translate: 1.5rem 0;
 }
 
@@ -245,24 +244,20 @@ html.theme-transition-to-light .theme-toggle__thumb {
 
 @keyframes theme-toggle-to-dark {
     from {
-        background: #55701a;
         translate: 0 0;
     }
 
     to {
-        background: #dfd9bd;
         translate: 1.5rem 0;
     }
 }
 
 @keyframes theme-toggle-to-light {
     from {
-        background: #dfd9bd;
         translate: 1.5rem 0;
     }
 
     to {
-        background: #55701a;
         translate: 0 0;
     }
 }
@@ -283,7 +278,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
     --editor-placeholder: var(--workspace-muted);
     --editor-link: var(--workspace-live);
     --editor-code-bg: var(--workspace-panel);
-    --editor-code-text: #414a33;
+    --editor-code-text: oklch(0.36 0.07 var(--daily-hue));
     --editor-pre-bg: var(--workspace-code);
     --editor-pre-text: var(--workspace-code-ink);
     --editor-pre-border: transparent;
@@ -308,7 +303,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
 }
 
 .dark {
-    --editor-code-text: #c8d5ad;
+    --editor-code-text: oklch(0.82 0.07 var(--daily-hue));
     --editor-pre-border: var(--workspace-rule);
 }
 
