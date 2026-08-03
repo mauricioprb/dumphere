@@ -12,6 +12,7 @@ pest()->extend(TestCase::class)->in(
 
 pest()->use(LazilyRefreshDatabase::class)->in(
     'Feature/DocumentEndpointsTest.php',
+    'Feature/DocumentTreeTest.php',
     'Feature/PurgeStaleDocumentsTest.php',
     'Feature/SeoTest.php',
 );

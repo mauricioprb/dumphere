@@ -19,3 +19,14 @@ export interface SaveResponse {
     updatedAt?: string;
     error?: string;
 }
+
+export interface DocumentTreeNode {
+    slug: string;
+    label: string;
+    hasChildren: boolean;
+    exists: boolean;
+}
+
+export interface DocumentTreeResponse {
+    children: DocumentTreeNode[];
+}

@@ -31,6 +31,18 @@ const en = {
     'navigation.home': 'Back to home',
     'navigation.skip': 'Skip to main content',
 
+    'documentTree.title': 'Pages',
+    'documentTree.breadcrumbs': 'Page path',
+    'documentTree.open': 'Open page tree',
+    'documentTree.close': 'Close page tree',
+    'documentTree.expandSidebar': 'Expand pages panel',
+    'documentTree.collapseSidebar': 'Collapse pages panel',
+    'documentTree.expand': 'Expand {page}',
+    'documentTree.collapse': 'Collapse {page}',
+    'documentTree.loading': 'Loading pages...',
+    'documentTree.loadError': 'Could not load this branch.',
+    'documentTree.retry': 'Try again',
+
     'loader.loading': 'Loading page...',
 
     'toolbar.ariaLabel': 'Formatting toolbar',

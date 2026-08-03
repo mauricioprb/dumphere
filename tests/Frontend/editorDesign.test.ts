@@ -27,12 +27,14 @@ describe('editor design system', () => {
         expect(themeStyles).toContain('--workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue))');
     });
 
-    it('keeps the writing canvas readable without the oversized focus frame', () => {
+    it('keeps the writing canvas focus indicator above scrolling content', () => {
         const editorStyles = readSource('resources/css/editor.css');
 
         expect(editorStyles).toContain('max-width: 76ch');
+        expect(editorStyles).toContain('border-top: 2px solid transparent');
         expect(editorStyles).toContain('.editor-canvas:focus-within');
-        expect(editorStyles).toContain('box-shadow: inset 0 2px 0 var(--workspace-live)');
+        expect(editorStyles).toContain('border-top-color: var(--workspace-live)');
+        expect(editorStyles).not.toContain('box-shadow: inset 0 2px 0 var(--workspace-live)');
         expect(editorStyles).toContain('border-inline-start: 1px solid var(--editor-blockquote-border)');
         expect(editorStyles).not.toContain('border-left: 3px solid var(--editor-blockquote-border)');
     });
@@ -53,6 +55,9 @@ describe('editor design system', () => {
         const toolbar = readSource('resources/js/Components/Editor/EditorToolbar.vue');
 
         expect(page).toContain('<Wordmark />');
+        expect(page).toContain('<DocumentBreadcrumbs :slug="document.slug" />');
+        expect(page).toContain('<DocumentTreeSidebar');
+        expect(page).toContain('aria-controls="document-tree-sidebar"');
         expect(page).toContain('<ConnectionStatus />');
         expect(page).toContain('<ThemeToggle />');
         expect(editor).toContain('<TableFloatingToolbar :editor="editor" />');
@@ -75,5 +80,19 @@ describe('editor design system', () => {
         expect(toolbar).toContain(sharedEdgePadding);
         expect(headerMarkup).not.toContain('max-w-[96rem]');
         expect(headerMarkup).not.toContain('mx-auto');
+    });
+
+    it('keeps the page tree collapsible and uses page icons for every node', () => {
+        const page = readSource('resources/js/Pages/Document/Show.vue');
+        const sidebar = readSource('resources/js/Components/Editor/DocumentTreeSidebar.vue');
+
+        expect(page).toContain(':collapsed="treeNavigationCollapsed"');
+        expect(page).toContain('@toggle-collapse="toggleTreeNavigationCollapse"');
+        expect(sidebar).toContain('<PanelLeftOpen v-if="collapsed"');
+        expect(sidebar).toContain('<PanelLeftClose v-else');
+        expect(sidebar).toContain('<FileText class="size-4 shrink-0"');
+        expect(sidebar).toContain('<TransitionGroup');
+        expect(sidebar).toContain('motion-reduce:transition-none');
+        expect(sidebar).not.toContain('<Folder');
     });
 });

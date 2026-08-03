@@ -18,11 +18,12 @@
 .editor-canvas,
 .editor-source-canvas {
     min-height: 0;
+    border-top: 2px solid transparent;
 }
 
 .editor-canvas:focus-within,
 .editor-source-canvas:focus-within {
-    box-shadow: inset 0 2px 0 var(--workspace-live);
+    border-top-color: var(--workspace-live);
 }
 
 .editor-toolbar {

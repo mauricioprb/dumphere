@@ -54,6 +54,10 @@ Route::get('/health', function () {
 
 Route::middleware([ThrottleByIp::class, SanitizeSlug::class])
     ->group(function () {
+        Route::get('/api/document-tree/{slug}', [DocumentController::class, 'tree'])
+            ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
+            ->name('document.tree');
+
         Route::post('/{slug}/save', [DocumentController::class, 'save'])
             ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
             ->name('document.save');

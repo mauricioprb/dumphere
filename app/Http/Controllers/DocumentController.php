@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\FindOrCreateDocument;
+use App\Actions\ListDocumentChildren;
 use App\Actions\PersistDocumentContent;
 use App\Exceptions\DocumentTooLargeException;
 use App\Exceptions\TooManyDocumentsCreatedException;
@@ -19,6 +20,7 @@ class DocumentController extends Controller
 {
     public function __construct(
         private readonly FindOrCreateDocument $findOrCreate,
+        private readonly ListDocumentChildren $listDocumentChildren,
         private readonly PersistDocumentContent $persistContent,
         private readonly WebSocketTokenService $wsTokenService,
     ) {}
@@ -46,6 +48,13 @@ class DocumentController extends Controller
                 $request,
                 filled($document->title) ? $document->title : $document->slug,
             ),
+        ]);
+    }
+
+    public function tree(string $slug): JsonResponse
+    {
+        return response()->json([
+            'children' => $this->listDocumentChildren->execute($slug),
         ]);
     }
 

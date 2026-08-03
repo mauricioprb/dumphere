@@ -30,6 +30,18 @@ export default {
     'navigation.home': 'Voltar para o início',
     'navigation.skip': 'Ir para o conteúdo principal',
 
+    'documentTree.title': 'Páginas',
+    'documentTree.breadcrumbs': 'Caminho da página',
+    'documentTree.open': 'Abrir árvore de páginas',
+    'documentTree.close': 'Fechar árvore de páginas',
+    'documentTree.expandSidebar': 'Expandir painel de páginas',
+    'documentTree.collapseSidebar': 'Recolher painel de páginas',
+    'documentTree.expand': 'Expandir {page}',
+    'documentTree.collapse': 'Recolher {page}',
+    'documentTree.loading': 'Carregando páginas...',
+    'documentTree.loadError': 'Não foi possível carregar este ramo.',
+    'documentTree.retry': 'Tentar novamente',
+
     'loader.loading': 'Carregando página...',
 
     'toolbar.ariaLabel': 'Barra de formatação',
