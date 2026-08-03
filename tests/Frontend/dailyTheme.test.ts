@@ -58,6 +58,8 @@ describe('daily theme', () => {
         expect(theme).toMatch(/\.dark\s*{[^}]*--workspace-live: oklch\([^;]+var\(--workspace-theme-hue\)/s);
         expect(external).toContain('--external-paper: var(--workspace-paper)');
         expect(external).toContain('--external-live: var(--workspace-live)');
+        expect(external.match(/--external-presence-[^;]+var\(--workspace-theme-hue\)/g)).toHaveLength(6);
+        expect(external).not.toMatch(/--external-presence-[^;]+var\(--daily-hue\)/);
         expect(layout).toContain('bg-(--workspace-paper)');
         expect(layout).toContain('text-(--workspace-ink)');
     });

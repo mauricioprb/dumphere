@@ -15,9 +15,9 @@
     --external-noise-ink: oklch(0.24 0.02 var(--daily-hue) / 0.13);
     --external-noise-blend: multiply;
     --external-focus-edge: var(--workspace-ink);
-    --external-presence-line: oklch(0.48 0.11 calc(var(--daily-hue) + 145deg));
-    --external-presence-chip: oklch(0.82 0.08 calc(var(--daily-hue) + 145deg));
-    --external-presence-chip-ink: oklch(0.26 0.08 calc(var(--daily-hue) + 145deg));
+    --external-presence-line: oklch(0.48 0.11 calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip: oklch(0.82 0.08 calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip-ink: oklch(0.26 0.08 calc(var(--workspace-theme-hue) + 145deg));
 }
 
 .dark .external-page {
@@ -27,9 +27,9 @@
     --external-noise-ink: oklch(0.62 0.015 var(--daily-hue) / 0.3);
     --external-noise-blend: color-dodge;
     --external-focus-edge: transparent;
-    --external-presence-line: oklch(0.76 0.08 calc(var(--daily-hue) + 145deg));
-    --external-presence-chip: oklch(0.69 0.09 calc(var(--daily-hue) + 145deg));
-    --external-presence-chip-ink: oklch(0.18 0.06 calc(var(--daily-hue) + 145deg));
+    --external-presence-line: oklch(0.76 0.08 calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip: oklch(0.69 0.09 calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip-ink: oklch(0.18 0.06 calc(var(--workspace-theme-hue) + 145deg));
 }
 
 .external-backdrop__art {
