@@ -111,17 +111,6 @@ export function collaboratorInkColor(color: string): string {
     return COLLABORATOR_INKS[color.toUpperCase() as keyof typeof COLLABORATOR_INKS] ?? '#263238';
 }
 
-export function randomCollaboratorNames(count: number): string[] {
-    const names = [...COLLABORATOR_NAMES];
-
-    for (let index = names.length - 1; index > 0; index -= 1) {
-        const randomIndex = Math.floor(Math.random() * (index + 1));
-        [names[index], names[randomIndex]] = [names[randomIndex], names[index]];
-    }
-
-    return names.slice(0, Math.max(0, count));
-}
-
 export function generateUniqueCollaboratorName(usedNames: string[]): string {
     const availableNames = COLLABORATOR_NAMES.filter((name) => !usedNames.includes(name));
 

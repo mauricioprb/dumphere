@@ -1,6 +1,5 @@
 export default {
     'app.title': 'Dumphere',
-    'app.titleFull': 'Editor Markdown colaborativo',
 
     'home.heroLead': 'Abra uma',
     'home.heroObject': 'página.',

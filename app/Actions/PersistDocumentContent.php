@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Exceptions\DocumentTooLargeException;
 use App\Models\Document;
 use App\Support\DocumentHtmlSanitizer;
 use Illuminate\Support\Facades\Log;
@@ -21,9 +20,7 @@ class PersistDocumentContent
 
         $contentSizeBytes = strlen($contentHtml);
         if ($contentSizeBytes > Document::MAX_SIZE_BYTES) {
-            throw new DocumentTooLargeException(
-                "Document '{$slug}' exceeds maximum size of " . Document::MAX_SIZE_BYTES . " bytes (current: {$contentSizeBytes} bytes)."
-            );
+            abort(413, "Document '{$slug}' exceeds maximum size of " . Document::MAX_SIZE_BYTES . " bytes (current: {$contentSizeBytes} bytes).");
         }
 
         $contentHtml = $this->htmlSanitizer->sanitize($contentHtml);

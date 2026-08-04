@@ -2,7 +2,6 @@ import type ptBR from './pt-BR';
 
 const en = {
     'app.title': 'Dumphere',
-    'app.titleFull': 'Collaborative Markdown editor',
 
     'home.heroLead': 'Open a',
     'home.heroObject': 'page.',

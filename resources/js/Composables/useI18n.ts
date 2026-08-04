@@ -58,16 +58,5 @@ export function useI18n() {
         return message;
     };
 
-    function setLocale(newLocale: Locale) {
-        locale.value = newLocale;
-    }
-
-    const availableLocales: Locale[] = ['pt-BR', 'en'];
-
-    return {
-        t,
-        locale,
-        setLocale,
-        availableLocales,
-    };
+    return { t, locale };
 }

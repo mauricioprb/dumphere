@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Http\Controllers\DocumentController;
 use App\Http\Middleware\SanitizeSlug;
-use App\Http\Middleware\ThrottleByIp;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +51,7 @@ Route::get('/health', function () {
     ]);
 })->name('health');
 
-Route::middleware([ThrottleByIp::class, SanitizeSlug::class])
+Route::middleware(['throttle:60,1', SanitizeSlug::class])
     ->group(function () {
         Route::get('/api/document-tree/{slug}', [DocumentController::class, 'tree'])
             ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
