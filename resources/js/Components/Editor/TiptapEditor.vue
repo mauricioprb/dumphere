@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, toRef, watch } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import type { Editor } from '@tiptap/core';
 import { BubbleMenu } from '@tiptap/vue-3/menus';
@@ -30,7 +30,7 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 const { ydoc, yXmlFragment, wsProvider, userName, userColor, whenLocalSynced, connect } = useYjsProvider({
     documentId: props.documentId,
-    wsToken: props.wsToken,
+    wsToken: toRef(props, 'wsToken'),
     initialStateBase64: props.initialYjsState,
 });
 

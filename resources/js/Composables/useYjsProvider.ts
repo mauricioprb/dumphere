@@ -1,4 +1,5 @@
-import { ref, onUnmounted } from 'vue';
+import { ref, watch, onUnmounted, type Ref } from 'vue';
+import { router } from '@inertiajs/vue3';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { IndexeddbPersistence } from 'y-indexeddb';
@@ -9,9 +10,11 @@ import { generateUniqueCollaboratorName, randomCollaboratorColor } from '@/Lib/c
 
 interface YjsProviderOptions {
     documentId: string;
-    wsToken: string;
+    wsToken: Ref<string>;
     initialStateBase64: string | null;
 }
+
+const RECONNECT_FAILURES_BEFORE_TOKEN_REFRESH = 2;
 
 interface AwarenessState {
     user?: {
@@ -37,8 +40,30 @@ export function useYjsProvider({ documentId, wsToken, initialStateBase64 }: YjsP
     const wsProvider = new WebsocketProvider(wsUrl, `document-${documentId}`, ydoc, {
         connect: false,
         maxBackoffTime: 10000,
-        protocols: ['yjs', `auth.${wsToken}`],
+        protocols: authProtocols(wsToken.value),
     });
+
+    watch(wsToken, (freshToken) => {
+        wsProvider.protocols = authProtocols(freshToken);
+    });
+
+    let tokenRefreshInFlight = false;
+
+    const refreshExpiredToken = () => {
+        if (tokenRefreshInFlight || wsProvider.wsUnsuccessfulReconnects < RECONNECT_FAILURES_BEFORE_TOKEN_REFRESH) {
+            return;
+        }
+
+        tokenRefreshInFlight = true;
+        router.reload({
+            only: ['wsToken'],
+            onFinish: () => {
+                tokenRefreshInFlight = false;
+            },
+        });
+    };
+
+    wsProvider.on('connection-error', refreshExpiredToken);
 
     const awareness = wsProvider.awareness;
     const userColor = randomCollaboratorColor();
@@ -121,6 +146,7 @@ export function useYjsProvider({ documentId, wsToken, initialStateBase64 }: YjsP
 
     onUnmounted(() => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
+        wsProvider.off('connection-error', refreshExpiredToken);
         awareness.setLocalState(null);
         awareness.off('change', handleAwarenessChange);
         store.setConnected(false);
@@ -143,6 +169,10 @@ export function useYjsProvider({ documentId, wsToken, initialStateBase64 }: YjsP
 }
 
 const USERNAME_STORAGE_KEY = 'md-editor-username';
+
+function authProtocols(token: string): string[] {
+    return ['yjs', `auth.${token}`];
+}
 
 function getOrCreateUserName(): string {
     const stored = localStorage.getItem(USERNAME_STORAGE_KEY);

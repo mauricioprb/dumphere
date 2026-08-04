@@ -13,7 +13,6 @@ class FindOrCreateDocument
 {
     private const MAX_CREATIONS_PER_HOUR = 10;
 
-    /** The slug arrives normalised and validated from the SanitizeSlug middleware. */
     public function execute(string $slug): Document
     {
         $document = Document::where('slug', $slug)->first();

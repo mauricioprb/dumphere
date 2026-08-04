@@ -78,6 +78,7 @@ export default {
     'status.connected': 'Conectado',
     'status.disconnected': 'Desconectado',
     'status.failedToSave': 'Falha ao salvar. Tentando novamente...',
+    'status.tooLarge': 'Documento grande demais para salvar. Remova parte do conteúdo.',
 
     'presence.more': '+{count} mais',
     'presence.ariaLabel': 'Outras pessoas neste documento',

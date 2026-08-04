@@ -6,11 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Drops what earlier migrations created for features this app never gained:
- * accounts (there is no login, documents are anonymous), queued jobs, and the
- * pre-Tiptap document columns replaced by content_html / yjs_state_base64.
- */
 return new class extends Migration
 {
     public function up(): void

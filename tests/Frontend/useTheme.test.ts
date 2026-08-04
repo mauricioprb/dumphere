@@ -79,7 +79,6 @@ describe('theme', () => {
     it('defines two temporary palettes between the permanent themes', () => {
         const themeStyles = readFileSync(new URL('../../resources/css/theme.css', import.meta.url), 'utf8');
 
-        expect(themeStyles).toContain('--theme-lens-duration: 720ms');
         expect(themeStyles).toContain('--theme-phase-duration: 240ms');
         expect(themeStyles).toContain('html.theme-phase-light');
         expect(themeStyles).toContain('html.theme-phase-dark');

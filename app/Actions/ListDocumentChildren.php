@@ -9,11 +9,7 @@ use Illuminate\Support\Str;
 
 final class ListDocumentChildren
 {
-    /**
-     * The slug arrives normalised and validated from the SanitizeSlug middleware.
-     *
-     * @return list<array{slug: string, label: string, hasChildren: bool, exists: bool}>
-     */
+    /** @return list<array{slug: string, label: string, hasChildren: bool, exists: bool}> */
     public function execute(string $slug): array
     {
         $children = [];

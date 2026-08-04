@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\Document;
 use App\Support\WebSocketTokenService;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -142,4 +143,27 @@ it('does not consume the creation limit for existing documents', function (): vo
     }
 
     $this->assertDatabaseCount('documents', 1);
+});
+
+it('mints a fresh websocket token on a partial reload', function (): void {
+    $this->withoutVite();
+
+    $document = Document::create([
+        'slug' => 'long-lived-tab',
+        'title' => 'Long Lived Tab',
+        'content_html' => '',
+    ]);
+
+    $response = $this->get('/long-lived-tab', [
+        'X-Inertia' => 'true',
+        'X-Inertia-Version' => (new HandleInertiaRequests)->version(request()),
+        'X-Inertia-Partial-Component' => 'Document/Show',
+        'X-Inertia-Partial-Data' => 'wsToken',
+    ])->assertOk();
+
+    $props = $response->json('props');
+
+    expect($props)->toHaveKey('wsToken')
+        ->and($props)->not->toHaveKey('document')
+        ->and(app(WebSocketTokenService::class)->verify($props['wsToken']))->toBe($document->id);
 });

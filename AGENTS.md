@@ -247,9 +247,9 @@ caminho, abre a página e escreve; quem tiver o link entra na mesma sala e edita
 tempo real. O documento é criado sozinho no primeiro acesso e removido depois de 30 dias
 sem visitas.
 
-- NÃO existe autenticação, conta, login ou perfil. `App\Models\User` e a tabela `users`
-  são resíduo do esqueleto do Laravel e não são usados por nenhuma rota. Não construa em
-  cima deles nem os trate como funcionalidade existente.
+- NÃO existe autenticação, conta, login ou perfil. O modelo `User`, a tabela `users` e o
+  esqueleto de fila e e-mail do Laravel foram removidos por não terem uso. Não os traga de
+  volta nem construa em cima deles.
 - NÃO é multi-tenant e não tem cobrança. Não adicione essa complexidade.
 - Privacidade é o produto. Não colete PII, não registre conteúdo de documento em log e não
   adicione analytics de comportamento.
@@ -309,14 +309,13 @@ além disso é cerimônia que só atrapalha quem lê.
 ```
 app/
 ├── Actions/                     um caso de uso por classe, método execute()
-│                                FindOrCreateDocument, PersistDocumentContent, PurgeStaleDocuments
+│                                FindOrCreateDocument, ListDocumentChildren,
+│                                PersistDocumentContent, PurgeStaleDocuments
 ├── Console/Commands/            PurgeStaleDocumentsCommand
-├── Exceptions/                  DocumentTooLargeException, TooManyDocumentsCreatedException
 ├── Http/
 │   ├── Controllers/             DocumentController
-│   └── Middleware/              ContentSecurityPolicy, SanitizeSlug, ThrottleByIp, HandleInertiaRequests
-├── Models/                      Document, User (User não é usado, ver §2)
-├── Providers/                   AppServiceProvider
+│   └── Middleware/              ContentSecurityPolicy, SanitizeSlug, HandleInertiaRequests
+├── Models/                      Document
 └── Support/                     DocumentSlug, DocumentHtmlSanitizer, TiptapAttributeSanitizer,
                                  WebSocketTokenService
 
@@ -379,6 +378,9 @@ Uma única tabela de negócio. Não há relação com usuário porque não há u
   o humano; não use como chave em nada persistente.
 - `title` (string 255, nulável).
 - `content_html` (longtext, nulável). Representação HTML sanitizada, escrita pelo Laravel.
+  O editor só a lê quando o CRDT está vazio, ou seja, em documento que nunca sincronizou.
+  Depois do primeiro snapshot ela vira só leitura para humano e para backup; não a trate
+  como caminho de recuperação da edição, porque ela não é lida de volta.
 - `yjs_state_base64` (longtext, nulável). Snapshot do CRDT, escrito pelo `yjs-server`.
 - `last_accessed_at` (timestamp, nulável, index). Base do expurgo.
 - `created_at`, `updated_at`. Índice composto `(last_accessed_at, created_at)`.
@@ -393,12 +395,15 @@ Regras que importam:
 - `Document::MAX_SIZE_BYTES` (512 KB) limita o HTML e alimenta o
   `withMaxInputLength` do sanitizador. O `yjs-server` tem seu próprio teto
   (`YJS_MAX_DOCUMENT_BYTES`, 2 MB). São limites distintos e propositais; não unifique sem
-  pensar nos dois formatos.
+  pensar nos dois formatos. O editor tem um terceiro teto, `MAX_DOCUMENT_CHARACTERS` em
+  `editorExtensions.ts`, cuja função é impedir que o documento chegue ao teto do servidor:
+  o autosave não re-tenta rejeição permanente, então um documento acima de 512 KB pararia
+  de salvar de vez.
 - Todo HTML que entra passa por `DocumentHtmlSanitizer` antes de tocar o banco. Nunca
   persista HTML vindo do cliente sem sanitizar, nem confie em sanitização feita no
   frontend.
 - O documento é criado sozinho no primeiro `GET /{slug}`. Criação é limitada por IP e
-  lança `TooManyDocumentsCreatedException`.
+  responde 429 quando o limite estoura.
 - Expurgo diário às 03:00 (`documents:purge`) remove o que está sem acesso há mais de 30
   dias. É destrutivo e sem lixeira; qualquer mudança nessa regra precisa de teste.
 - Migração que renomeia coluna usada pelos dois processos precisa de janela compatível:
@@ -418,8 +423,11 @@ O caminho crítico do produto. Trate com cuidado.
 4. O `yjs-server` aplica limite de conexões por IP e de mensagens por segundo, e persiste o
    snapshot no PostgreSQL.
 5. Em paralelo, o cliente faz autosave do HTML em `POST /{slug}/save`, que sanitiza e grava
-   `content_html`. É a representação legível e a base de recuperação, não a fonte da
-   verdade da edição concorrente.
+   `content_html`. É a representação legível do documento, não a fonte da verdade da edição
+   concorrente.
+6. Quando a reconexão falha duas vezes seguidas, o cliente recarrega apenas a prop `wsToken`
+   e troca `protocols` do provider. Sem isso, uma aba aberta por mais de uma hora perde a
+   colaboração em silêncio, porque o token expira e toda reconexão passa a levar 403.
 
 Regras:
 
@@ -490,7 +498,7 @@ obrigatória.
 Como não há conta nem cobrança, todo limite é por IP ou por documento. Eles são a defesa do
 serviço, não detalhe de configuração.
 
-- `ThrottleByIp` protege as rotas de documento (60 requisições por minuto por padrão).
+- O `throttle:60,1` do Laravel protege as rotas de documento.
 - Criação de documento tem limite próprio por IP em `FindOrCreateDocument`.
 - `YJS_MAX_CONNECTIONS_PER_IP`, `YJS_MAX_MESSAGES_PER_SECOND`, `YJS_MAX_MESSAGE_BURST`,
   `YJS_MAX_PAYLOAD_BYTES` e `YJS_MAX_DOCUMENT_BYTES` controlam o servidor colaborativo.

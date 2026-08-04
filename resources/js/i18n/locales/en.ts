@@ -79,6 +79,7 @@ const en = {
     'status.connected': 'Connected',
     'status.disconnected': 'Disconnected',
     'status.failedToSave': 'Failed to save. Will retry...',
+    'status.tooLarge': 'Document too large to save. Remove some content.',
 
     'presence.more': '+{count} more',
     'presence.ariaLabel': 'Other people in this document',

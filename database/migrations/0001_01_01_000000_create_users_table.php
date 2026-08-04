@@ -6,10 +6,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Only the session table survives here: the app has no accounts. The file name
- * is kept because deployed databases already recorded it as run.
- */
 return new class extends Migration
 {
     public function up(): void

@@ -48,8 +48,6 @@
     --daily-hue: 87deg;
     --workspace-theme-hue: var(--daily-hue);
     --brand-slash: var(--workspace-live);
-    --theme-lens-duration: 720ms;
-    --theme-lens-easing: linear;
     --theme-phase-duration: 240ms;
     --workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue));
     --workspace-panel: oklch(0.94 0.02 var(--workspace-theme-hue));

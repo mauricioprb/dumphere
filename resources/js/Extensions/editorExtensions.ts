@@ -35,6 +35,8 @@ interface EditorExtensionsOptions {
 
 const lowlight = createLowlight(common);
 
+export const MAX_DOCUMENT_CHARACTERS = 100_000;
+
 export function createEditorExtensions(options: EditorExtensionsOptions) {
     return [
         StarterKit.configure({
@@ -69,7 +71,7 @@ export function createEditorExtensions(options: EditorExtensionsOptions) {
         TableRow,
         TableCell,
         TableHeader,
-        CharacterCount,
+        CharacterCount.configure({ limit: MAX_DOCUMENT_CHARACTERS }),
         Image.configure({
             inline: false,
             allowBase64: false,

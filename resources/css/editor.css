@@ -181,8 +181,7 @@
     min-height: 100%;
 }
 
-[data-node-view-wrapper],
-.tiptap-editor-wrapper {
+[data-node-view-wrapper] {
     height: 100%;
 }
 
