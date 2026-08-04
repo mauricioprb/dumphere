@@ -13,4 +13,14 @@ describe('external page background', () => {
         expect(styles).not.toContain('.reading-surface');
         expect(terms).not.toContain('reading-surface');
     });
+
+    it('uses document scrolling for the terms page', () => {
+        const layout = readSource('resources/js/Components/Layout/AppLayout.vue');
+        const terms = readSource('resources/js/Pages/Terms.vue');
+
+        expect(layout).toContain('fixedViewport?: boolean');
+        expect(layout).toContain('fixedViewport: true');
+        expect(layout).toContain(":class=\"fixedViewport ? 'h-dvh min-h-screen' : 'min-h-screen'\"");
+        expect(terms).toContain('<AppLayout :fixed-viewport="false">');
+    });
 });

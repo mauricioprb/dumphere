@@ -3,13 +3,23 @@ import { useTheme } from '@/Composables/useTheme';
 import { useI18n } from '@/Composables/useI18n';
 import SeoHead from '@/Components/UI/SeoHead.vue';
 
+withDefaults(
+    defineProps<{
+        fixedViewport?: boolean;
+    }>(),
+    {
+        fixedViewport: true,
+    },
+);
+
 useTheme();
 const { t } = useI18n();
 </script>
 
 <template>
     <div
-        class="app-shell flex h-dvh min-h-screen flex-col bg-(--workspace-paper) font-sans text-(--workspace-ink) transition-colors duration-200 motion-reduce:transition-none"
+        class="app-shell flex flex-col bg-(--workspace-paper) font-sans text-(--workspace-ink) transition-colors duration-200 motion-reduce:transition-none"
+        :class="fixedViewport ? 'h-dvh min-h-screen' : 'min-h-screen'"
     >
         <SeoHead />
         <a

@@ -148,7 +148,7 @@ const clauses = computed<Clause[]>(() => [
 </script>
 
 <template>
-    <AppLayout>
+    <AppLayout :fixed-viewport="false">
         <ExternalPageShell class="scroll-pt-8 scroll-smooth motion-reduce:scroll-auto">
             <div class="relative z-2 mx-auto w-[min(100%,54rem)] px-[clamp(1.1rem,3vw,2.75rem)] pb-4">
                 <div class="pt-[clamp(1.5rem,5vh,3.5rem)]">
