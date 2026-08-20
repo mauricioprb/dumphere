@@ -9,6 +9,7 @@
         "php": "^8.5",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/framework": "^13.0",
+        "stripe/stripe-php": "^21.2",
         "symfony/html-sanitizer": "^8.1"
     },
     "require-dev": {

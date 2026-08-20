@@ -20,7 +20,7 @@ export function createMessageRateLimiter(messagesPerSecond, now = () => Date.now
     };
 }
 
-export function guardMessageHandlers(webSocket, consumeMessage) {
+export function guardMessageHandlers(webSocket, consumeMessage, acceptMessage = () => true) {
     const originalOn = webSocket.on;
 
     webSocket.on = function on(eventName, listener) {
@@ -33,6 +33,8 @@ export function guardMessageHandlers(webSocket, consumeMessage) {
                 this.close(1008, 'Message rate exceeded');
                 return;
             }
+
+            if (!acceptMessage(arguments_[0])) return;
 
             listener(...arguments_);
         });

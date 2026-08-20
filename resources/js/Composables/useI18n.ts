@@ -14,7 +14,7 @@ const locales: Record<Locale, Record<string, string>> = {
 const isLocale = (value: string | null): value is Locale => value === 'pt-BR' || value === 'en';
 
 const getBrowserLocale = (): Locale => {
-    if (typeof window === 'undefined') return 'pt-BR';
+    if (typeof window === 'undefined') return 'en';
 
     const browserLang = window.navigator.language.toLowerCase();
 
@@ -46,12 +46,12 @@ export function useI18n() {
     });
 
     const t: TranslationFunction = (key, params) => {
-        const messages = locales[currentLocale.value] ?? locales['pt-BR'];
+        const messages = locales[currentLocale.value] ?? locales.en;
         let message = messages[key] ?? key;
 
         if (params) {
             for (const [k, v] of Object.entries(params)) {
-                message = message.replace(`{${k}}`, String(v));
+                message = message.replaceAll(`{${k}}`, String(v));
             }
         }
 

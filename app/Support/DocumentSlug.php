@@ -18,10 +18,14 @@ final class DocumentSlug
         'assets',
         'broadcasting',
         'build',
+        'checkout',
+        'claim',
         'dashboard',
         'favicon',
         'health',
         'login',
+        'manage',
+        'recover',
         'register',
         'reverb',
         'robots',
@@ -31,6 +35,11 @@ final class DocumentSlug
         'up',
         'vendor',
     ];
+
+    public static function root(string $slug): string
+    {
+        return explode('/', self::normalize($slug), 2)[0];
+    }
 
     public static function normalize(string $slug): string
     {

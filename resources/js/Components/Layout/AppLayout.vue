@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { watchEffect } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { applyAddressTheme } from '@/Lib/dailyTheme';
 import { useTheme } from '@/Composables/useTheme';
 import { useI18n } from '@/Composables/useI18n';
 import SeoHead from '@/Components/UI/SeoHead.vue';
@@ -14,6 +17,16 @@ withDefaults(
 
 useTheme();
 const { t } = useI18n();
+const page = usePage();
+
+watchEffect(() => {
+    applyAddressTheme(document.documentElement, {
+        hue: (page.props.themeHue ?? null) as number | null,
+        chroma: (page.props.themeChroma ?? null) as number | null,
+        hueDark: (page.props.themeHueDark ?? null) as number | null,
+        chromaDark: (page.props.themeChromaDark ?? null) as number | null,
+    });
+});
 </script>
 
 <template>

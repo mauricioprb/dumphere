@@ -16,17 +16,17 @@
     --color-neutral-900: #0e0e11;
     --color-neutral-950: #08080a;
 
-    --color-primary-50: oklch(0.98 0.018 var(--daily-hue));
-    --color-primary-100: oklch(0.95 0.035 var(--daily-hue));
-    --color-primary-200: oklch(0.89 0.06 var(--daily-hue));
-    --color-primary-300: oklch(0.8 0.1 var(--daily-hue));
-    --color-primary-400: oklch(0.69 0.13 var(--daily-hue));
-    --color-primary-500: oklch(0.56 0.15 var(--daily-hue));
-    --color-primary-600: oklch(0.47 0.14 var(--daily-hue));
-    --color-primary-700: oklch(0.39 0.12 var(--daily-hue));
-    --color-primary-800: oklch(0.32 0.09 var(--daily-hue));
-    --color-primary-900: oklch(0.26 0.065 var(--daily-hue));
-    --color-primary-950: oklch(0.18 0.045 var(--daily-hue));
+    --color-primary-50: oklch(0.98 calc(0.018 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-100: oklch(0.95 calc(0.035 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-200: oklch(0.89 calc(0.06 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-300: oklch(0.8 calc(0.1 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-400: oklch(0.69 calc(0.13 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-500: oklch(0.56 calc(0.15 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-600: oklch(0.47 calc(0.14 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-700: oklch(0.39 calc(0.12 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-800: oklch(0.32 calc(0.09 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-900: oklch(0.26 calc(0.065 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-950: oklch(0.18 calc(0.045 * var(--theme-chroma, 1)) var(--daily-hue));
 
     --color-success-400: #34d399;
     --color-success-500: #10b981;
@@ -46,73 +46,75 @@
 
 :root {
     --daily-hue: 87deg;
-    --workspace-theme-hue: var(--daily-hue);
+    --workspace-theme-hue: var(--light-hue, var(--daily-hue));
+    --theme-chroma: var(--light-chroma, 1);
     --brand-slash: var(--workspace-live);
     --theme-phase-duration: 240ms;
-    --workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue));
-    --workspace-panel: oklch(0.94 0.02 var(--workspace-theme-hue));
-    --workspace-raised: oklch(0.998 0.004 var(--workspace-theme-hue));
-    --workspace-ink: oklch(0.19 0.025 var(--workspace-theme-hue));
-    --workspace-muted: oklch(0.42 0.032 var(--workspace-theme-hue));
-    --workspace-rule: oklch(0.83 0.028 var(--workspace-theme-hue));
-    --workspace-accent: oklch(0.9 0.075 var(--workspace-theme-hue));
-    --workspace-accent-ink: oklch(0.24 0.07 var(--workspace-theme-hue));
-    --workspace-live: oklch(0.44 0.14 var(--workspace-theme-hue));
-    --workspace-live-ink: oklch(0.985 0.006 var(--workspace-theme-hue));
-    --workspace-danger: #a02c3a;
-    --workspace-warning: #8b5a0a;
-    --workspace-code: oklch(0.18 0.026 var(--workspace-theme-hue));
-    --workspace-code-ink: oklch(0.94 0.012 var(--workspace-theme-hue));
+    --workspace-paper: oklch(0.985 calc(0.012 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.94 calc(0.02 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.998 calc(0.004 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.19 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.42 calc(0.032 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.83 calc(0.028 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.9 calc(0.075 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.24 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live: oklch(0.44 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.985 calc(0.006 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-danger: oklch(0.48 calc(0.16 * var(--theme-chroma, 1)) 15deg);
+    --workspace-warning: oklch(0.52 calc(0.12 * var(--theme-chroma, 1)) 75deg);
+    --workspace-code: oklch(0.18 calc(0.026 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.94 calc(0.012 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
 }
 
 .dark {
-    --workspace-theme-hue: calc(var(--daily-hue) + 180deg);
-    --workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue));
-    --workspace-panel: oklch(0.195 0.035 var(--workspace-theme-hue));
-    --workspace-raised: oklch(0.245 0.04 var(--workspace-theme-hue));
-    --workspace-ink: oklch(0.95 0.01 var(--workspace-theme-hue));
-    --workspace-muted: oklch(0.72 0.025 var(--workspace-theme-hue));
-    --workspace-rule: oklch(0.34 0.035 var(--workspace-theme-hue));
-    --workspace-accent: oklch(0.3 0.085 var(--workspace-theme-hue));
-    --workspace-accent-ink: oklch(0.92 0.03 var(--workspace-theme-hue));
-    --workspace-live: oklch(0.78 0.13 var(--workspace-theme-hue));
-    --workspace-live-ink: oklch(0.15 0.03 var(--workspace-theme-hue));
-    --workspace-danger: #f0919b;
-    --workspace-warning: #e6c27a;
-    --workspace-code: oklch(0.115 0.02 var(--workspace-theme-hue));
-    --workspace-code-ink: oklch(0.9 0.01 var(--workspace-theme-hue));
+    --workspace-theme-hue: var(--dark-hue, calc(var(--light-hue, var(--daily-hue)) + 180deg));
+    --theme-chroma: var(--dark-chroma, var(--light-chroma, 1));
+    --workspace-paper: oklch(0.145 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.195 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.245 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.95 calc(0.01 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.72 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.34 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.3 calc(0.085 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.92 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live: oklch(0.78 calc(0.13 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.15 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-danger: oklch(0.78 calc(0.12 * var(--theme-chroma, 1)) 15deg);
+    --workspace-warning: oklch(0.83 calc(0.09 * var(--theme-chroma, 1)) 75deg);
+    --workspace-code: oklch(0.115 calc(0.02 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.9 calc(0.01 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
 }
 
 html.theme-phase-light {
-    --workspace-theme-hue: calc(var(--daily-hue) + 250deg);
-    --workspace-paper: oklch(0.955 0.04 var(--workspace-theme-hue));
-    --workspace-panel: oklch(0.91 0.05 var(--workspace-theme-hue));
-    --workspace-raised: oklch(0.98 0.025 var(--workspace-theme-hue));
-    --workspace-ink: oklch(0.22 0.035 var(--workspace-theme-hue));
-    --workspace-muted: oklch(0.45 0.04 var(--workspace-theme-hue));
-    --workspace-rule: oklch(0.76 0.05 var(--workspace-theme-hue));
-    --workspace-accent: oklch(0.84 0.095 var(--workspace-theme-hue));
-    --workspace-accent-ink: oklch(0.24 0.07 var(--workspace-theme-hue));
-    --workspace-live: oklch(0.49 0.14 var(--workspace-theme-hue));
-    --workspace-live-ink: oklch(0.97 0.015 var(--workspace-theme-hue));
-    --workspace-code: oklch(0.19 0.035 var(--workspace-theme-hue));
-    --workspace-code-ink: oklch(0.93 0.025 var(--workspace-theme-hue));
+    --workspace-theme-hue: calc(var(--light-hue, var(--daily-hue)) + 250deg);
+    --workspace-paper: oklch(0.955 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.91 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.98 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.22 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.45 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.76 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.84 calc(0.095 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.24 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live: oklch(0.49 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.97 calc(0.015 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code: oklch(0.19 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.93 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
 }
 
 html.theme-phase-dark {
-    --workspace-theme-hue: calc(var(--daily-hue) + 72deg);
-    --workspace-paper: oklch(0.16 0.045 var(--workspace-theme-hue));
-    --workspace-panel: oklch(0.205 0.05 var(--workspace-theme-hue));
-    --workspace-raised: oklch(0.255 0.055 var(--workspace-theme-hue));
-    --workspace-ink: oklch(0.91 0.025 var(--workspace-theme-hue));
-    --workspace-muted: oklch(0.68 0.035 var(--workspace-theme-hue));
-    --workspace-rule: oklch(0.31 0.05 var(--workspace-theme-hue));
-    --workspace-accent: oklch(0.27 0.1 var(--workspace-theme-hue));
-    --workspace-accent-ink: oklch(0.91 0.035 var(--workspace-theme-hue));
-    --workspace-live: oklch(0.72 0.14 var(--workspace-theme-hue));
-    --workspace-live-ink: oklch(0.13 0.04 var(--workspace-theme-hue));
-    --workspace-code: oklch(0.12 0.03 var(--workspace-theme-hue));
-    --workspace-code-ink: oklch(0.88 0.025 var(--workspace-theme-hue));
+    --workspace-theme-hue: calc(var(--light-hue, var(--daily-hue)) + 72deg);
+    --workspace-paper: oklch(0.16 calc(0.045 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.205 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.255 calc(0.055 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.91 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.68 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.31 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.27 calc(0.1 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(0.91 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live: oklch(0.72 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(0.13 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code: oklch(0.12 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.88 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
 }
 
 html.theme-transition-to-dark body,
@@ -241,7 +243,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
     --editor-placeholder: var(--workspace-muted);
     --editor-link: var(--workspace-live);
     --editor-code-bg: var(--workspace-panel);
-    --editor-code-text: oklch(0.36 0.07 var(--workspace-theme-hue));
+    --editor-code-text: oklch(0.36 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
     --editor-pre-bg: var(--workspace-code);
     --editor-pre-text: var(--workspace-code-ink);
     --editor-pre-border: transparent;
@@ -266,7 +268,7 @@ html.theme-transition-to-light .theme-toggle__thumb {
 }
 
 .dark {
-    --editor-code-text: oklch(0.82 0.07 var(--workspace-theme-hue));
+    --editor-code-text: oklch(0.82 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
     --editor-pre-border: var(--workspace-rule);
 }
 

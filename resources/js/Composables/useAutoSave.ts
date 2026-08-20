@@ -1,4 +1,4 @@
-import { onUnmounted, type ShallowRef } from 'vue';
+import { onUnmounted, type Ref, type ShallowRef } from 'vue';
 import { router } from '@inertiajs/vue3';
 import type { Editor } from '@tiptap/vue-3';
 import { useDocumentStore } from '@/Stores/documentStore';
@@ -10,6 +10,7 @@ import { useI18n } from '@/Composables/useI18n';
 export function useAutoSave(
     editorRef: ShallowRef<Editor | undefined>,
     slug: string,
+    wsToken: Ref<string>,
     debounceMs = 1500,
     beforeRead?: () => void,
 ) {
@@ -60,6 +61,7 @@ export function useAutoSave(
                 },
                 body: JSON.stringify({
                     contentHtml,
+                    wsToken: wsToken.value,
                 }),
             });
 
@@ -125,7 +127,7 @@ export function useAutoSave(
                 'X-CSRF-TOKEN': getCSRFToken(),
                 Accept: 'application/json',
             },
-            body: JSON.stringify({ contentHtml }),
+            body: JSON.stringify({ contentHtml, wsToken: wsToken.value }),
             keepalive: true,
         }).catch(() => {});
     }

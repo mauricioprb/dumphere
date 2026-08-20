@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import test from 'node:test';
 import {
+    gateFor,
     isAllowedOrigin,
     resolveClientIp,
     roomForDocument,
@@ -14,10 +15,13 @@ const secret = 'test-secret';
 const documentId = '0198f37a-21b4-7d6c-8a9b-123456789abc';
 const now = 1_800_000_000;
 
-function tokenFor(id = documentId, expiresAt = now + 3600, signingSecret = secret) {
-    const signature = crypto.createHmac('sha256', signingSecret).update(`${id}:${expiresAt}`).digest('hex');
+function tokenFor(id = documentId, expiresAt = now + 3600, signingSecret = secret, scope = 'write', gate = '') {
+    const signature = crypto
+        .createHmac('sha256', signingSecret)
+        .update(`${id}:${scope}:${gate}:${expiresAt}`)
+        .digest('hex');
 
-    return Buffer.from(`${id}:${expiresAt}:${signature}`).toString('base64url');
+    return Buffer.from(`${id}:${scope}:${gate}:${expiresAt}:${signature}`).toString('base64url');
 }
 
 test('accepts a valid token only for its document room', () => {
@@ -33,6 +37,22 @@ test('rejects expired, overlong and tampered tokens', () => {
     assert.equal(verifyToken(tokenFor(documentId, now + 7201), secret, now).reason, 'invalid_lifetime');
     assert.equal(verifyToken(tokenFor(documentId, now + 3600, 'wrong-secret'), secret, now).reason, 'bad_signature');
     assert.equal(verifyToken('not-base64!', secret, now).reason, 'malformed');
+});
+
+test('carries the scope and refuses unknown ones', () => {
+    assert.equal(verifyToken(tokenFor(), secret, now).scope, 'write');
+    assert.equal(verifyToken(tokenFor(documentId, now + 3600, secret, 'read'), secret, now).scope, 'read');
+    assert.equal(verifyToken(tokenFor(documentId, now + 3600, secret, 'admin'), secret, now).reason, 'malformed');
+});
+
+test('carries the gate so stale rules can be spotted', () => {
+    const gate = gateFor(true, 'hashed-password', 'session-one');
+
+    assert.equal(verifyToken(tokenFor(documentId, now + 3600, secret, 'read', gate), secret, now).gate, gate);
+    assert.notEqual(gateFor(false, 'hashed-password', 'session-one'), gate);
+    assert.notEqual(gateFor(true, null, 'session-one'), gate);
+    assert.notEqual(gateFor(true, 'hashed-password', 'session-two'), gate);
+    assert.equal(gateFor(false, null, null), gateFor(false, null, null));
 });
 
 test('parses only canonical document rooms', () => {

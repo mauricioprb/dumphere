@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue';
-import { Link } from '@inertiajs/vue3';
-import { ChevronRight, FileText, PanelLeftClose, PanelLeftOpen, RefreshCw, X } from '@lucide/vue';
+import { Link, router } from '@inertiajs/vue3';
+import { ChevronRight, FileText, PanelLeftClose, PanelLeftOpen, RefreshCw, Trash2, X } from '@lucide/vue';
 import { useDocumentTree } from '@/Composables/useDocumentTree';
 import { useI18n } from '@/Composables/useI18n';
 
-const props = defineProps<{
-    currentSlug: string;
-    open: boolean;
-    collapsed: boolean;
-}>();
+const props = withDefaults(
+    defineProps<{
+        currentSlug: string;
+        open: boolean;
+        collapsed: boolean;
+        isOwner?: boolean;
+    }>(),
+    { isOwner: false },
+);
 
 const emit = defineEmits<{
     close: [];
@@ -35,6 +39,35 @@ watch(isTreeAvailable, (available) => emit('availability', available), { immedia
 
 function depthClass(depth: number): string {
     return depthClasses[Math.min(depth, depthClasses.length - 1)];
+}
+
+const deleting = ref('');
+
+async function removePage(slug: string, label: string): Promise<void> {
+    if (!window.confirm(t('documentTree.deleteConfirm', { page: label }))) return;
+
+    deleting.value = slug;
+
+    const token = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? '';
+
+    try {
+        const response = await fetch(`/${slug}`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json', 'X-CSRF-TOKEN': token },
+        });
+
+        if (!response.ok) return;
+
+        // Deleting the page you are on leaves nowhere to stand, so go back to the address.
+        const root = props.currentSlug.split('/')[0];
+        const landing =
+            props.currentSlug === slug || props.currentSlug.startsWith(`${slug}/`) ? root : props.currentSlug;
+
+        router.visit(`/${landing}`);
+    } finally {
+        deleting.value = '';
+    }
 }
 </script>
 
@@ -155,6 +188,18 @@ function depthClass(depth: number): string {
                                     aria-hidden="true"
                                 />
                             </Link>
+
+                            <button
+                                v-if="isOwner && node.depth > 0"
+                                type="button"
+                                :disabled="deleting === node.slug"
+                                :aria-label="t('documentTree.delete', { page: node.label })"
+                                :title="t('documentTree.delete', { page: node.label })"
+                                class="editor-focus inline-flex size-9 shrink-0 items-center justify-center rounded-md text-(--workspace-muted) transition-colors hover:bg-(--workspace-paper) hover:text-(--workspace-danger) focus:outline-none disabled:opacity-50 motion-reduce:transition-none"
+                                @click="removePage(node.slug, node.label)"
+                            >
+                                <Trash2 class="size-3.5" aria-hidden="true" />
+                            </button>
                         </div>
 
                         <p

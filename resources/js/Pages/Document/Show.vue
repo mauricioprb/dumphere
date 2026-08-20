@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import DocumentBreadcrumbs from '@/Components/Editor/DocumentBreadcrumbs.vue';
 import DocumentTreeSidebar from '@/Components/Editor/DocumentTreeSidebar.vue';
 import TiptapEditor from '@/Components/Editor/TiptapEditor.vue';
 import ConnectionStatus from '@/Components/UI/ConnectionStatus.vue';
 import ExpirationNotice from '@/Components/UI/ExpirationNotice.vue';
+import PageOwnership from '@/Components/UI/PageOwnership.vue';
 import UserBadge from '@/Components/UI/UserBadge.vue';
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue';
 import Wordmark from '@/Components/UI/Wordmark.vue';
@@ -17,10 +18,35 @@ import { readDocumentTreeCollapsed, storeDocumentTreeCollapsed } from '@/Lib/doc
 import { PanelLeft, Users } from '@lucide/vue';
 import type { DocumentData } from '@/types/document';
 
-const props = defineProps<{
-    document: DocumentData;
-    wsToken: string;
-}>();
+const props = withDefaults(
+    defineProps<{
+        document: DocumentData;
+        wsToken: string;
+        readonly?: boolean;
+        paid?: boolean;
+        price?: string | null;
+        isOwner?: boolean;
+        readonlyForVisitors?: boolean;
+        lockedForVisitors?: boolean;
+    }>(),
+    {
+        readonly: false,
+        paid: false,
+        price: null,
+        isOwner: false,
+        readonlyForVisitors: false,
+        lockedForVisitors: false,
+    },
+);
+
+const visitorRestriction = computed(() => {
+    if (!props.isOwner) return null;
+    if (props.readonlyForVisitors && props.lockedForVisitors) return 'status.visitorsLockedReadonly';
+    if (props.readonlyForVisitors) return 'status.readonlyForVisitors';
+    if (props.lockedForVisitors) return 'status.lockedForVisitors';
+
+    return null;
+});
 
 const store = useDocumentStore();
 const { users } = usePresence();
@@ -118,7 +144,24 @@ watch(
                             <span aria-hidden="true">{{ users.length }}</span>
                         </span>
 
-                        <ConnectionStatus />
+                        <PageOwnership :slug="document.slug" :paid="paid" :price="price" :is-owner="isOwner" />
+
+                        <span
+                            v-if="readonly"
+                            class="inline-flex min-h-11 shrink-0 items-center font-mono text-[0.72rem] text-(--workspace-muted) sm:min-h-9"
+                        >
+                            {{ t('status.readonly') }}
+                        </span>
+                        <template v-else>
+                            <span
+                                v-if="visitorRestriction"
+                                :title="t('status.visitorRestrictionLong')"
+                                class="hidden min-h-11 shrink-0 items-center font-mono text-[0.72rem] text-(--workspace-warning) sm:inline-flex sm:min-h-9"
+                            >
+                                {{ t(visitorRestriction) }}
+                            </span>
+                            <ConnectionStatus />
+                        </template>
 
                         <ThemeToggle />
                     </div>
@@ -131,6 +174,7 @@ watch(
                     :current-slug="document.slug"
                     :open="treeNavigationOpen"
                     :collapsed="treeNavigationCollapsed"
+                    :is-owner="isOwner"
                     @availability="updateTreeNavigationAvailability"
                     @close="closeTreeNavigation"
                     @toggle-collapse="toggleTreeNavigationCollapse"
@@ -138,17 +182,19 @@ watch(
                 <div class="flex min-w-0 flex-1 flex-col">
                     <h1 class="sr-only">{{ document.title ?? document.slug }}</h1>
                     <TiptapEditor
+                        :key="`${document.id}:${readonly}`"
                         :document-id="document.id"
                         :slug="document.slug"
                         :initial-content="document.contentHtml"
                         :initial-yjs-state="document.yjsStateBase64"
                         :ws-token="wsToken"
+                        :readonly="readonly"
                         class="flex min-h-0 flex-1 flex-col"
                     />
                 </div>
             </main>
 
-            <ExpirationNotice :slug="document.slug" :created-at="document.createdAt" />
+            <ExpirationNotice v-if="!paid" :slug="document.slug" :created-at="document.createdAt" />
         </div>
     </AppLayout>
 </template>
