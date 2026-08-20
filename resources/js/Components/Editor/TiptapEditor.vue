@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, toRef, watch } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import type { Editor } from '@tiptap/core';
 import { BubbleMenu } from '@tiptap/vue-3/menus';
@@ -16,13 +16,17 @@ import TableFloatingToolbar from './TableFloatingToolbar.vue';
 import { useImageModal } from '@/Composables/useImageModal';
 import { Download } from '@lucide/vue';
 
-const props = defineProps<{
-    documentId: string;
-    slug: string;
-    initialContent: string;
-    initialYjsState: string | null;
-    wsToken: string;
-}>();
+const props = withDefaults(
+    defineProps<{
+        documentId: string;
+        slug: string;
+        initialContent: string;
+        initialYjsState: string | null;
+        wsToken: string;
+        readonly?: boolean;
+    }>(),
+    { readonly: false },
+);
 
 const { t, locale } = useI18n();
 const editorReady = ref(false);
@@ -30,12 +34,13 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 const { ydoc, yXmlFragment, wsProvider, userName, userColor, whenLocalSynced, connect } = useYjsProvider({
     documentId: props.documentId,
-    wsToken: props.wsToken,
+    documentSlug: props.slug,
+    wsToken: toRef(props, 'wsToken'),
     initialStateBase64: props.initialYjsState,
 });
 
 function openInlineMarkdownAt(view: EditorView, pos: number): boolean {
-    if (sourceMode.value) return false;
+    if (props.readonly || !view.editable || sourceMode.value) return false;
 
     const $pos = view.state.doc.resolve(pos);
     const depth = $pos.depth > 0 ? 1 : 0;
@@ -106,8 +111,14 @@ const editor = useEditor({
                 ed.commands.setContent(props.initialContent, { emitUpdate: false });
             }
 
+            // Read-only participants still join the room, to watch edits and cursors
+            // arrive live. The server drops anything they try to send.
             connect();
-            ed.setEditable(true);
+
+            if (!props.readonly) {
+                ed.setEditable(true);
+            }
+
             editorReady.value = true;
         });
     },
@@ -152,12 +163,17 @@ function toggleSourceMode() {
     }
 }
 
-const { onEditorUpdate } = useAutoSave(editor, props.slug, 1500, () => applySourceContent(false));
+const { onEditorUpdate } = useAutoSave(editor, props.slug, toRef(props, 'wsToken'), 1500, () =>
+    applySourceContent(false),
+);
 
 watch(
     editor,
     (ed, _old, onCleanup) => {
-        if (!ed) return;
+        // Read-only pages have nothing to persist: rehydrating the local cache still
+        // emits updates, and saving them would only earn a 403 from the server.
+        if (!ed || props.readonly) return;
+
         ed.on('update', onEditorUpdate);
         onCleanup(() => ed.off('update', onEditorUpdate));
     },
@@ -203,7 +219,7 @@ function exportHtml() {
 <template>
     <div class="editor-workspace flex h-full flex-col">
         <EditorToolbar
-            v-if="editor && editorReady"
+            v-if="editor && editorReady && !readonly"
             :editor="editor"
             :source-mode="sourceMode"
             @toggle-source="toggleSourceMode"
@@ -236,7 +252,9 @@ function exportHtml() {
                 v-if="editor"
                 :editor="editor"
                 plugin-key="tableMenu"
-                :should-show="({ editor: activeEditor }: { editor: Editor }) => activeEditor.isActive('table')"
+                :should-show="
+                    ({ editor: activeEditor }: { editor: Editor }) => !readonly && activeEditor.isActive('table')
+                "
                 :tippy-options="{
                     placement: 'top',
                     duration: prefersReducedMotion ? 0 : [150, 100],

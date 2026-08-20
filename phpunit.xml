@@ -21,16 +21,13 @@
         <env name="APP_ENV" value="testing" force="true"/>
         <env name="APP_KEY" value="base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" force="true"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
-        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
-        <env name="BROADCAST_CONNECTION" value="null" force="true"/>
         <env name="CACHE_STORE" value="array" force="true"/>
         <env name="DB_CONNECTION" value="sqlite" force="true"/>
         <env name="DB_DATABASE" value=":memory:" force="true"/>
-        <env name="MAIL_MAILER" value="array" force="true"/>
-        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
-        <env name="PULSE_ENABLED" value="false" force="true"/>
-        <env name="TELESCOPE_ENABLED" value="false" force="true"/>
-        <env name="NIGHTWATCH_ENABLED" value="false" force="true"/>
+        <env name="STRIPE_SECRET" value="sk_test_dummy" force="true"/>
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_dummy" force="true"/>
+        <env name="STRIPE_PRICE_BRL" value="" force="true"/>
+        <env name="STRIPE_PRICE_USD" value="" force="true"/>
     </php>
 </phpunit>

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\PrefixController;
 use App\Http\Middleware\SanitizeSlug;
-use App\Http\Middleware\ThrottleByIp;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -52,15 +53,46 @@ Route::get('/health', function () {
     ]);
 })->name('health');
 
-Route::middleware([ThrottleByIp::class, SanitizeSlug::class])
+Route::post('/checkout', [CheckoutController::class, 'create'])
+    ->middleware('throttle:10,1')
+    ->name('checkout.create');
+
+Route::post('/checkout/webhook', [CheckoutController::class, 'webhook'])->name('checkout.webhook');
+
+Route::get('/claim', [PrefixController::class, 'claim'])
+    ->middleware('throttle:10,1')
+    ->name('prefix.claim');
+Route::post('/claim', [PrefixController::class, 'storeOwnerPassword'])
+    ->middleware('throttle:10,1')
+    ->name('prefix.claim.store');
+
+Route::get('/recover', [PrefixController::class, 'recoverForm'])->name('prefix.recover');
+Route::post('/recover', [PrefixController::class, 'recover'])
+    ->middleware('throttle:5,1')
+    ->name('prefix.recover.store');
+
+Route::middleware(['throttle:60,1', SanitizeSlug::class])
     ->group(function () {
         Route::get('/api/document-tree/{slug}', [DocumentController::class, 'tree'])
             ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
             ->name('document.tree');
 
+        Route::post('/{slug}/settings', [PrefixController::class, 'settings'])
+            ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
+            ->middleware('throttle:30,1')
+            ->name('prefix.settings');
+
         Route::post('/{slug}/save', [DocumentController::class, 'save'])
             ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
             ->name('document.save');
+
+        Route::delete('/{slug}', [DocumentController::class, 'destroy'])
+            ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
+            ->name('document.destroy');
+
+        Route::post('/{slug}', [DocumentController::class, 'unlock'])
+            ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')
+            ->name('document.unlock');
 
         Route::get('/{slug}', [DocumentController::class, 'show'])
             ->where('slug', '[A-Za-z0-9][A-Za-z0-9\-\/]*')

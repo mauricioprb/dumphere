@@ -1,14 +1,16 @@
-import { onUnmounted, type ShallowRef } from 'vue';
+import { onUnmounted, type Ref, type ShallowRef } from 'vue';
 import { router } from '@inertiajs/vue3';
 import type { Editor } from '@tiptap/vue-3';
 import { useDocumentStore } from '@/Stores/documentStore';
 import type { SaveResponse } from '@/types/document';
 import { getPersistableHtml } from '@/Lib/editorContent';
+import { isPermanentSaveRejection } from '@/Lib/saveRetry';
 import { useI18n } from '@/Composables/useI18n';
 
 export function useAutoSave(
     editorRef: ShallowRef<Editor | undefined>,
     slug: string,
+    wsToken: Ref<string>,
     debounceMs = 1500,
     beforeRead?: () => void,
 ) {
@@ -59,11 +61,12 @@ export function useAutoSave(
                 },
                 body: JSON.stringify({
                     contentHtml,
+                    wsToken: wsToken.value,
                 }),
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new SaveFailure(response.status);
             }
 
             const data: SaveResponse = await response.json();
@@ -82,12 +85,19 @@ export function useAutoSave(
             }
         } catch (err) {
             console.error('[AutoSave] Failed:', err);
-            store.markError(t('status.failedToSave'));
-            retryTimer = setTimeout(() => {
-                retryTimer = null;
-                performSave();
-            }, currentRetryMs);
-            currentRetryMs = Math.min(currentRetryMs * 2, maxRetryMs);
+
+            const status = err instanceof SaveFailure ? err.status : null;
+
+            if (status !== null && isPermanentSaveRejection(status)) {
+                store.markError(status === 413 ? t('status.tooLarge') : t('status.failedToSave'));
+            } else {
+                store.markError(t('status.failedToSave'));
+                retryTimer = setTimeout(() => {
+                    retryTimer = null;
+                    performSave();
+                }, currentRetryMs);
+                currentRetryMs = Math.min(currentRetryMs * 2, maxRetryMs);
+            }
         } finally {
             savingInFlight = false;
             if (dirty) {
@@ -117,7 +127,7 @@ export function useAutoSave(
                 'X-CSRF-TOKEN': getCSRFToken(),
                 Accept: 'application/json',
             },
-            body: JSON.stringify({ contentHtml }),
+            body: JSON.stringify({ contentHtml, wsToken: wsToken.value }),
             keepalive: true,
         }).catch(() => {});
     }
@@ -148,6 +158,12 @@ export function useAutoSave(
     return {
         onEditorUpdate,
     };
+}
+
+class SaveFailure extends Error {
+    constructor(readonly status: number) {
+        super(`HTTP ${status}`);
+    }
 }
 
 function getCSRFToken(): string {

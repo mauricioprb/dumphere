@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Support\DocumentSlug;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Document extends Model
 {
@@ -21,6 +23,28 @@ class Document extends Model
         'last_accessed_at',
     ];
 
+    public static function prefixOwner(string $slug): ?self
+    {
+        return self::query()
+            ->where('slug', DocumentSlug::root($slug))
+            ->where('paid_until', '>', now())
+            ->first();
+    }
+
+    public function announceRulesChanged(): void
+    {
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::select('SELECT pg_notify(?, ?)', ['dumphere_mode', DocumentSlug::root($this->slug)]);
+        }
+    }
+
+    public function announceDeleted(): void
+    {
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::select('SELECT pg_notify(?, ?)', ['dumphere_deleted', $this->slug]);
+        }
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -30,6 +54,8 @@ class Document extends Model
     {
         return [
             'last_accessed_at' => 'datetime',
+            'paid_until' => 'datetime',
+            'readonly' => 'boolean',
         ];
     }
 }

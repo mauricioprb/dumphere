@@ -4,6 +4,8 @@ import { isIP } from 'node:net';
 const DOCUMENT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const BASE64_URL_PATTERN = /^[A-Za-z0-9_-]+$/;
 const MAX_TOKEN_LIFETIME_SECONDS = 7200;
+const SCOPES = new Set(['write', 'read']);
+const GATE_PATTERN = /^[0-9a-f]{0,12}$/;
 
 export function roomForDocument(documentId) {
     if (!DOCUMENT_ID_PATTERN.test(documentId)) {
@@ -23,6 +25,14 @@ export function roomFromPathname(pathname) {
     }
 }
 
+export function gateFor(readonly, visitorPasswordHash, ownerSessionId) {
+    return crypto
+        .createHash('sha256')
+        .update(`${readonly ? '1' : '0'}:${visitorPasswordHash ?? ''}:${ownerSessionId ?? ''}`)
+        .digest('hex')
+        .slice(0, 12);
+}
+
 export function verifyToken(token, secret, now = Math.floor(Date.now() / 1000)) {
     if (!secret || !token || !BASE64_URL_PATTERN.test(token)) {
         return { valid: false, reason: 'malformed' };
@@ -32,12 +42,17 @@ export function verifyToken(token, secret, now = Math.floor(Date.now() / 1000)) 
         const decoded = Buffer.from(token, 'base64url').toString('utf8');
         const parts = decoded.split(':');
 
-        if (parts.length !== 3) return { valid: false, reason: 'malformed' };
+        if (parts.length !== 5) return { valid: false, reason: 'malformed' };
 
-        const [documentId, expiresAtValue, signature] = parts;
+        const [documentId, scope, gate, expiresAtValue, signature] = parts;
         const expiresAt = Number(expiresAtValue);
 
-        if (!DOCUMENT_ID_PATTERN.test(documentId) || !Number.isSafeInteger(expiresAt)) {
+        if (
+            !DOCUMENT_ID_PATTERN.test(documentId) ||
+            !SCOPES.has(scope) ||
+            !GATE_PATTERN.test(gate) ||
+            !Number.isSafeInteger(expiresAt)
+        ) {
             return { valid: false, reason: 'malformed' };
         }
 
@@ -50,7 +65,10 @@ export function verifyToken(token, secret, now = Math.floor(Date.now() / 1000)) 
         }
 
         const secretBytes = secret.startsWith('base64:') ? Buffer.from(secret.slice(7), 'base64') : Buffer.from(secret);
-        const expected = crypto.createHmac('sha256', secretBytes).update(`${documentId}:${expiresAt}`).digest('hex');
+        const expected = crypto
+            .createHmac('sha256', secretBytes)
+            .update(`${documentId}:${scope}:${gate}:${expiresAt}`)
+            .digest('hex');
         const supplied = Buffer.from(signature);
         const expectedBytes = Buffer.from(expected);
 
@@ -60,6 +78,8 @@ export function verifyToken(token, secret, now = Math.floor(Date.now() / 1000)) 
 
         return {
             valid: true,
+            scope,
+            gate,
             documentId: documentId.toLowerCase(),
             room: roomForDocument(documentId),
         };

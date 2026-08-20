@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Models\Document;
-use App\Support\DocumentSlug;
 use Illuminate\Support\Str;
 
 final class ListDocumentChildren
@@ -13,12 +12,6 @@ final class ListDocumentChildren
     /** @return list<array{slug: string, label: string, hasChildren: bool, exists: bool}> */
     public function execute(string $slug): array
     {
-        $slug = DocumentSlug::normalize($slug);
-
-        if (! DocumentSlug::isValid($slug)) {
-            abort(404, 'Invalid document URL.');
-        }
-
         $children = [];
         $prefix = $slug . '/';
 

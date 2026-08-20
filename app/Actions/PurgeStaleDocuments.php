@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Models\Document;
+use App\Support\DocumentSlug;
 use Illuminate\Support\Facades\Log;
 
 class PurgeStaleDocuments
@@ -17,6 +18,11 @@ class PurgeStaleDocuments
 
         $count = 0;
 
+        $paidRoots = Document::query()
+            ->where('paid_until', '>', now())
+            ->pluck('slug')
+            ->flip();
+
         Document::query()
             ->where(function ($query) use ($threshold): void {
                 $query->where('last_accessed_at', '<', $threshold)
@@ -25,8 +31,12 @@ class PurgeStaleDocuments
                             ->where('created_at', '<', $threshold);
                     });
             })
-            ->chunkById(100, function ($documents) use (&$count): void {
+            ->chunkById(100, function ($documents) use (&$count, $paidRoots): void {
                 foreach ($documents as $document) {
+                    if ($paidRoots->has(DocumentSlug::root($document->slug))) {
+                        continue;
+                    }
+
                     $document->delete();
                     $count++;
                 }

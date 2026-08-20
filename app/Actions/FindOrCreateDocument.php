@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Exceptions\TooManyDocumentsCreatedException;
 use App\Models\Document;
-use App\Support\DocumentSlug;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Request;
@@ -15,26 +13,27 @@ class FindOrCreateDocument
 {
     private const MAX_CREATIONS_PER_HOUR = 10;
 
-    public function execute(string $slug): Document
+    /**
+     * @param  bool  $trusted  Owners creating pages inside the address they paid for.
+     *                         The per-IP limit exists to stop strangers spamming new
+     *                         documents, which is not what an owner is doing.
+     */
+    public function execute(string $slug, bool $trusted = false): Document
     {
-        $slug = DocumentSlug::normalize($slug);
-
-        if (! DocumentSlug::isValid($slug)) {
-            abort(404, 'Invalid document URL.');
-        }
-
         $document = Document::where('slug', $slug)->first();
 
         if ($document === null) {
             $document = Cache::lock('doc:create:' . hash('sha256', $slug), 5)
-                ->block(3, function () use ($slug): Document {
+                ->block(3, function () use ($slug, $trusted): Document {
                     $existing = Document::where('slug', $slug)->first();
 
                     if ($existing !== null) {
                         return $existing;
                     }
 
-                    $this->enforceCreationRateLimit();
+                    if (! $trusted) {
+                        $this->enforceCreationRateLimit();
+                    }
 
                     return Document::create([
                         'slug' => $slug,
@@ -62,7 +61,7 @@ class FindOrCreateDocument
         $attempts = RateLimiter::hit($key, 3600);
 
         if ($attempts > self::MAX_CREATIONS_PER_HOUR) {
-            throw new TooManyDocumentsCreatedException;
+            abort(response('', 429, ['Retry-After' => (string) RateLimiter::availableIn($key)]));
         }
     }
 

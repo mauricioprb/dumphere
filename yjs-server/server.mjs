@@ -2,7 +2,15 @@ import http from 'node:http';
 import { createRequire } from 'node:module';
 import pg from 'pg';
 import { WebSocketServer } from 'ws';
-import { isAllowedOrigin, resolveClientIp, roomFromPathname, tokenFromProtocols, verifyToken } from './auth.mjs';
+import {
+    gateFor,
+    isAllowedOrigin,
+    resolveClientIp,
+    roomFromPathname,
+    tokenFromProtocols,
+    verifyToken,
+} from './auth.mjs';
+import { isWriteMessage } from './scope.mjs';
 import { createPostgresPersistence, documentIdFromRoom } from './persistence.mjs';
 import { createMessageRateLimiter, guardMessageHandlers } from './rate-limit.mjs';
 
@@ -39,6 +47,12 @@ if (!WS_SECRET) {
 if (ALLOWED_ORIGINS.size === 0) {
     throw new Error('YJS_ALLOWED_ORIGINS or APP_URL is required');
 }
+
+const MODE_CHANGED_CODE = 4001;
+const DELETED_CODE = 4002;
+let modeListener = null;
+let shuttingDown = false;
+const connections = new Map();
 
 const pool = new Pool({
     host: process.env.DB_HOST || '127.0.0.1',
@@ -130,7 +144,20 @@ async function authorizeAndUpgrade(request, socket, head) {
         connectionsByIp.set(ip, (connectionsByIp.get(ip) ?? 0) + 1);
         reservedIp = ip;
 
-        const result = await pool.query('SELECT 1 FROM documents WHERE id = $1 LIMIT 1', [tokenResult.documentId]);
+        const result = await pool.query(
+            `SELECT d.slug AS slug,
+                    split_part(d.slug, '/', 1) AS root,
+                    COALESCE(owner.readonly, false) AS readonly,
+                    owner.visitor_password_hash AS visitor_password_hash,
+                    owner.owner_session_id AS owner_session_id
+             FROM documents d
+             LEFT JOIN documents owner
+               ON owner.slug = split_part(d.slug, '/', 1)
+              AND owner.paid_until > now()
+             WHERE d.id = $1
+             LIMIT 1`,
+            [tokenResult.documentId],
+        );
 
         if (result.rowCount === 0) {
             releaseConnection(ip);
@@ -139,9 +166,26 @@ async function authorizeAndUpgrade(request, socket, head) {
             return;
         }
 
+        const {
+            slug,
+            root,
+            readonly,
+            visitor_password_hash: visitorPasswordHash,
+            owner_session_id: ownerSessionId,
+        } = result.rows[0];
+
+        if (tokenResult.gate !== gateFor(readonly, visitorPasswordHash, ownerSessionId)) {
+            releaseConnection(ip);
+            reservedIp = null;
+            rejectUpgrade(socket, 403, 'Forbidden');
+            return;
+        }
+
+        const scope = readonly || tokenResult.scope === 'read' ? 'read' : 'write';
+
         wss.handleUpgrade(request, socket, head, (ws) => {
             reservedIp = null;
-            wss.emit('connection', ws, request, { ip, room });
+            wss.emit('connection', ws, request, { ip, room, scope, root, slug });
         });
     } catch {
         if (reservedIp !== null) releaseConnection(reservedIp);
@@ -149,16 +193,61 @@ async function authorizeAndUpgrade(request, socket, head) {
     }
 }
 
-wss.on('connection', (ws, request, { ip, room }) => {
+wss.on('connection', (ws, request, { ip, room, scope, root, slug }) => {
     const consumeMessage = createMessageRateLimiter(MAX_MESSAGES_PER_SECOND, undefined, MAX_MESSAGE_BURST);
-    const removeMessageGuard = guardMessageHandlers(ws, consumeMessage);
+    const acceptMessage = scope === 'read' ? (payload) => !isWriteMessage(payload) : undefined;
+    const removeMessageGuard = guardMessageHandlers(ws, consumeMessage, acceptMessage);
+
+    connections.set(ws, { root, slug, room });
 
     ws.once('close', () => {
+        connections.delete(ws);
         releaseConnection(ip);
     });
 
     setupWSConnection(ws, request, { docName: room });
     removeMessageGuard();
+});
+
+async function listenForModeChanges() {
+    if (shuttingDown) return;
+
+    const client = await pool.connect();
+    modeListener = client;
+
+    client.on('notification', ({ channel, payload }) => {
+        const deleted = channel === 'dumphere_deleted';
+
+        for (const [ws, connection] of connections) {
+            const affected = deleted
+                ? connection.slug === payload || connection.slug.startsWith(`${payload}/`)
+                : connection.root === payload;
+
+            if (!affected) continue;
+
+            if (deleted) {
+                docs.get(connection.room)?.destroy();
+                docs.delete(connection.room);
+            }
+
+            ws.close(deleted ? DELETED_CODE : MODE_CHANGED_CODE, deleted ? 'Page deleted' : 'Mode changed');
+        }
+    });
+
+    client.on('error', (error) => {
+        modeListener = null;
+        client.release(error);
+        log('error', 'Mode change listener failed; retrying', { message: error.message });
+        setTimeout(() => void listenForModeChanges(), 5000);
+    });
+
+    await client.query('LISTEN dumphere_mode');
+    await client.query('LISTEN dumphere_deleted');
+    log('info', 'Listening for address mode changes');
+}
+
+void listenForModeChanges().catch((error) => {
+    log('error', 'Could not listen for address mode changes', { message: error.message });
 });
 
 server.listen(PORT, HOST, () => {
@@ -176,9 +265,13 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
 }
 
 async function shutdown(signal) {
+    shuttingDown = true;
     log('info', 'Yjs server shutting down', { signal });
     server.close();
     wss.close();
+
+    modeListener?.release();
+    modeListener = null;
 
     await Promise.allSettled(
         Array.from(docs.entries()).map(([room, document]) => persistence.writeState(room, document)),

@@ -2,11 +2,6 @@ import type { DocumentTreeNode } from '@/types/document';
 
 const DOCUMENT_TREE_COLLAPSED_STORAGE_KEY = 'dumphere:document-tree-collapsed';
 
-interface DocumentTreePreferenceStorage {
-    getItem(key: string): string | null;
-    setItem(key: string, value: string): void;
-}
-
 export interface DocumentBreadcrumb {
     slug: string;
     label: string;
@@ -78,7 +73,7 @@ export function formatDocumentSegment(segment: string): string {
         .join(' ');
 }
 
-export function readDocumentTreeCollapsed(storage: DocumentTreePreferenceStorage | undefined): boolean {
+export function readDocumentTreeCollapsed(storage: Pick<Storage, 'getItem' | 'setItem'> | undefined): boolean {
     try {
         return storage?.getItem(DOCUMENT_TREE_COLLAPSED_STORAGE_KEY) === '1';
     } catch {
@@ -87,7 +82,7 @@ export function readDocumentTreeCollapsed(storage: DocumentTreePreferenceStorage
 }
 
 export function storeDocumentTreeCollapsed(
-    storage: DocumentTreePreferenceStorage | undefined,
+    storage: Pick<Storage, 'getItem' | 'setItem'> | undefined,
     collapsed: boolean,
 ): void {
     try {

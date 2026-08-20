@@ -18,8 +18,8 @@ it('renders indexable metadata and open graph tags on the home page', function (
         ->getContent();
 
     expect($html)
-        ->toContain('<title>Dumphere — Editor Markdown colaborativo</title>')
-        ->toContain('<meta name="description" content="Crie e edite documentos Markdown')
+        ->toContain('<title>Dumphere — Collaborative Markdown editor</title>')
+        ->toContain('<meta name="description" content="Create and edit Markdown documents')
         ->toContain('<meta name="robots" content="index, follow, max-image-preview:large')
         ->toContain('rel="canonical"')
         ->toContain('href="https://dumphere.test"')
@@ -36,7 +36,7 @@ it('uses page-specific metadata for the terms page', function (): void {
         ->getContent();
 
     expect($html)
-        ->toContain('<title>Termos e Privacidade — Dumphere</title>')
+        ->toContain('<title>Terms and Privacy — Dumphere</title>')
         ->toContain('href="https://dumphere.test/terms"')
         ->toContain('"@type":"WebPage"');
 });

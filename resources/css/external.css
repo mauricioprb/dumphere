@@ -12,24 +12,28 @@
     --external-art-opacity: 0.05;
     --external-art-blend: multiply;
     --external-art-filter: grayscale(1) sepia(0.3) hue-rotate(calc(var(--daily-hue) - 70deg)) contrast(1.06);
-    --external-noise-ink: oklch(0.24 0.02 var(--daily-hue) / 0.13);
+    --external-noise-ink: oklch(0.24 calc(0.02 * var(--theme-chroma, 1)) var(--daily-hue) / 0.13);
     --external-noise-blend: multiply;
     --external-focus-edge: var(--workspace-ink);
-    --external-presence-line: oklch(0.48 0.11 calc(var(--workspace-theme-hue) + 145deg));
-    --external-presence-chip: oklch(0.82 0.08 calc(var(--workspace-theme-hue) + 145deg));
-    --external-presence-chip-ink: oklch(0.26 0.08 calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-line: oklch(0.48 calc(0.11 * var(--theme-chroma, 1)) calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip: oklch(0.82 calc(0.08 * var(--theme-chroma, 1)) calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip-ink: oklch(
+        0.26 calc(0.08 * var(--theme-chroma, 1)) calc(var(--workspace-theme-hue) + 145deg)
+    );
 }
 
 .dark .external-page {
     --external-art-opacity: 0.022;
     --external-art-blend: screen;
     --external-art-filter: grayscale(1) invert(1) sepia(0.24) hue-rotate(calc(var(--daily-hue) - 70deg)) contrast(1.04);
-    --external-noise-ink: oklch(0.62 0.015 var(--daily-hue) / 0.3);
+    --external-noise-ink: oklch(0.62 calc(0.015 * var(--theme-chroma, 1)) var(--daily-hue) / 0.3);
     --external-noise-blend: color-dodge;
     --external-focus-edge: transparent;
-    --external-presence-line: oklch(0.76 0.08 calc(var(--workspace-theme-hue) + 145deg));
-    --external-presence-chip: oklch(0.69 0.09 calc(var(--workspace-theme-hue) + 145deg));
-    --external-presence-chip-ink: oklch(0.18 0.06 calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-line: oklch(0.76 calc(0.08 * var(--theme-chroma, 1)) calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip: oklch(0.69 calc(0.09 * var(--theme-chroma, 1)) calc(var(--workspace-theme-hue) + 145deg));
+    --external-presence-chip-ink: oklch(
+        0.18 calc(0.06 * var(--theme-chroma, 1)) calc(var(--workspace-theme-hue) + 145deg)
+    );
 }
 
 .external-backdrop__art {
@@ -58,7 +62,8 @@
 
 .external-wordmark:focus-visible,
 .external-focus:focus-visible,
-.entry-form button:focus-visible {
+.entry-form button:focus-visible,
+.external-button:focus-visible {
     outline: 3px solid var(--external-live);
     outline-offset: 4px;
     box-shadow:
@@ -165,6 +170,34 @@
     box-shadow: 0 4px 0 var(--external-live);
 }
 
+.external-input {
+    min-height: 2.75rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--external-rule);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--external-ink);
+    transition:
+        border-color 160ms ease-out,
+        box-shadow 160ms ease-out;
+}
+
+.external-input::placeholder {
+    color: var(--external-muted);
+    opacity: 1;
+}
+
+.external-input:focus {
+    /* One ring, not two: the outline replaces the border in place, so nothing shifts. */
+    border-color: transparent;
+    outline: 2px solid var(--external-live);
+    outline-offset: -1px;
+}
+
+.external-input:disabled {
+    opacity: 0.5;
+}
+
 .entry-form__control.has-error {
     border-color: var(--external-error);
     box-shadow: 0 4px 0 color-mix(in srgb, var(--external-error) 45%, transparent);
@@ -200,7 +233,8 @@
     display: none !important;
 }
 
-.entry-form button {
+.entry-form button,
+.external-button {
     display: inline-flex;
     min-height: 3.25rem;
     align-items: center;
@@ -220,13 +254,15 @@
         transform 160ms ease-out;
 }
 
-.entry-form button:hover:not(:disabled) {
+.entry-form button:hover:not(:disabled),
+.external-button:hover:not(:disabled) {
     background: var(--external-live);
     color: var(--external-live-ink);
     transform: translateY(-2px);
 }
 
-.entry-form button:disabled {
+.entry-form button:disabled,
+.external-button:disabled {
     cursor: not-allowed;
     opacity: 0.42;
 }
@@ -427,7 +463,8 @@
         font-size: 1.05rem;
     }
 
-    .entry-form button {
+    .entry-form button,
+    .external-button {
         min-height: 2.9rem;
         margin-bottom: 0.55rem;
         padding-inline: 0.95rem;

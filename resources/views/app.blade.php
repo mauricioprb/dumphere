@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="en" class="h-full">
 
 <head>
     <meta charset="utf-8">
@@ -13,6 +13,25 @@
     <script nonce="{{ app('csp-nonce') }}">
         (function() {
             const root = document.documentElement;
+
+            root.style.removeProperty('--theme-chroma');
+
+            @isset($themeHue)
+                root.dataset.themeHue = '{{ $themeHue }}';
+                root.style.setProperty('--light-hue', '{{ $themeHue }}deg');
+            @endisset
+
+            @isset($themeChroma)
+                root.style.setProperty('--light-chroma', '{{ $themeChroma / 100 }}');
+            @endisset
+
+            @isset($themeHueDark)
+                root.style.setProperty('--dark-hue', '{{ $themeHueDark }}deg');
+            @endisset
+
+            @isset($themeChromaDark)
+                root.style.setProperty('--dark-chroma', '{{ $themeChromaDark / 100 }}');
+            @endisset
 
             try {
                 const parts = new Intl.DateTimeFormat('en-US', {
@@ -29,9 +48,14 @@
                 const hue = Number((((ordinal * 137.508) % 360) + 360).toFixed(3)) % 360;
 
                 root.dataset.dailyThemeDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                root.style.setProperty('--daily-hue', `${hue}deg`);
+
+                if (root.dataset.themeHue === undefined) {
+                    root.style.setProperty('--daily-hue', `${hue}deg`);
+                }
             } catch {
-                root.style.setProperty('--daily-hue', '87deg');
+                if (root.dataset.themeHue === undefined) {
+                    root.style.setProperty('--daily-hue', '87deg');
+                }
             }
 
             const storedLocale = localStorage.getItem('md-editor-locale');
@@ -47,27 +71,28 @@
             }
         })();
     </script>
-    <style nonce="{{ app('csp-nonce') }}">
         :root {
-            --workspace-theme-hue: var(--daily-hue);
-            --workspace-paper: oklch(0.985 0.012 var(--workspace-theme-hue));
-            --workspace-ink: oklch(0.19 0.025 var(--workspace-theme-hue));
-            --workspace-muted: oklch(0.42 0.032 var(--workspace-theme-hue));
-            --workspace-rule: oklch(0.83 0.028 var(--workspace-theme-hue));
-            --workspace-accent: oklch(0.9 0.075 var(--workspace-theme-hue));
-            --workspace-accent-ink: oklch(0.24 0.07 var(--workspace-theme-hue));
-            --workspace-live: oklch(0.44 0.14 var(--workspace-theme-hue));
+            --workspace-theme-hue: var(--light-hue, var(--daily-hue));
+            --theme-chroma: var(--light-chroma, 1);
+            --workspace-paper: oklch(0.985 calc(0.012 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-ink: oklch(0.19 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-muted: oklch(0.42 calc(0.032 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-rule: oklch(0.83 calc(0.028 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-accent: oklch(0.9 calc(0.075 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-accent-ink: oklch(0.24 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-live: oklch(0.44 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
         }
 
         html.dark {
-            --workspace-theme-hue: calc(var(--daily-hue) + 180deg);
-            --workspace-paper: oklch(0.145 0.03 var(--workspace-theme-hue));
-            --workspace-ink: oklch(0.95 0.01 var(--workspace-theme-hue));
-            --workspace-muted: oklch(0.72 0.025 var(--workspace-theme-hue));
-            --workspace-rule: oklch(0.34 0.035 var(--workspace-theme-hue));
-            --workspace-accent: oklch(0.3 0.085 var(--workspace-theme-hue));
-            --workspace-accent-ink: oklch(0.92 0.03 var(--workspace-theme-hue));
-            --workspace-live: oklch(0.78 0.13 var(--workspace-theme-hue));
+            --workspace-theme-hue: var(--dark-hue, calc(var(--light-hue, var(--daily-hue)) + 180deg));
+            --theme-chroma: var(--dark-chroma, var(--light-chroma, 1));
+            --workspace-paper: oklch(0.145 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-ink: oklch(0.95 calc(0.01 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-muted: oklch(0.72 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-rule: oklch(0.34 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-accent: oklch(0.3 calc(0.085 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-accent-ink: oklch(0.92 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+            --workspace-live: oklch(0.78 calc(0.13 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
         }
 
         html,
@@ -247,7 +272,8 @@
             </div>
         </div>
     </div>
-    @inertia
+    <script data-page="app" type="application/json" nonce="{{ app('csp-nonce') }}">{!! json_encode($page, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
+    <div id="app"></div>
     <noscript>Esta aplicação precisa de JavaScript para funcionar.</noscript>
 </body>
 

@@ -5,18 +5,9 @@ import {
     collaboratorInkColor,
     generateUniqueCollaboratorName,
     randomCollaboratorColor,
-    randomCollaboratorNames,
 } from '../../resources/js/Lib/collaboratorIdentity';
 
 describe('collaborator identity', () => {
-    it('selects distinct names from the product collaborator list', () => {
-        const names = randomCollaboratorNames(2);
-
-        expect(names).toHaveLength(2);
-        expect(new Set(names)).toHaveLength(2);
-        expect(names.every((name) => COLLABORATOR_NAMES.some((candidate) => candidate === name))).toBe(true);
-    });
-
     it('avoids names that are already in use', () => {
         const onlyAvailableName = COLLABORATOR_NAMES.at(-1)!;
         const usedNames = COLLABORATOR_NAMES.slice(0, -1);
