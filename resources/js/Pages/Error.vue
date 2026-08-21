@@ -18,7 +18,7 @@ const props = withDefaults(
 
 const { t } = useI18n();
 
-const known = [403, 404, 419, 429, 500, 503];
+const known = [403, 404, 409, 419, 429, 500, 503];
 
 const key = computed(() => props.reason ?? (known.includes(props.status) ? String(props.status) : 'default'));
 

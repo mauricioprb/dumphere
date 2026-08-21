@@ -23,6 +23,14 @@ class Document extends Model
         'last_accessed_at',
     ];
 
+    protected $hidden = [
+        'checkout_claim_hash',
+        'owner_password_hash',
+        'owner_recovery_key_hash',
+        'owner_session_id',
+        'visitor_password_hash',
+    ];
+
     public static function prefixOwner(string $slug): ?self
     {
         return self::query()
@@ -55,6 +63,7 @@ class Document extends Model
         return [
             'last_accessed_at' => 'datetime',
             'paid_until' => 'datetime',
+            'checkout_reserved_until' => 'datetime',
             'readonly' => 'boolean',
         ];
     }

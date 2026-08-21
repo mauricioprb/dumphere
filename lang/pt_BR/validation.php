@@ -18,7 +18,7 @@ return [
         'password_confirmation' => 'confirmação de senha',
         'visitor_password' => 'senha de visita',
         'prefix' => 'endereço',
-        'receipt_url' => 'link do recibo',
+        'recovery_key' => 'chave de recuperação',
         'contentHtml' => 'conteúdo',
     ],
 ];

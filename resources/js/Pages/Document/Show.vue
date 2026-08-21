@@ -25,6 +25,7 @@ const props = withDefaults(
         readonly?: boolean;
         paid?: boolean;
         price?: string | null;
+        maxDocuments: number;
         isOwner?: boolean;
         readonlyForVisitors?: boolean;
         lockedForVisitors?: boolean;
@@ -144,7 +145,13 @@ watch(
                             <span aria-hidden="true">{{ users.length }}</span>
                         </span>
 
-                        <PageOwnership :slug="document.slug" :paid="paid" :price="price" :is-owner="isOwner" />
+                        <PageOwnership
+                            :slug="document.slug"
+                            :paid="paid"
+                            :price="price"
+                            :max-documents="maxDocuments"
+                            :is-owner="isOwner"
+                        />
 
                         <span
                             v-if="readonly"

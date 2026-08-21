@@ -5,7 +5,13 @@ import BuyAddressDialog from '@/Components/UI/BuyAddressDialog.vue';
 import PageSettingsDialog from '@/Components/UI/PageSettingsDialog.vue';
 import { useI18n } from '@/Composables/useI18n';
 
-const props = defineProps<{ slug: string; paid: boolean; price: string | null; isOwner: boolean }>();
+const props = defineProps<{
+    slug: string;
+    paid: boolean;
+    price: string | null;
+    maxDocuments: number;
+    isOwner: boolean;
+}>();
 
 const { t } = useI18n();
 const prefix = computed(() => props.slug.split('/')[0]);
@@ -35,6 +41,12 @@ const settingsOpen = ref(false);
         <Settings class="size-4" aria-hidden="true" />
     </button>
 
-    <BuyAddressDialog v-if="!paid" v-model:open="buyOpen" :prefix="prefix" :price="price" />
+    <BuyAddressDialog
+        v-if="!paid"
+        v-model:open="buyOpen"
+        :prefix="prefix"
+        :price="price"
+        :max-documents="maxDocuments"
+    />
     <PageSettingsDialog v-if="paid" v-model:open="settingsOpen" :slug="slug" :prefix="prefix" :is-owner="isOwner" />
 </template>

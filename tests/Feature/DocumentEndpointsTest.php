@@ -9,6 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 it('creates and opens a normalized document', function (): void {
     $this->withoutVite();
+    config(['stripe.max_documents' => 37]);
 
     $this->get('/Configuration-Notes')
         ->assertOk()
@@ -17,6 +18,7 @@ it('creates and opens a normalized document', function (): void {
             ->where('document.slug', 'configuration-notes')
             ->where('document.contentHtml', '')
             ->where('document.yjsStateBase64', null)
+            ->where('maxDocuments', 37)
             ->has('wsToken'));
 
     $document = Document::query()

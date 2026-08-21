@@ -4,7 +4,7 @@ import { router } from '@inertiajs/vue3';
 import { Check, X } from '@lucide/vue';
 import { useI18n } from '@/Composables/useI18n';
 
-const props = defineProps<{ open: boolean; prefix: string; price: string | null }>();
+const props = defineProps<{ open: boolean; prefix: string; price: string | null; maxDocuments: number }>();
 const emit = defineEmits<{ 'update:open': [boolean] }>();
 
 const { t } = useI18n();
@@ -12,7 +12,7 @@ const buying = ref(false);
 const confirmButton = ref<HTMLButtonElement | null>(null);
 let previouslyFocused: HTMLElement | null = null;
 
-const benefits = ['never', 'yours', 'nested', 'readonly', 'password', 'once'] as const;
+const benefits = ['never', 'yours', 'nested', 'limit', 'readonly', 'password', 'once'] as const;
 
 watch(
     () => props.open,
@@ -93,7 +93,7 @@ function buy(): void {
                         <ul class="flex flex-col gap-3 px-5 py-4 text-sm text-(--workspace-ink)">
                             <li v-for="benefit in benefits" :key="benefit" class="flex items-start gap-2.5">
                                 <Check class="mt-0.5 size-4 shrink-0 text-(--workspace-live)" aria-hidden="true" />
-                                <span>{{ t(`buy.${benefit}`, { prefix }) }}</span>
+                                <span>{{ t(`buy.${benefit}`, { prefix, count: maxDocuments }) }}</span>
                             </li>
                         </ul>
 

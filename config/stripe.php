@@ -11,4 +11,5 @@ return [
     ],
 
     'years' => (int) env('STRIPE_ACCESS_YEARS', 100),
+    'max_documents' => (int) env('PAID_PREFIX_MAX_DOCUMENTS', 50),
 ];

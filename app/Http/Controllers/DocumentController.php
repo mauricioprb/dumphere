@@ -53,7 +53,7 @@ class DocumentController
         }
 
         $readonly = $owner?->readonly === true && ! $isOwner;
-        $document = $this->findOrCreate->execute($slug, trusted: $isOwner);
+        $document = $this->findOrCreate->execute($slug, owner: $isOwner ? $owner : null);
 
         return Inertia::render('Document/Show', [
             'document' => [
@@ -67,6 +67,7 @@ class DocumentController
             ],
             'paid' => $owner !== null,
             'isOwner' => $isOwner,
+            'maxDocuments' => max(1, (int) config('stripe.max_documents')),
             'themeHue' => $owner?->theme_hue,
             'themeChroma' => $owner?->theme_chroma,
             'themeHueDark' => $owner?->theme_hue_dark,

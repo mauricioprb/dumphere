@@ -7,7 +7,7 @@ import { useAppHost } from '@/Composables/useAppUrl';
 
 const { t } = useI18n();
 const appHost = useAppHost();
-const form = useForm({ prefix: '', receipt_url: '', password: '', password_confirmation: '' });
+const form = useForm({ prefix: '', recovery_key: '', password: '', password_confirmation: '' });
 </script>
 
 <template>
@@ -39,27 +39,27 @@ const form = useForm({ prefix: '', receipt_url: '', password: '', password_confi
                             {{ t('recover.prefixHint') }}
                         </p>
 
-                        <label class="mt-4 text-sm text-(--external-muted)" for="recover-receipt">
-                            {{ t('recover.receipt') }}
+                        <label class="mt-4 text-sm text-(--external-muted)" for="recover-key">
+                            {{ t('recover.recoveryKey') }}
                         </label>
                         <input
-                            id="recover-receipt"
-                            v-model="form.receipt_url"
-                            type="url"
-                            placeholder="https://pay.stripe.com/receipts/..."
+                            id="recover-key"
+                            v-model="form.recovery_key"
+                            type="text"
+                            autocomplete="off"
                             required
-                            aria-describedby="recover-receipt-hint"
-                            class="external-input"
+                            aria-describedby="recover-key-hint"
+                            class="external-input font-mono"
                         />
-                        <p id="recover-receipt-hint" class="text-sm text-(--external-muted)">
-                            {{ t('recover.receiptHint') }}
+                        <p id="recover-key-hint" class="text-sm text-(--external-muted)">
+                            {{ t('recover.recoveryKeyHint') }}
                         </p>
                         <p
-                            v-if="form.errors.receipt_url"
+                            v-if="form.errors.recovery_key"
                             role="alert"
                             class="text-sm font-semibold text-(--external-error)"
                         >
-                            {{ form.errors.receipt_url }}
+                            {{ form.errors.recovery_key }}
                         </p>
 
                         <label class="mt-4 text-sm text-(--external-muted)" for="recover-password">

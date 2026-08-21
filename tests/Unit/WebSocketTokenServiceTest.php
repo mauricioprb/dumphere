@@ -27,3 +27,12 @@ it('rejects tampered and malformed tokens', function (): void {
         ->toBeNull()
         ->and($service->verify('not-base64'))->toBeNull();
 });
+
+it('requires a dedicated websocket signing secret', function (): void {
+    Config::set('app.yjs_ws_secret');
+    Config::set('app.key', 'application-key-must-not-be-reused');
+
+    expect(fn () => app(WebSocketTokenService::class)->generate(
+        '0198f37a-21b4-7d6c-8a9b-123456789abc',
+    ))->toThrow(RuntimeException::class, 'A WebSocket signing secret is required.');
+});

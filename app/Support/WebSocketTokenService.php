@@ -85,8 +85,7 @@ class WebSocketTokenService
 
     private function getSecret(): string
     {
-        $key = Config::get('app.yjs_ws_secret')
-            ?? Config::get('app.key');
+        $key = Config::get('app.yjs_ws_secret');
 
         if (! is_string($key) || $key === '') {
             throw new RuntimeException('A WebSocket signing secret is required.');

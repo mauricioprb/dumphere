@@ -7,6 +7,7 @@ import {
     isAllowedOrigin,
     resolveClientIp,
     roomFromPathname,
+    signingSecret,
     tokenFromProtocols,
     verifyToken,
 } from './auth.mjs';
@@ -20,7 +21,7 @@ const { Pool } = pg;
 
 const HOST = process.env.HOST || '127.0.0.1';
 const PORT = parseInteger(process.env.PORT, 1234);
-const WS_SECRET = process.env.YJS_WS_SECRET || process.env.APP_KEY || '';
+const WS_SECRET = signingSecret();
 const MAX_CONNECTIONS_PER_IP = parseInteger(process.env.YJS_MAX_CONNECTIONS_PER_IP, 10);
 const MAX_MESSAGES_PER_SECOND = parseInteger(process.env.YJS_MAX_MESSAGES_PER_SECOND, 30);
 const MAX_MESSAGE_BURST = parseInteger(process.env.YJS_MAX_MESSAGE_BURST, MAX_MESSAGES_PER_SECOND * 4);
@@ -39,10 +40,6 @@ const ALLOWED_ORIGINS = new Set(
         .map((origin) => origin.trim())
         .filter(Boolean),
 );
-
-if (!WS_SECRET) {
-    throw new Error('YJS_WS_SECRET or APP_KEY is required');
-}
 
 if (ALLOWED_ORIGINS.size === 0) {
     throw new Error('YJS_ALLOWED_ORIGINS or APP_URL is required');

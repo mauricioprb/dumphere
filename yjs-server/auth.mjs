@@ -7,6 +7,16 @@ const MAX_TOKEN_LIFETIME_SECONDS = 7200;
 const SCOPES = new Set(['write', 'read']);
 const GATE_PATTERN = /^[0-9a-f]{0,12}$/;
 
+export function signingSecret(environment = process.env) {
+    const secret = environment.YJS_WS_SECRET;
+
+    if (typeof secret !== 'string' || secret === '') {
+        throw new Error('YJS_WS_SECRET is required');
+    }
+
+    return secret;
+}
+
 export function roomForDocument(documentId) {
     if (!DOCUMENT_ID_PATTERN.test(documentId)) {
         throw new Error('Invalid document identifier');

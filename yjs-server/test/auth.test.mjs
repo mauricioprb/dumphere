@@ -7,6 +7,7 @@ import {
     resolveClientIp,
     roomForDocument,
     roomFromPathname,
+    signingSecret,
     tokenFromProtocols,
     verifyToken,
 } from '../auth.mjs';
@@ -67,6 +68,11 @@ test('requires an explicitly allowed browser origin', () => {
     assert.equal(isAllowedOrigin('https://editor.example', allowed), true);
     assert.equal(isAllowedOrigin('https://evil.example', allowed), false);
     assert.equal(isAllowedOrigin(undefined, allowed), false);
+});
+
+test('requires a dedicated websocket signing secret', () => {
+    assert.equal(signingSecret({ YJS_WS_SECRET: 'dedicated-secret', APP_KEY: 'application-key' }), 'dedicated-secret');
+    assert.throws(() => signingSecret({ APP_KEY: 'application-key' }), /YJS_WS_SECRET is required/);
 });
 
 test('extracts credentials from a WebSocket subprotocol instead of the URL', () => {
