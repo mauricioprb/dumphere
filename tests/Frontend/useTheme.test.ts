@@ -82,8 +82,8 @@ describe('theme', () => {
         expect(themeStyles).toContain('--theme-phase-duration: 240ms');
         expect(themeStyles).toContain('html.theme-phase-light');
         expect(themeStyles).toContain('html.theme-phase-dark');
-        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--daily-hue) + 250deg)');
-        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--daily-hue) + 72deg)');
+        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--light-hue, var(--daily-hue)) + 250deg)');
+        expect(themeStyles).toContain('--workspace-theme-hue: calc(var(--light-hue, var(--daily-hue)) + 72deg)');
         expect(themeStyles).toContain('transition-delay: 0s !important');
         expect(themeStyles).toContain('transition-duration: var(--theme-phase-duration) !important');
         expect(

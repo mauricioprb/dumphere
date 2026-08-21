@@ -71,6 +71,7 @@
             }
         })();
     </script>
+    <style nonce="{{ app('csp-nonce') }}">
         :root {
             --workspace-theme-hue: var(--light-hue, var(--daily-hue));
             --theme-chroma: var(--light-chroma, 1);

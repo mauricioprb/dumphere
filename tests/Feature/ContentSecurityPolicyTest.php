@@ -27,3 +27,11 @@ it('allows the active vite development server', function (): void {
         @unlink($hotFile);
     }
 });
+
+it('protects the inline loader styles with the request nonce', function (): void {
+    $content = $this->get('/terms')
+        ->assertOk()
+        ->getContent();
+
+    expect($content)->toMatch('/<style nonce="[^"]+">\s*:root\s*\{/');
+});

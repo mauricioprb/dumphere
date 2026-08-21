@@ -4,6 +4,7 @@ import { Link, router } from '@inertiajs/vue3';
 import { Settings as SettingsIcon, X } from '@lucide/vue';
 import { useI18n } from '@/Composables/useI18n';
 import { applyAddressTheme } from '@/Lib/dailyTheme';
+import { shouldPreviewSettings, shouldReloadSettings } from '@/Lib/pageSettings';
 
 type Settings = {
     prefix: string;
@@ -96,7 +97,7 @@ function dropPreview(): void {
 }
 
 watch([() => props.open, light, dark, previewDark, ownTheme], () => {
-    if (props.open) previewPalette();
+    if (shouldPreviewSettings(props.open, settings.value !== null)) previewPalette();
 });
 
 function close(): void {
@@ -145,7 +146,7 @@ async function send(apply: boolean, silent = false): Promise<void> {
         dark.chroma = settings.value.themeChromaDark ?? light.chroma;
         visitorPassword.value = '';
 
-        if (apply || authenticatedNow) {
+        if (shouldReloadSettings(apply, authenticatedNow, props.isOwner)) {
             paletteBeforePreview = null;
             router.reload();
         }
