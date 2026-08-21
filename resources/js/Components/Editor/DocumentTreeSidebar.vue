@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, ref, toRef, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ChevronRight, FileText, PanelLeftClose, PanelLeftOpen, RefreshCw, Trash2, X } from '@lucide/vue';
 import { useDocumentTree } from '@/Composables/useDocumentTree';
@@ -10,6 +10,7 @@ const props = withDefaults(
         currentSlug: string;
         open: boolean;
         collapsed: boolean;
+        wsToken: string;
         isOwner?: boolean;
     }>(),
     { isOwner: false },
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const { visibleNodes, isTreeAvailable, isExpanded, isLoading, hasFailed, toggleNode, retryNode } = useDocumentTree(
     props.currentSlug,
+    toRef(props, 'wsToken'),
 );
 const closeButton = ref<HTMLButtonElement | null>(null);
 const depthClasses = ['ps-2', 'ps-6', 'ps-10', 'ps-14'];

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
     documentBreadcrumbs,
     documentPathSlugs,
+    documentTreeRequestHeaders,
     documentTreeRoot,
     flattenDocumentTree,
     hasDocumentTreeContext,
@@ -11,6 +12,13 @@ import {
 import type { DocumentTreeNode } from '../../resources/js/types/document';
 
 describe('document tree', () => {
+    it('sends the current access proof outside the URL', () => {
+        expect(documentTreeRequestHeaders('signed-token')).toEqual({
+            Accept: 'application/json',
+            Authorization: 'Bearer signed-token',
+        });
+    });
+
     it('builds every ancestor path and breadcrumb', () => {
         expect(documentPathSlugs('overclock/projetos/app-mobile')).toEqual([
             'overclock',

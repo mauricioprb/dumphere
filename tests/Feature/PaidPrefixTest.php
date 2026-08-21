@@ -105,6 +105,39 @@ it('accepts a save only with a token minted under the current rules', function (
     $this->postJson('/acme/notes/save', ['contentHtml' => '<p>hi</p>', 'wsToken' => $token])->assertForbidden();
 });
 
+it('never creates a missing paid child while validating a visitor token', function (): void {
+    paidPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
+
+    $this->postJson('/acme/uninvited/save', [
+        'contentHtml' => '<p>intrusion</p>',
+        'wsToken' => 'invalid',
+    ])->assertForbidden();
+
+    expect(Document::where('slug', 'acme/uninvited')->exists())->toBeFalse();
+});
+
+it('protects a locked prefix tree with the current page token', function (): void {
+    $this->withoutVite();
+    $owner = paidPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
+    paidChild('acme/notes');
+    paidChild('acme/private-plan')->update(['title' => 'Private plan']);
+
+    $this->getJson('/api/document-tree/acme')->assertForbidden();
+
+    $token = $this->post('/acme/notes', ['password' => 'team-secret'])
+        ->assertOk()
+        ->viewData('page')['props']['wsToken'];
+
+    $this->withToken($token)
+        ->getJson('/api/document-tree/acme')
+        ->assertOk()
+        ->assertJsonFragment(['slug' => 'acme/private-plan', 'label' => 'Private plan']);
+
+    $owner->forceFill(['visitor_password_hash' => Hash::make('new-secret')])->save();
+
+    $this->withToken($token)->getJson('/api/document-tree/acme')->assertForbidden();
+});
+
 it('keeps paid prefixes and their children out of the purge', function (): void {
     $paid = paidPrefix();
     $child = Document::create(['slug' => 'acme/notes', 'title' => 'Notes', 'content_html' => '']);

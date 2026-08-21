@@ -174,6 +174,7 @@ watch(
                     :current-slug="document.slug"
                     :open="treeNavigationOpen"
                     :collapsed="treeNavigationCollapsed"
+                    :ws-token="wsToken"
                     :is-owner="isOwner"
                     @availability="updateTreeNavigationAvailability"
                     @close="closeTreeNavigation"

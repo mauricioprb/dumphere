@@ -1,8 +1,15 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
-import { documentPathSlugs, documentTreeRoot, flattenDocumentTree, hasDocumentTreeContext } from '@/Lib/documentTree';
+import type { Ref } from 'vue';
+import {
+    documentPathSlugs,
+    documentTreeRequestHeaders,
+    documentTreeRoot,
+    flattenDocumentTree,
+    hasDocumentTreeContext,
+} from '@/Lib/documentTree';
 import type { DocumentTreeNode, DocumentTreeResponse } from '@/types/document';
 
-export function useDocumentTree(currentSlug: string) {
+export function useDocumentTree(currentSlug: string, wsToken: Readonly<Ref<string>>) {
     const root = ref(documentTreeRoot(currentSlug));
     const childrenByParent = reactive(new Map<string, DocumentTreeNode[]>());
     const nodesBySlug = reactive(new Map<string, DocumentTreeNode>([[root.value.slug, root.value]]));
@@ -26,7 +33,7 @@ export function useDocumentTree(currentSlug: string) {
 
         try {
             const response = await fetch(`/api/document-tree/${slug}`, {
-                headers: { Accept: 'application/json' },
+                headers: documentTreeRequestHeaders(wsToken.value),
                 signal: controller.signal,
             });
 

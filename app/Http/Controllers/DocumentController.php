@@ -9,6 +9,7 @@ use App\Actions\ListDocumentChildren;
 use App\Actions\PersistDocumentContent;
 use App\Actions\ResolvePrefixPrice;
 use App\Models\Document;
+use App\Support\DocumentSlug;
 use App\Support\ErrorPage;
 use App\Support\PrefixCookie;
 use App\Support\SeoMetadata;
@@ -111,8 +112,15 @@ class DocumentController
         return response()->json(['removed' => $removed]);
     }
 
-    public function tree(string $slug): JsonResponse
+    public function tree(Request $request, string $slug): JsonResponse
     {
+        $owner = Document::prefixOwner($slug);
+
+        if ($owner?->visitor_password_hash !== null
+            && ! PrefixCookie::held($request, $owner, PrefixCookie::OWNER)) {
+            abort_unless($this->treeTokenMatchesPrefix($request->bearerToken(), $owner), 403);
+        }
+
         return response()->json([
             'children' => $this->listDocumentChildren->execute($slug),
         ]);
@@ -134,19 +142,16 @@ class DocumentController
     {
         $owner = Document::prefixOwner($slug);
         $isOwner = $owner !== null && PrefixCookie::held($request, $owner, PrefixCookie::OWNER);
+        $document = Document::where('slug', $slug)->first();
 
         if (! $isOwner) {
             abort_if($owner?->readonly === true, 403, 'This page is read-only.');
 
-            if ($owner?->visitor_password_hash !== null && ! $this->wsTokenService->matches(
+            if ($owner?->visitor_password_hash !== null && ($document === null || ! $this->wsTokenService->matches(
                 (string) $request->input('wsToken'),
-                $this->findOrCreate->execute($slug)->id,
-                WebSocketTokenService::gate(
-                    $owner->readonly,
-                    $owner->visitor_password_hash,
-                    $owner->owner_session_id,
-                ),
-            )) {
+                $document->id,
+                self::prefixGate($owner),
+            ))) {
                 abort(403, 'This page is locked.');
             }
         }
@@ -177,18 +182,28 @@ class DocumentController
         ];
     }
 
-    private static function unlockCookie(Document $owner): string
+    private static function prefixGate(Document $owner): string
     {
-        return 'dh_unlock_' . substr(hash('sha256', $owner->slug), 0, 16);
+        return WebSocketTokenService::gate(
+            $owner->readonly,
+            $owner->visitor_password_hash,
+            $owner->owner_session_id,
+        );
     }
 
-    private static function unlockValue(Document $owner): string
+    private function treeTokenMatchesPrefix(?string $token, Document $owner): bool
     {
-        return substr(hash('sha256', (string) $owner->visitor_password_hash), 0, 32);
-    }
+        if ($token === null) {
+            return false;
+        }
 
-    private function isUnlocked(Request $request, Document $owner): bool
-    {
-        return PrefixCookie::held($request, $owner, PrefixCookie::VISITOR);
+        $documentId = $this->wsTokenService->verify($token);
+        $document = $documentId === null
+            ? null
+            : Document::query()->select(['id', 'slug'])->find($documentId);
+
+        return $document !== null
+            && DocumentSlug::root($document->slug) === $owner->slug
+            && $this->wsTokenService->matches($token, $document->id, self::prefixGate($owner));
     }
 }

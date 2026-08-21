@@ -2,6 +2,13 @@ import type { DocumentTreeNode } from '@/types/document';
 
 const DOCUMENT_TREE_COLLAPSED_STORAGE_KEY = 'dumphere:document-tree-collapsed';
 
+export function documentTreeRequestHeaders(wsToken: string): Record<string, string> {
+    return {
+        Accept: 'application/json',
+        Authorization: `Bearer ${wsToken}`,
+    };
+}
+
 export interface DocumentBreadcrumb {
     slug: string;
     label: string;
