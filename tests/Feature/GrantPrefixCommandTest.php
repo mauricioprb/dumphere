@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Models\Document;
 use Illuminate\Support\Facades\Hash;
 
-it('reserves an address with everything a checkout would set', function (): void {
+it('reserves a special address without a payment provider', function (): void {
     $this->artisan('prefix:grant', [
         'address' => 'Studio',
         '--password' => 'owner secret',

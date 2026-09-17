@@ -77,19 +77,9 @@ task('deploy:check:environment', function (): void {
             fi
         }
 
-        for key in APP_KEY YJS_WS_SECRET YJS_ALLOWED_ORIGINS STRIPE_SECRET STRIPE_WEBHOOK_SECRET; do
+        for key in APP_KEY YJS_WS_SECRET YJS_ALLOWED_ORIGINS; do
             require_value "$key"
         done
-
-        if ! grep -Eq '^STRIPE_PRICE_(BRL|USD)=.+' "$env_file"; then
-            echo "The production .env must define at least one of STRIPE_PRICE_BRL or STRIPE_PRICE_USD." >&2
-            exit 1
-        fi
-
-        if grep -Eq '^STRIPE_SECRET=sk_test_' "$env_file"; then
-            echo "The production .env must not use a Stripe test key." >&2
-            exit 1
-        fi
 
         require_exact SESSION_DRIVER cookie
         require_exact SESSION_ENCRYPT true

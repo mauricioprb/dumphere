@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\GrantPrefixAccess;
 use App\Models\Document;
 use App\Support\DocumentSlug;
 use App\Support\PrefixCookie;
@@ -19,66 +18,6 @@ use Inertia\Response;
 
 class PrefixController
 {
-    public const CLAIM_COOKIE = 'dh_claim';
-
-    public const CLAIM_COOKIE_LIFETIME_MINUTES = 60 * 24 * 30;
-
-    public function __construct(private readonly GrantPrefixAccess $grantAccess) {}
-
-    public function claim(Request $request): Response
-    {
-        $sessionId = (string) $request->query('session_id');
-        $recoveryKey = (string) $request->cookie(self::CLAIM_COOKIE, '');
-        $document = $this->grantAccess->execute($sessionId, $recoveryKey);
-
-        if ($document === null) {
-            $pending = Document::where('checkout_session_id', $sessionId)->first();
-
-            abort_unless($pending !== null
-                && RecoveryKey::matches($recoveryKey, $pending->checkout_claim_hash), 404);
-
-            return Inertia::render('Prefix/Claim', [
-                'prefix' => $pending->slug,
-                'sessionId' => $sessionId,
-                'alreadyClaimed' => false,
-                'recoveryKey' => '',
-                'pending' => true,
-            ]);
-        }
-
-        abort_unless(RecoveryKey::matches($recoveryKey, $document->owner_recovery_key_hash), 404);
-
-        return Inertia::render('Prefix/Claim', [
-            'prefix' => $document->slug,
-            'sessionId' => $document->stripe_session_id,
-            'alreadyClaimed' => $document->owner_password_hash !== null,
-            'recoveryKey' => $recoveryKey,
-            'pending' => false,
-        ]);
-    }
-
-    public function storeOwnerPassword(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'session_id' => ['required', 'string'],
-            'password' => ['required', 'string', 'max:200', 'confirmed'],
-        ]);
-
-        $document = Document::where('stripe_session_id', $validated['session_id'])->firstOrFail();
-        $recoveryKey = (string) $request->cookie(self::CLAIM_COOKIE, '');
-
-        abort_unless(RecoveryKey::matches($recoveryKey, $document->owner_recovery_key_hash), 404);
-
-        if ($document->owner_password_hash !== null) {
-            throw ValidationException::withMessages(['password' => __('prefix.already_claimed')]);
-        }
-
-        $document->forceFill(['owner_password_hash' => Hash::make($validated['password'])])->save();
-
-        return redirect('/' . $document->slug)
-            ->withCookie(PrefixCookie::claim($document->fresh()));
-    }
-
     public function settings(Request $request, string $slug): JsonResponse
     {
         $document = Document::prefixOwner($slug);

@@ -10,7 +10,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use Stripe\StripeClient;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -20,8 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withSingletons([
-        StripeClient::class => fn (): StripeClient => new StripeClient((string) config('stripe.secret')),
-
         'csp-nonce' => fn (): string => base64_encode(random_bytes(16)),
     ])
     ->withMiddleware(function (Middleware $middleware): void {
@@ -31,8 +28,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 ? '*'
                 : array_map('trim', explode(',', $trustedProxies))
         );
-
-        $middleware->validateCsrfTokens(except: ['checkout/webhook']);
 
         $middleware->web(append: [
             SetLocale::class,

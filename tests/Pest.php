@@ -8,6 +8,7 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)->in(
     'Feature',
     'Unit/WebSocketTokenServiceTest.php',
+    'Unit/MarketPriceTest.php',
 );
 
 pest()->use(LazilyRefreshDatabase::class)->in(
@@ -17,4 +18,5 @@ pest()->use(LazilyRefreshDatabase::class)->in(
     'Feature/PaidPrefixTest.php',
     'Feature/PurgeStaleDocumentsTest.php',
     'Feature/SeoTest.php',
+    'Unit/MarketPriceTest.php',
 );

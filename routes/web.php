@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PrefixController;
 use App\Http\Middleware\SanitizeSlug;
@@ -52,19 +51,6 @@ Route::get('/health', function () {
         'timestamp' => now()->toISOString(),
     ]);
 })->name('health');
-
-Route::post('/checkout', [CheckoutController::class, 'create'])
-    ->middleware('throttle:10,1')
-    ->name('checkout.create');
-
-Route::post('/checkout/webhook', [CheckoutController::class, 'webhook'])->name('checkout.webhook');
-
-Route::get('/claim', [PrefixController::class, 'claim'])
-    ->middleware('throttle:10,1')
-    ->name('prefix.claim');
-Route::post('/claim', [PrefixController::class, 'storeOwnerPassword'])
-    ->middleware('throttle:10,1')
-    ->name('prefix.claim.store');
 
 Route::get('/recover', [PrefixController::class, 'recoverForm'])->name('prefix.recover');
 Route::post('/recover', [PrefixController::class, 'recover'])

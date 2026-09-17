@@ -16,13 +16,13 @@ class GrantPrefixCommand extends Command
     protected $signature = 'prefix:grant
         {address : The address to reserve, without slashes (for example: mauricio)}
         {--password= : Owner password; asked for when omitted}
-        {--years=100 : How long the address stays paid}
+        {--years=100 : How long the address stays reserved}
         {--readonly : Leave the address read-only for visitors}
         {--visitor-password= : Require this password to visit}
         {--hue= : Fixed palette hue, 0 to 359}
         {--saturation= : Palette saturation, 0 to 100}';
 
-    protected $description = 'Reserve an address for an owner, bypassing checkout.';
+    protected $description = 'Reserve a special address for an owner.';
 
     public function handle(): int
     {

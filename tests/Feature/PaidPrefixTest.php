@@ -2,24 +2,16 @@
 
 declare(strict_types=1);
 
-use App\Actions\GrantPrefixAccess;
 use App\Actions\PurgeStaleDocuments;
-use App\Actions\ReleasePrefixCheckout;
-use App\Actions\StartPrefixCheckout;
-use App\Http\Controllers\PrefixController;
 use App\Models\Document;
 use App\Support\PrefixCookie;
 use App\Support\RecoveryKey;
 use App\Support\WebSocketTokenService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Inertia\Testing\AssertableInertia as Assert;
-use Stripe\Checkout\Session;
-use Stripe\StripeClient;
 
 function paidChild(string $slug = 'acme/notes'): Document
 {
@@ -33,7 +25,6 @@ function paidPrefix(array $attributes = []): Document
     // Ownership is not mass assignable, exactly as in the application.
     $document->forceFill([
         'paid_until' => now()->addYear(),
-        'stripe_session_id' => 'cs_test_123',
         'owner_recovery_key_hash' => RecoveryKey::digest('recovery-key-123'),
         'owner_password_hash' => Hash::make('correct horse battery'),
         ...$attributes,
@@ -162,40 +153,11 @@ it('keeps paid prefixes and their children out of the purge', function (): void 
         ->and(Document::where('slug', 'free')->exists())->toBeFalse();
 });
 
-it('lets the owner password be set once and then opens the in-page settings', function (): void {
-    $this->withoutVite();
-    $document = paidPrefix(['owner_password_hash' => null]);
-
-    $this->mock(GrantPrefixAccess::class)
-        ->shouldReceive('execute')->with('cs_test_123', 'recovery-key-123')->andReturn($document);
-
-    $this->post('/claim', [
-        'session_id' => 'cs_test_123',
-        'password' => 'stolen password',
-        'password_confirmation' => 'stolen password',
-    ])->assertNotFound();
-
-    $this->withCookie(PrefixController::CLAIM_COOKIE, 'recovery-key-123')
-        ->get('/claim?session_id=cs_test_123')
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->component('Prefix/Claim')
-            ->where('alreadyClaimed', false)
-            ->where('recoveryKey', 'recovery-key-123'));
-
-    $this->withCookie(PrefixController::CLAIM_COOKIE, 'recovery-key-123')
-        ->post('/claim', [
-            'session_id' => 'cs_test_123',
-            'password' => 'a decent password',
-            'password_confirmation' => 'a decent password',
-        ])->assertRedirect('/acme');
-
-    $this->withCookie(PrefixController::CLAIM_COOKIE, 'recovery-key-123')
-        ->post('/claim', [
-            'session_id' => 'cs_test_123',
-            'password' => 'another password',
-            'password_confirmation' => 'another password',
-        ])->assertSessionHasErrors('password');
+it('lets a manually granted owner open the in-page settings', function (): void {
+    $this->artisan('prefix:grant', [
+        'address' => 'acme',
+        '--password' => 'a decent password',
+    ])->assertSuccessful();
 
     $this->postJson('/acme/notes/settings', ['password' => 'wrong'])->assertStatus(422);
 
@@ -398,8 +360,8 @@ it('keeps strangers from conjuring pages inside a paid address', function (): vo
         ->assertInertia(fn (Assert $page) => $page->component('Error')->where('status', 404)->where('reason', null));
 
     // Rate limiting gets the same treatment, with the wait it asks for.
-    foreach (range(1, 11) as $ignored) {
-        $response = $this->post('/checkout', ['prefix' => 'anything']);
+    foreach (range(1, 6) as $ignored) {
+        $response = $this->post('/recover', []);
     }
 
     $response->assertStatus(429)
@@ -433,7 +395,7 @@ it('does not throttle the owner creating pages inside the address they paid for'
 
 it('caps an owned address at the configured number of documents', function (): void {
     $this->withoutVite();
-    config(['stripe.max_documents' => 3]);
+    config(['prefix.max_documents' => 3]);
 
     paidPrefix();
     paidChild('acme/one');
@@ -509,208 +471,26 @@ it('pins the palette of a paid address for everyone who opens it', function (): 
     expect($this->get('/acme/notes')->getContent())->not->toContain("root.dataset.themeHue = '");
 });
 
-it('refuses a claim from a browser that did not start the checkout', function (): void {
-    Log::spy();
-
-    $stripe = Mockery::mock(StripeClient::class);
-    $sessions = Mockery::mock();
-
-    $stripe->checkout = (object) ['sessions' => $sessions];
-    $sessions->shouldReceive('retrieve')->andReturn((object) [
-        'payment_status' => 'paid',
-        'metadata' => ['prefix' => 'acme', 'claim' => 'the-real-claim'],
-        'payment_intent' => null,
-    ]);
-
-    $grant = new GrantPrefixAccess($stripe);
-
-    expect($grant->execute('cs_test_1', 'a-stolen-link'))->toBeNull()
-        ->and(Document::where('slug', 'acme')->exists())->toBeFalse();
-
-    expect($grant->execute('cs_test_1', 'the-real-claim'))->not->toBeNull();
-
-    Log::shouldHaveReceived('warning')
-        ->once()
-        ->with(
-            'Claim attempted from a browser that did not start the checkout.',
-            ['session_fingerprint' => substr(hash('sha256', 'cs_test_1'), 0, 12)],
-        );
-});
-
-it('reserves a prefix before creating a single stripe checkout session', function (): void {
-    $stripe = Mockery::mock(StripeClient::class);
-    $sessions = Mockery::mock();
-    $stripe->checkout = (object) ['sessions' => $sessions];
-
-    $sessions->shouldReceive('create')
-        ->once()
-        ->withArgs(function (array $parameters, array $options): bool {
-            expect($parameters['metadata']['prefix'])->toBe('acme')
-                ->and($parameters['metadata']['reservation'])->not->toBeEmpty()
-                ->and($parameters['metadata'])->not->toHaveKey('claim')
-                ->and($parameters['expires_at'])->toBeGreaterThan(now()->addMinutes(50)->timestamp)
-                ->and($options['idempotency_key'])->toBe($parameters['metadata']['reservation']);
-
-            return true;
-        })
-        ->andReturn(Session::constructFrom([
-            'id' => 'cs_reserved',
-            'url' => 'https://checkout.stripe.com/c/pay/cs_reserved',
-        ]));
-
-    $checkout = new StartPrefixCheckout($stripe);
-
-    $session = $checkout->execute(
-        prefix: 'acme',
-        priceId: 'price_brl',
-        recoveryKey: 'browser-claim',
-        successUrl: 'https://dumphere.test/claim?session_id={CHECKOUT_SESSION_ID}',
-        cancelUrl: 'https://dumphere.test',
-    );
-
-    $document = Document::where('slug', 'acme')->firstOrFail();
-
-    expect($session->id)->toBe('cs_reserved')
-        ->and($document->checkout_session_id)->toBe('cs_reserved')
-        ->and($document->checkout_reservation_id)->not->toBeNull()
-        ->and($document->checkout_claim_hash)->toBe(RecoveryKey::digest('browser-claim'))
-        ->and($document->checkout_reserved_until)->not->toBeNull();
-
-    expect(fn () => $checkout->execute(
-        prefix: 'acme',
-        priceId: 'price_brl',
-        recoveryKey: 'another-browser',
-        successUrl: 'https://dumphere.test/claim?session_id={CHECKOUT_SESSION_ID}',
-        cancelUrl: 'https://dumphere.test',
-    ))->toThrow(ValidationException::class);
-});
-
-it('keeps the reservation when stripe checkout has an uncertain outcome', function (): void {
-    $stripe = Mockery::mock(StripeClient::class);
-    $sessions = Mockery::mock();
-    $stripe->checkout = (object) ['sessions' => $sessions];
-    $sessions->shouldReceive('create')->once()->andThrow(new RuntimeException('Stripe unavailable'));
-
-    $checkout = new StartPrefixCheckout($stripe);
-
-    expect(fn () => $checkout->execute(
-        prefix: 'acme',
-        priceId: 'price_brl',
-        recoveryKey: 'browser-claim',
-        successUrl: 'https://dumphere.test/claim?session_id={CHECKOUT_SESSION_ID}',
-        cancelUrl: 'https://dumphere.test',
-    ))->toThrow(RuntimeException::class, 'Stripe unavailable');
-
-    $document = Document::where('slug', 'acme')->firstOrFail();
-
-    expect($document->checkout_reservation_id)->not->toBeNull()
-        ->and($document->checkout_reserved_until)->not->toBeNull()
-        ->and($document->checkout_session_id)->toBeNull();
-});
-
-it('fulfills the same checkout once and rejects a different paid session', function (): void {
-    $reservation = (string) Str::uuid();
-    $document = Document::create(['slug' => 'acme', 'title' => 'Acme', 'content_html' => '']);
-    $document->forceFill([
-        'checkout_reservation_id' => $reservation,
-        'checkout_reserved_until' => now()->addHour(),
-        'checkout_session_id' => 'cs_paid',
-    ])->save();
-
-    $stripe = Mockery::mock(StripeClient::class);
-    $sessions = Mockery::mock();
-    $stripe->checkout = (object) ['sessions' => $sessions];
-    $sessions->shouldReceive('retrieve')->twice()->with('cs_paid')->andReturn(
-        Session::constructFrom([
-            'id' => 'cs_paid',
-            'payment_status' => 'paid',
-            'status' => 'complete',
-            'metadata' => ['prefix' => 'acme', 'claim' => 'claim', 'reservation' => $reservation],
-            'payment_intent' => null,
-        ]),
-    );
-
-    $grant = new GrantPrefixAccess($stripe);
-    $first = $grant->execute('cs_paid');
-    $paidUntil = $first?->paid_until?->toISOString();
-    $second = $grant->execute('cs_paid');
-
-    expect($second?->paid_until?->toISOString())->toBe($paidUntil)
-        ->and($second?->checkout_session_id)->toBeNull()
-        ->and($second?->checkout_reservation_id)->toBeNull();
-
-    $sessions->shouldReceive('retrieve')->once()->with('cs_other')->andReturn(
-        Session::constructFrom([
-            'id' => 'cs_other',
-            'payment_status' => 'paid',
-            'status' => 'complete',
-            'metadata' => ['prefix' => 'acme', 'claim' => 'other', 'reservation' => (string) Str::uuid()],
-            'payment_intent' => null,
-        ]),
-    );
-
-    expect($grant->execute('cs_other'))->toBeNull()
-        ->and(Document::where('slug', 'acme')->firstOrFail()->stripe_session_id)->toBe('cs_paid');
-});
-
-it('keeps fulfilled access when a stale expiration event arrives later', function (): void {
-    $document = paidPrefix();
-
-    (new ReleasePrefixCheckout)->execute('cs_test_123', (string) Str::uuid());
-
-    expect($document->fresh()->paid_until)->not->toBeNull()
-        ->and($document->fresh()->stripe_session_id)->toBe('cs_test_123');
-});
-
-it('keeps the reservation while a delayed payment is processing', function (): void {
-    $reservation = (string) Str::uuid();
-    $document = Document::create(['slug' => 'acme', 'title' => 'Acme', 'content_html' => '']);
-    $document->forceFill([
-        'checkout_reservation_id' => $reservation,
-        'checkout_reserved_until' => now()->addHour(),
-        'checkout_session_id' => 'cs_pending',
-    ])->save();
-
-    $stripe = Mockery::mock(StripeClient::class);
-    $sessions = Mockery::mock();
-    $stripe->checkout = (object) ['sessions' => $sessions];
-    $sessions->shouldReceive('retrieve')->once()->andReturn(Session::constructFrom([
-        'id' => 'cs_pending',
-        'payment_status' => 'unpaid',
-        'status' => 'complete',
-        'metadata' => ['prefix' => 'acme', 'reservation' => $reservation],
-    ]));
-
-    expect((new GrantPrefixAccess($stripe))->execute('cs_pending'))->toBeNull()
-        ->and($document->fresh()->checkout_session_id)->toBe('cs_pending')
-        ->and($document->fresh()->checkout_reserved_until)->toBeNull();
-});
-
-it('keeps the buyer on a waiting page while delayed payment is processing', function (): void {
+it('rejects retired payment endpoints without changing ownership', function (string $method, string $path): void {
     $this->withoutVite();
-    $document = Document::create(['slug' => 'acme', 'title' => 'Acme', 'content_html' => '']);
-    $document->forceFill([
-        'checkout_claim_hash' => RecoveryKey::digest('recovery-key-123'),
-        'checkout_reservation_id' => (string) Str::uuid(),
-        'checkout_reserved_until' => null,
-        'checkout_session_id' => 'cs_pending',
-    ])->save();
+    $document = paidPrefix();
+    $attributes = $document->fresh()->getAttributes();
 
-    $this->mock(GrantPrefixAccess::class)
-        ->shouldReceive('execute')
-        ->once()
-        ->with('cs_pending', 'recovery-key-123')
-        ->andReturnNull();
+    $this->call($method, $path, [
+        'prefix' => 'acme',
+        'session_id' => 'cs_test_123',
+        'password' => 'stolen password',
+        'password_confirmation' => 'stolen password',
+    ])->assertNotFound();
 
-    $this->withCookie(PrefixController::CLAIM_COOKIE, 'recovery-key-123')
-        ->get('/claim?session_id=cs_pending')
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->component('Prefix/Claim')
-            ->where('prefix', 'acme')
-            ->where('pending', true)
-            ->where('recoveryKey', ''));
-});
+    expect($document->fresh()->getAttributes())->toBe($attributes)
+        ->and(Document::count())->toBe(1);
+})->with([
+    'checkout' => ['POST', '/checkout'],
+    'webhook' => ['POST', '/checkout/webhook'],
+    'claim page' => ['GET', '/claim?session_id=cs_test_123'],
+    'claim password' => ['POST', '/claim'],
+]);
 
 it('preserves a legacy receipt as a recovery key during migration', function (): void {
     $migration = require database_path(
@@ -737,75 +517,6 @@ it('preserves a legacy receipt as a recovery key during migration', function ():
     expect(Schema::hasColumn('documents', 'stripe_receipt_url'))->toBeFalse()
         ->and(DB::table('documents')->where('id', $documentId)->value('owner_recovery_key_hash'))
         ->toBe(RecoveryKey::digest($receiptUrl));
-});
-
-it('releases a prefix when an asynchronous payment fails', function (): void {
-    config(['stripe.webhook_secret' => 'whsec_test']);
-
-    $reservation = (string) Str::uuid();
-    $document = Document::create(['slug' => 'acme', 'title' => 'Acme', 'content_html' => '']);
-    $document->forceFill([
-        'checkout_reservation_id' => $reservation,
-        'checkout_reserved_until' => null,
-        'checkout_session_id' => 'cs_failed',
-    ])->save();
-
-    $payload = json_encode([
-        'id' => 'evt_failed',
-        'object' => 'event',
-        'type' => 'checkout.session.async_payment_failed',
-        'data' => [
-            'object' => [
-                'id' => 'cs_failed',
-                'object' => 'checkout.session',
-                'metadata' => ['reservation' => $reservation],
-            ],
-        ],
-    ], JSON_THROW_ON_ERROR);
-    $timestamp = time();
-    $signature = hash_hmac('sha256', $timestamp . '.' . $payload, 'whsec_test');
-
-    $this->call(
-        'POST',
-        '/checkout/webhook',
-        server: [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
-        ],
-        content: $payload,
-    )->assertNoContent();
-
-    expect($document->fresh()->checkout_session_id)->toBeNull()
-        ->and($document->fresh()->checkout_reservation_id)->toBeNull();
-});
-
-it('fulfills delayed stripe payments from their asynchronous webhook', function (): void {
-    config(['stripe.webhook_secret' => 'whsec_test']);
-
-    $this->mock(GrantPrefixAccess::class)
-        ->shouldReceive('execute')
-        ->once()
-        ->with('cs_async')
-        ->andReturnNull();
-
-    $payload = json_encode([
-        'id' => 'evt_async',
-        'object' => 'event',
-        'type' => 'checkout.session.async_payment_succeeded',
-        'data' => ['object' => ['id' => 'cs_async', 'object' => 'checkout.session']],
-    ], JSON_THROW_ON_ERROR);
-    $timestamp = time();
-    $signature = hash_hmac('sha256', $timestamp . '.' . $payload, 'whsec_test');
-
-    $this->call(
-        'POST',
-        '/checkout/webhook',
-        server: [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
-        ],
-        content: $payload,
-    )->assertNoContent();
 });
 
 it('accepts whatever password the owner picks', function (): void {

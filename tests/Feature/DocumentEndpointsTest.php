@@ -9,7 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 it('creates and opens a normalized document', function (): void {
     $this->withoutVite();
-    config(['stripe.max_documents' => 37]);
+    config(['prefix.max_documents' => 37]);
 
     $this->get('/Configuration-Notes')
         ->assertOk()

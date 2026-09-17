@@ -74,7 +74,7 @@ class FindOrCreateDocument
                 ->orWhere('slug', 'like', $lockedOwner->slug . '/%')
                 ->count();
 
-            abort_if($documentCount >= max(1, (int) config('stripe.max_documents')), 409);
+            abort_if($documentCount >= max(1, (int) config('prefix.max_documents')), 409);
 
             return $this->createDocument($slug);
         }, attempts: 5);

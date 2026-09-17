@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Actions\FindOrCreateDocument;
 use App\Actions\ListDocumentChildren;
 use App\Actions\PersistDocumentContent;
-use App\Actions\ResolvePrefixPrice;
 use App\Models\Document;
 use App\Support\DocumentSlug;
 use App\Support\ErrorPage;
@@ -29,7 +28,6 @@ class DocumentController
         private readonly ListDocumentChildren $listDocumentChildren,
         private readonly PersistDocumentContent $persistContent,
         private readonly WebSocketTokenService $wsTokenService,
-        private readonly ResolvePrefixPrice $resolvePrice,
     ) {}
 
     public function show(Request $request, string $slug, bool $unlocked = false): Response|SymfonyResponse
@@ -67,14 +65,11 @@ class DocumentController
             ],
             'paid' => $owner !== null,
             'isOwner' => $isOwner,
-            'maxDocuments' => max(1, (int) config('stripe.max_documents')),
+            'maxDocuments' => max(1, (int) config('prefix.max_documents')),
             'themeHue' => $owner?->theme_hue,
             'themeChroma' => $owner?->theme_chroma,
             'themeHueDark' => $owner?->theme_hue_dark,
             'themeChromaDark' => $owner?->theme_chroma_dark,
-            'price' => $owner === null
-                ? $this->resolvePrice->execute($request->getPreferredLanguage(['en', 'pt-BR']))
-                : null,
             'readonly' => $readonly,
             'readonlyForVisitors' => $owner?->readonly === true,
             'lockedForVisitors' => $owner?->visitor_password_hash !== null,

@@ -63,7 +63,6 @@ class Document extends Model
         return [
             'last_accessed_at' => 'datetime',
             'paid_until' => 'datetime',
-            'checkout_reserved_until' => 'datetime',
             'readonly' => 'boolean',
         ];
     }

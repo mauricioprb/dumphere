@@ -2,20 +2,26 @@
 
 declare(strict_types=1);
 
-use App\Support\MarketPrice;
+use Inertia\Testing\AssertableInertia as Assert;
 
-it('sends brazilian visitors to the brazilian price', function (string $language, string $market): void {
-    expect(MarketPrice::market($language))->toBe($market);
+it('opens documents without payment pricing for every language', function (?string $language): void {
+    $this->withoutVite();
+
+    if ($language !== null) {
+        $this->withHeader('Accept-Language', $language);
+    }
+
+    $this->get('/notes')->assertOk()->assertInertia(fn (Assert $page) => $page
+        ->component('Document/Show')
+        ->where('paid', false)
+        ->missing('price'));
 })->with([
-    'brazilian portuguese' => ['pt-BR', 'brl'],
-    'european portuguese' => ['pt-PT', 'brl'],
-    'bare portuguese' => ['pt', 'brl'],
-    'english' => ['en', 'usd'],
-    'american english' => ['en-US', 'usd'],
-    'german' => ['de-DE', 'usd'],
-    'unknown' => ['', 'usd'],
+    'brazilian portuguese' => ['pt-BR'],
+    'european portuguese' => ['pt-PT'],
+    'bare portuguese' => ['pt'],
+    'english' => ['en'],
+    'american english' => ['en-US'],
+    'german' => ['de-DE'],
+    'unknown' => [''],
+    'missing language' => [null],
 ]);
-
-it('falls back to the dollar price when the language is missing', function (): void {
-    expect(MarketPrice::market(null))->toBe('usd');
-});
