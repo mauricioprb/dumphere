@@ -12,7 +12,6 @@
         "symfony/html-sanitizer": "^8.1"
     },
     "require-dev": {
-        "deployer/deployer": "^8.0",
         "fakerphp/faker": "^1.23",
         "laravel/boost": "^2.4",
         "laravel/pint": "^1.24",

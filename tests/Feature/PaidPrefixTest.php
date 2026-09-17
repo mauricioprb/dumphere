@@ -59,7 +59,9 @@ it('refuses saves on a read-only prefix', function (): void {
     paidPrefix(['readonly' => true]);
     paidChild();
 
-    $this->post('/acme/notes/save', ['contentHtml' => '<p>nope</p>'])->assertForbidden();
+    $this->post('/acme/notes/save', ['contentHtml' => '<p>nope</p>'])
+        ->assertForbidden()
+        ->assertInertia(fn (Assert $page) => $page->component('Error')->where('status', 403));
 });
 
 it('asks for the password again on every visit', function (): void {

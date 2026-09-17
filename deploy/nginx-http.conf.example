@@ -1,9 +1,0 @@
-
-
-log_format dumphere_privacy escape=json
-    '{"timestamp":"$time_iso8601",'
-    '"request_id":"$request_id",'
-    '"method":"$request_method",'
-    '"status":$status,'
-    '"bytes":$body_bytes_sent,'
-    '"duration_seconds":$request_time}';

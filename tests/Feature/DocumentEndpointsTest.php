@@ -158,7 +158,7 @@ it('mints a fresh websocket token on a partial reload', function (): void {
 
     $response = $this->get('/long-lived-tab', [
         'X-Inertia' => 'true',
-        'X-Inertia-Version' => (new HandleInertiaRequests)->version(request()),
+        'X-Inertia-Version' => (string) (new HandleInertiaRequests)->version(request()),
         'X-Inertia-Partial-Component' => 'Document/Show',
         'X-Inertia-Partial-Data' => 'wsToken',
     ])->assertOk();

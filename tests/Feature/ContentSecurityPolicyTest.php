@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Vite;
 
 it('allows the active vite development server', function (): void {
+    $this->withVite();
+
     $hotFile = tempnam(sys_get_temp_dir(), 'vite-hot-');
 
     expect($hotFile)->not->toBeFalse();

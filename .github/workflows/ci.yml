@@ -43,16 +43,14 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Prepare test environment
+        run: cp .env.example .env
+
       - name: Audit production dependencies
         run: composer audit --locked --no-dev
 
       - name: Pint (code style)
         run: composer lint:test
-
-      - name: Validate deployment recipe
-        run: |
-          php -l deploy.php
-          vendor/bin/dep tree deploy
 
       - name: Run tests
         run: composer test

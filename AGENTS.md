@@ -278,7 +278,7 @@ sem visitas.
 | Testes do yjs-server  | `node --test`, sem framework                                 |
 | Estilo de código PHP  | Laravel Pint (`pint.json`)                                   |
 | Estilo do frontend    | ESLint 10 flat config mais Prettier                          |
-| Deploy                | Deployer 8 (`deploy.php`), systemd para o Yjs, Nginx         |
+| Deploy                | Laravel Forge, Supervisor para o Yjs, Nginx                  |
 | Contexto para IA      | Laravel Boost                                                |
 
 Restrições que já foram decididas:
@@ -502,8 +502,8 @@ serviço, não detalhe de configuração.
 - Criação de documento tem limite próprio por IP em `FindOrCreateDocument`.
 - `YJS_MAX_CONNECTIONS_PER_IP`, `YJS_MAX_MESSAGES_PER_SECOND`, `YJS_MAX_MESSAGE_BURST`,
   `YJS_MAX_PAYLOAD_BYTES` e `YJS_MAX_DOCUMENT_BYTES` controlam o servidor colaborativo.
-- Ao mexer em qualquer um desses valores, ajuste `.env.example` e
-  `deploy/production.env.example` na mesma mudança, e diga no relato qual passa a ser o
+- Ao mexer em qualquer um desses valores, ajuste `.env.example` e a
+  configuração de produção no `README.md` na mesma mudança, e diga no relato qual passa a ser o
   comportamento sob abuso.
 - Documento sem acesso há 30 dias é apagado. O aviso de expiração na interface
   (`ExpirationNotice`) precisa continuar coerente com a regra do agendador.
@@ -512,7 +512,7 @@ serviço, não detalhe de configuração.
 
 ## 9. Segurança
 
-- Segredos só em `.env`. `.env.example` e `deploy/production.env.example` sempre
+- Segredos só em `.env`. `.env.example` e os exemplos no `README.md` sempre
   atualizados, com valores vazios ou de exemplo.
 - `APP_KEY` e `YJS_WS_SECRET` são independentes e devem ser diferentes entre ambientes.
   Nunca reutilize valor de produção em dev.
