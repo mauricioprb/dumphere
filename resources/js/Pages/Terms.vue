@@ -6,6 +6,7 @@ import AppLayout from '@/Components/Layout/AppLayout.vue';
 import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
 import { useI18n } from '@/Composables/useI18n';
 import { appName, sourceUrl } from '@/Lib/brand';
+import GithubMark from '@/Components/UI/GithubMark.vue';
 import { useContactEmail } from '@/Composables/useAppUrl';
 
 const { t } = useI18n();
@@ -293,9 +294,10 @@ const clauses = computed<Clause[]>(() => [
                     <a
                         :href="sourceUrl"
                         rel="noopener"
-                        class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
-                        >{{ t('footer.source') }}</a
-                    >
+                        class="external-focus text-inherit transition-colors hover:text-(--external-ink)"
+                        :aria-label="t('footer.source')"
+                        ><GithubMark class="size-[1.15em]"
+                    /></a>
                     <span class="external-divider" aria-hidden="true" />
                     <span>{{ t('terms.footer') }}</span>
                 </footer>

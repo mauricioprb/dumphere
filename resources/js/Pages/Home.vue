@@ -4,6 +4,7 @@ import { Link, router } from '@inertiajs/vue3';
 import { ArrowRight } from '@lucide/vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
+import GithubMark from '@/Components/UI/GithubMark.vue';
 import { useI18n } from '@/Composables/useI18n';
 import { appName, sourceUrl } from '@/Lib/brand';
 import { useTypewriter } from '@/Composables/useTypewriter';
@@ -219,9 +220,10 @@ function clearError() {
                 <a
                     :href="sourceUrl"
                     rel="noopener"
-                    class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
+                    class="external-focus text-inherit transition-colors hover:text-(--external-ink)"
+                    :aria-label="t('footer.source')"
                 >
-                    {{ t('footer.source') }}
+                    <GithubMark class="size-[1.15em]" />
                 </a>
             </footer>
         </ExternalPageShell>
