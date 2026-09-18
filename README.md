@@ -107,12 +107,10 @@ highest published number:
 
 ## Deployment
 
-- [docs/deploy.md](docs/deploy.md): the four processes and what the environment
-  needs, on any host.
-- [docs/deploy-forge.md](docs/deploy-forge.md): the worked Laravel Forge setup,
-  with the Nginx, Supervisor and deploy-script configuration used in production.
+[docs/deploy.md](docs/deploy.md) covers the four processes, the environment
+variables, the Nginx configuration and the operational details, on any host.
 
-Reserved addresses are granted by command, not bought:
+Reserved addresses are granted by command:
 
 ```bash
 php artisan prefix:grant acme

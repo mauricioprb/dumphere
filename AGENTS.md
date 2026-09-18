@@ -277,7 +277,7 @@ document is created on its own at first access and removed after 30 days without
 | yjs-server tests     | `node --test`, no framework                                  |
 | PHP code style       | Laravel Pint (`pint.json`)                                   |
 | Frontend code style  | ESLint 10 flat config plus Prettier                          |
-| Deploy               | Laravel Forge, Supervisor for Yjs, Nginx                     |
+| Deploy               | Nginx plus PHP-FPM, the Yjs server under a supervisor        |
 | AI context           | Laravel Boost                                                |
 
 Constraints that are already decided:
