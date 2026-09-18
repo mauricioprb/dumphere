@@ -10,15 +10,13 @@ pest()->extend(TestCase::class)->beforeEach(function (): void {
 })->in(
     'Feature',
     'Unit/WebSocketTokenServiceTest.php',
-    'Unit/MarketPriceTest.php',
 );
 
 pest()->use(LazilyRefreshDatabase::class)->in(
     'Feature/DocumentEndpointsTest.php',
     'Feature/DocumentTreeTest.php',
     'Feature/GrantPrefixCommandTest.php',
-    'Feature/PaidPrefixTest.php',
+    'Feature/ReservedPrefixTest.php',
     'Feature/PurgeStaleDocumentsTest.php',
     'Feature/SeoTest.php',
-    'Unit/MarketPriceTest.php',
 );

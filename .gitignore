@@ -19,6 +19,7 @@
 !/.vscode/extensions.json
 !/.vscode/tailwind.css-data.json
 /auth.json
+/md_editor
 /node_modules
 /public/build
 /public/hot

@@ -1,5 +1,5 @@
 /**
- * Brand assets that live outside CSS — the favicon and the `theme-color` meta —
+ * Brand assets that live outside CSS, the favicon and the `theme-color` meta,
  * cannot read `--daily-hue`, so they are rebuilt from the hue in JavaScript.
  *
  * The anchors below mirror the palette in resources/css/theme.css: the mark

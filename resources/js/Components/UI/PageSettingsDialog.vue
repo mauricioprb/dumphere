@@ -14,7 +14,7 @@ type Settings = {
     themeChroma: number | null;
     themeHueDark: number | null;
     themeChromaDark: number | null;
-    paidUntil: string | null;
+    reservedUntil: string | null;
 };
 
 const props = defineProps<{ open: boolean; slug: string; prefix: string; isOwner: boolean }>();

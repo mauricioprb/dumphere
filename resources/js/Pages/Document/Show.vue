@@ -23,7 +23,7 @@ const props = withDefaults(
         document: DocumentData;
         wsToken: string;
         readonly?: boolean;
-        paid?: boolean;
+        reserved?: boolean;
         maxDocuments: number;
         isOwner?: boolean;
         readonlyForVisitors?: boolean;
@@ -31,7 +31,7 @@ const props = withDefaults(
     }>(),
     {
         readonly: false,
-        paid: false,
+        reserved: false,
         isOwner: false,
         readonlyForVisitors: false,
         lockedForVisitors: false,
@@ -143,7 +143,7 @@ watch(
                             <span aria-hidden="true">{{ users.length }}</span>
                         </span>
 
-                        <PageOwnership v-if="paid" :slug="document.slug" :is-owner="isOwner" />
+                        <PageOwnership v-if="reserved" :slug="document.slug" :is-owner="isOwner" />
 
                         <span
                             v-if="readonly"
@@ -194,7 +194,7 @@ watch(
                 </div>
             </main>
 
-            <ExpirationNotice v-if="!paid" :slug="document.slug" :created-at="document.createdAt" />
+            <ExpirationNotice v-if="!reserved" :slug="document.slug" :created-at="document.createdAt" />
         </div>
     </AppLayout>
 </template>

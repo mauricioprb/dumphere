@@ -18,8 +18,8 @@ class PurgeStaleDocuments
 
         $count = 0;
 
-        $paidRoots = Document::query()
-            ->where('paid_until', '>', now())
+        $reservedRoots = Document::query()
+            ->where('reserved_until', '>', now())
             ->pluck('slug')
             ->flip();
 
@@ -31,9 +31,9 @@ class PurgeStaleDocuments
                             ->where('created_at', '<', $threshold);
                     });
             })
-            ->chunkById(100, function ($documents) use (&$count, $paidRoots): void {
+            ->chunkById(100, function ($documents) use (&$count, $reservedRoots): void {
                 foreach ($documents as $document) {
-                    if ($paidRoots->has(DocumentSlug::root($document->slug))) {
+                    if ($reservedRoots->has(DocumentSlug::root($document->slug))) {
                         continue;
                     }
 

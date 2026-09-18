@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import NoiseOverlay from '@/Components/UI/NoiseOverlay.vue';
 import ThemeToggle from '@/Components/UI/ThemeToggle.vue';
 import Wordmark from '@/Components/UI/Wordmark.vue';
-import { useI18n } from '@/Composables/useI18n';
+import { appName } from '@/Lib/brand';
 
 withDefaults(
     defineProps<{
@@ -13,8 +13,6 @@ withDefaults(
         eagerArtwork: false,
     },
 );
-
-const { t } = useI18n();
 </script>
 
 <template>
@@ -47,7 +45,7 @@ const { t } = useI18n();
             <Link
                 href="/"
                 class="external-wordmark text-[1.08rem] text-(--external-ink) no-underline"
-                :aria-label="t('app.title')"
+                :aria-label="appName"
             >
                 <Wordmark />
             </Link>

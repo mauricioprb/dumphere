@@ -1,8 +1,6 @@
 import type ptBR from './pt-BR';
 
 const en = {
-    'app.title': 'Dumphere',
-
     'home.heroLead': 'Open a',
     'home.heroObject': 'page.',
     'home.inputPlaceholder': 'my-page',
@@ -288,6 +286,7 @@ const en = {
         'Reports, takedown requests, personal data and questions about these terms can be sent to the address below.',
     'terms.footer': 'Use at your own risk.',
     'terms.footerHome': 'Home',
+    'footer.source': 'Source code',
 
     'table.addRowBefore': 'Add row above',
     'table.addRowAfter': 'Add row below',

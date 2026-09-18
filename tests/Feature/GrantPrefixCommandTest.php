@@ -19,7 +19,7 @@ it('reserves a special address without a payment provider', function (): void {
     $document = Document::where('slug', 'studio')->first();
 
     expect($document)->not->toBeNull()
-        ->and($document->paid_until->year)->toBe(now()->addYears(5)->year)
+        ->and($document->reserved_until->year)->toBe(now()->addYears(5)->year)
         ->and(Hash::check('owner secret', $document->owner_password_hash))->toBeTrue()
         ->and(Hash::check('team secret', $document->visitor_password_hash))->toBeTrue()
         ->and($document->readonly)->toBeTrue()
@@ -44,5 +44,5 @@ it('takes over an address that already exists, keeping its content', function ()
     $document = Document::where('slug', 'notes')->first();
 
     expect($document->content_html)->toBe('<p>written before</p>')
-        ->and($document->paid_until)->not->toBeNull();
+        ->and($document->reserved_until)->not->toBeNull();
 });

@@ -63,7 +63,7 @@ class DocumentController
                 'updatedAt' => $document->updated_at->toISOString(),
                 'createdAt' => $document->created_at->toISOString(),
             ],
-            'paid' => $owner !== null,
+            'reserved' => $owner !== null,
             'isOwner' => $isOwner,
             'maxDocuments' => max(1, (int) config('prefix.max_documents')),
             'themeHue' => $owner?->theme_hue,

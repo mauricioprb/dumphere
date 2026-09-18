@@ -1,6 +1,4 @@
 export default {
-    'app.title': 'Dumphere',
-
     'home.heroLead': 'Abra uma',
     'home.heroObject': 'página.',
     'home.inputPlaceholder': 'minha-pagina',
@@ -290,6 +288,7 @@ export default {
         'Denúncias, pedidos de remoção, dados pessoais e dúvidas sobre estes termos podem ser enviados para o endereço abaixo.',
     'terms.footer': 'Uso por conta e risco do usuário.',
     'terms.footerHome': 'Início',
+    'footer.source': 'Código-fonte',
 
     'table.addRowBefore': 'Adicionar linha acima',
     'table.addRowAfter': 'Adicionar linha abaixo',

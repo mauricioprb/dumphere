@@ -213,7 +213,7 @@ async function listenForModeChanges() {
     modeListener = client;
 
     client.on('notification', ({ channel, payload }) => {
-        const deleted = channel === 'dumphere_deleted';
+        const deleted = channel === 'document_deleted';
 
         for (const [ws, connection] of connections) {
             const affected = deleted
@@ -238,8 +238,8 @@ async function listenForModeChanges() {
         setTimeout(() => void listenForModeChanges(), 5000);
     });
 
-    await client.query('LISTEN dumphere_mode');
-    await client.query('LISTEN dumphere_deleted');
+    await client.query('LISTEN document_mode');
+    await client.query('LISTEN document_deleted');
     log('info', 'Listening for address mode changes');
 }
 

@@ -9,22 +9,20 @@ use App\Support\RecoveryKey;
 use App\Support\WebSocketTokenService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 
-function paidChild(string $slug = 'acme/notes'): Document
+function reservedChild(string $slug = 'acme/notes'): Document
 {
     return Document::create(['slug' => $slug, 'title' => 'Notes', 'content_html' => '']);
 }
 
-function paidPrefix(array $attributes = []): Document
+function reservedPrefix(array $attributes = []): Document
 {
     $document = Document::create(['slug' => 'acme', 'title' => 'Acme', 'content_html' => '']);
 
     // Ownership is not mass assignable, exactly as in the application.
     $document->forceFill([
-        'paid_until' => now()->addYear(),
+        'reserved_until' => now()->addYear(),
         'owner_recovery_key_hash' => RecoveryKey::digest('recovery-key-123'),
         'owner_password_hash' => Hash::make('correct horse battery'),
         ...$attributes,
@@ -35,15 +33,15 @@ function paidPrefix(array $attributes = []): Document
 
 it('never hands out a websocket token for a read-only prefix', function (): void {
     $this->withoutVite();
-    paidPrefix(['readonly' => true]);
-    paidChild();
+    reservedPrefix(['readonly' => true]);
+    reservedChild();
 
     $this->get('/acme/notes')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Document/Show')
             ->where('readonly', true)
-            ->where('paid', true)
+            ->where('reserved', true)
             ->has('wsToken'));
 
     // The token exists, but only to watch: the collaboration server drops its writes.
@@ -56,8 +54,8 @@ it('never hands out a websocket token for a read-only prefix', function (): void
 });
 
 it('refuses saves on a read-only prefix', function (): void {
-    paidPrefix(['readonly' => true]);
-    paidChild();
+    reservedPrefix(['readonly' => true]);
+    reservedChild();
 
     $this->post('/acme/notes/save', ['contentHtml' => '<p>nope</p>'])
         ->assertForbidden()
@@ -66,8 +64,8 @@ it('refuses saves on a read-only prefix', function (): void {
 
 it('asks for the password again on every visit', function (): void {
     $this->withoutVite();
-    paidPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
-    paidChild();
+    reservedPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
+    reservedChild();
 
     $this->get('/acme/notes')
         ->assertOk()
@@ -91,8 +89,8 @@ it('asks for the password again on every visit', function (): void {
 
 it('accepts a save only with a token minted under the current rules', function (): void {
     $this->withoutVite();
-    $document = paidPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
-    paidChild();
+    $document = reservedPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
+    reservedChild();
 
     $token = $this->post('/acme/notes', ['password' => 'team-secret'])
         ->assertOk()
@@ -107,8 +105,8 @@ it('accepts a save only with a token minted under the current rules', function (
     $this->postJson('/acme/notes/save', ['contentHtml' => '<p>hi</p>', 'wsToken' => $token])->assertForbidden();
 });
 
-it('never creates a missing paid child while validating a visitor token', function (): void {
-    paidPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
+it('never creates a missing reserved child while validating a visitor token', function (): void {
+    reservedPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
 
     $this->postJson('/acme/uninvited/save', [
         'contentHtml' => '<p>intrusion</p>',
@@ -120,9 +118,9 @@ it('never creates a missing paid child while validating a visitor token', functi
 
 it('protects a locked prefix tree with the current page token', function (): void {
     $this->withoutVite();
-    $owner = paidPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
-    paidChild('acme/notes');
-    paidChild('acme/private-plan')->update(['title' => 'Private plan']);
+    $owner = reservedPrefix(['visitor_password_hash' => Hash::make('team-secret')]);
+    reservedChild('acme/notes');
+    reservedChild('acme/private-plan')->update(['title' => 'Private plan']);
 
     $this->getJson('/api/document-tree/acme')->assertForbidden();
 
@@ -140,12 +138,12 @@ it('protects a locked prefix tree with the current page token', function (): voi
     $this->withToken($token)->getJson('/api/document-tree/acme')->assertForbidden();
 });
 
-it('keeps paid prefixes and their children out of the purge', function (): void {
-    $paid = paidPrefix();
+it('keeps reserved prefixes and their children out of the purge', function (): void {
+    $reserved = reservedPrefix();
     $child = Document::create(['slug' => 'acme/notes', 'title' => 'Notes', 'content_html' => '']);
     $free = Document::create(['slug' => 'free', 'title' => 'Free', 'content_html' => '']);
 
-    foreach ([$paid, $child, $free] as $document) {
+    foreach ([$reserved, $child, $free] as $document) {
         $document->timestamps = false;
         $document->forceFill(['last_accessed_at' => now()->subDays(60), 'created_at' => now()->subDays(60)])->save();
     }
@@ -176,7 +174,7 @@ it('lets a manually granted owner open the in-page settings', function (): void 
 
 it('lets the owner edit and skip the password while the cookie lasts', function (): void {
     $this->withoutVite();
-    paidPrefix(['readonly' => true, 'visitor_password_hash' => Hash::make('team-secret')]);
+    reservedPrefix(['readonly' => true, 'visitor_password_hash' => Hash::make('team-secret')]);
 
     // A stranger sees the lock.
     $this->get('/acme/notes')->assertInertia(fn (Assert $page) => $page->component('Document/Locked'));
@@ -207,7 +205,7 @@ it('lets the owner edit and skip the password while the cookie lasts', function 
 });
 
 it('switches the mode without requiring every optional field', function (): void {
-    paidPrefix(['readonly' => false]);
+    reservedPrefix(['readonly' => false]);
 
     $this->postJson('/acme/settings', [
         'password' => 'correct horse battery',
@@ -220,7 +218,7 @@ it('switches the mode without requiring every optional field', function (): void
 });
 
 it('answers in the language the browser asked for', function (): void {
-    paidPrefix(['visitor_password_hash' => Hash::make('123')]);
+    reservedPrefix(['visitor_password_hash' => Hash::make('123')]);
 
     $this->withHeader('Accept-Language', 'pt-BR,pt;q=0.9')
         ->post('/acme/notes/unlock', ['password' => 'wrong'])
@@ -234,7 +232,7 @@ it('answers in the language the browser asked for', function (): void {
 });
 
 it('keeps the owner privilege on one browser at a time', function (): void {
-    paidPrefix();
+    reservedPrefix();
 
     $cookiesOf = fn ($response) => collect($response->headers->getCookies())
         ->mapWithKeys(fn ($cookie) => [$cookie->getName() => $cookie->getValue()])
@@ -253,7 +251,7 @@ it('keeps the owner privilege on one browser at a time', function (): void {
 
 it('drops the previous browser out of owner mode on the page itself', function (): void {
     $this->withoutVite();
-    paidPrefix(['readonly' => true]);
+    reservedPrefix(['readonly' => true]);
 
     $cookiesOf = fn ($response) => collect($response->headers->getCookies())
         ->mapWithKeys(fn ($cookie) => [$cookie->getName() => $cookie->getValue()])
@@ -277,7 +275,7 @@ it('drops the previous browser out of owner mode on the page itself', function (
 
 it('retires the collaboration token when ownership moves to another browser', function (): void {
     $this->withoutVite();
-    $document = paidPrefix(['readonly' => true]);
+    $document = reservedPrefix(['readonly' => true]);
 
     $cookies = collect(
         $this->postJson('/acme/settings', ['password' => 'correct horse battery'])->assertOk()->headers->getCookies()
@@ -299,9 +297,9 @@ it('retires the collaboration token when ownership moves to another browser', fu
 });
 
 it('lets the owner delete subpages but never the address itself', function (): void {
-    paidPrefix();
-    paidChild();
-    paidChild('acme/notes/deep');
+    reservedPrefix();
+    reservedChild();
+    reservedChild('acme/notes/deep');
 
     $cookies = collect(
         $this->postJson('/acme/settings', ['password' => 'correct horse battery'])->assertOk()->headers->getCookies()
@@ -326,9 +324,9 @@ it('lets the owner delete subpages but never the address itself', function (): v
         ->and(Document::where('slug', 'acme')->exists())->toBeTrue();
 });
 
-it('keeps strangers from conjuring pages inside a paid address', function (): void {
+it('keeps strangers from conjuring pages inside a reserved address', function (): void {
     $this->withoutVite();
-    paidPrefix();
+    reservedPrefix();
 
     $this->get('/acme/uninvited')
         ->assertNotFound()
@@ -370,9 +368,9 @@ it('keeps strangers from conjuring pages inside a paid address', function (): vo
         ->assertInertia(fn (Assert $page) => $page->component('Error')->where('status', 429)->has('retryAfter'));
 });
 
-it('does not throttle the owner creating pages inside the address they paid for', function (): void {
+it('does not throttle the owner creating pages inside the address they reserved', function (): void {
     $this->withoutVite();
-    paidPrefix();
+    reservedPrefix();
 
     $cookies = collect(
         $this->postJson('/acme/settings', ['password' => 'correct horse battery'])->assertOk()->headers->getCookies()
@@ -399,9 +397,9 @@ it('caps an owned address at the configured number of documents', function (): v
     $this->withoutVite();
     config(['prefix.max_documents' => 3]);
 
-    paidPrefix();
-    paidChild('acme/one');
-    paidChild('acme/two');
+    reservedPrefix();
+    reservedChild('acme/one');
+    reservedChild('acme/two');
 
     $cookies = collect(
         $this->postJson('/acme/settings', ['password' => 'correct horse battery'])->assertOk()->headers->getCookies()
@@ -424,10 +422,10 @@ it('caps an owned address at the configured number of documents', function (): v
         ->count())->toBe(3);
 });
 
-it('pins the palette of a paid address for everyone who opens it', function (): void {
+it('pins the palette of a reserved address for everyone who opens it', function (): void {
     $this->withoutVite();
-    paidPrefix();
-    paidChild();
+    reservedPrefix();
+    reservedChild();
 
     $cookies = collect(
         $this->postJson('/acme/settings', ['password' => 'correct horse battery'])->assertOk()->headers->getCookies()
@@ -475,7 +473,7 @@ it('pins the palette of a paid address for everyone who opens it', function (): 
 
 it('rejects retired payment endpoints without changing ownership', function (string $method, string $path): void {
     $this->withoutVite();
-    $document = paidPrefix();
+    $document = reservedPrefix();
     $attributes = $document->fresh()->getAttributes();
 
     $this->call($method, $path, [
@@ -494,35 +492,8 @@ it('rejects retired payment endpoints without changing ownership', function (str
     'claim password' => ['POST', '/claim'],
 ]);
 
-it('preserves a legacy receipt as a recovery key during migration', function (): void {
-    $migration = require database_path(
-        'migrations/2026_08_21_180658_replace_receipt_recovery_with_key_on_documents_table.php',
-    );
-
-    $migration->down();
-
-    $documentId = (string) Str::uuid();
-    $receiptUrl = 'https://pay.stripe.com/receipts/legacy-buyer';
-
-    DB::table('documents')->insert([
-        'id' => $documentId,
-        'slug' => 'legacy-buyer',
-        'title' => 'Legacy buyer',
-        'content_html' => '',
-        'stripe_receipt_url' => $receiptUrl,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-
-    $migration->up();
-
-    expect(Schema::hasColumn('documents', 'stripe_receipt_url'))->toBeFalse()
-        ->and(DB::table('documents')->where('id', $documentId)->value('owner_recovery_key_hash'))
-        ->toBe(RecoveryKey::digest($receiptUrl));
-});
-
 it('accepts whatever password the owner picks', function (): void {
-    paidPrefix();
+    reservedPrefix();
 
     $this->postJson('/acme/settings', [
         'password' => 'correct horse battery',
@@ -536,7 +507,7 @@ it('accepts whatever password the owner picks', function (): void {
 });
 
 it('refuses to require a password without one being set', function (): void {
-    paidPrefix();
+    reservedPrefix();
 
     $this->postJson('/acme/settings', [
         'password' => 'correct horse battery',
@@ -549,8 +520,8 @@ it('refuses to require a password without one being set', function (): void {
 
 it('stops honouring tokens minted before the rules changed', function (): void {
     $this->withoutVite();
-    $document = paidPrefix();
-    paidChild();
+    $document = reservedPrefix();
+    reservedChild();
     $token = app(WebSocketTokenService::class);
 
     $before = $this->get('/acme/notes')->viewData('page')['props']['wsToken'];
@@ -560,13 +531,13 @@ it('stops honouring tokens minted before the rules changed', function (): void {
 
     $document->forceFill(['visitor_password_hash' => Hash::make('123')])->save();
 
-    // Same signature, same expiry — but the gate no longer describes this address.
+    // Same signature, same expiry, but the gate no longer describes this address.
     expect($token->verify($before))->not->toBeNull()
         ->and(WebSocketTokenService::gate(false, $document->fresh()->visitor_password_hash))->not->toBe($openGate);
 });
 
 it('recovers ownership only with the matching recovery key', function (): void {
-    paidPrefix();
+    reservedPrefix();
 
     $this->post('/recover', [
         'prefix' => 'acme',

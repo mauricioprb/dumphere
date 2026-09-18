@@ -5,13 +5,14 @@ import { createPinia } from 'pinia';
 import type { DefineComponent } from 'vue';
 import PageLoader from '@/Components/UI/PageLoader.vue';
 import { startDailyTheme } from '@/Lib/dailyTheme';
+import { appName } from '@/Lib/brand';
 
 const pages = import.meta.glob<DefineComponent>('./Pages/**/*.vue');
 
 startDailyTheme(document.documentElement);
 
 createInertiaApp({
-    title: (title: string) => title || 'Dumphere',
+    title: (title: string) => title || appName,
     resolve: (name: string) => {
         const page = pages[`./Pages/${name}.vue`];
 

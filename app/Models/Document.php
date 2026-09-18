@@ -24,7 +24,6 @@ class Document extends Model
     ];
 
     protected $hidden = [
-        'checkout_claim_hash',
         'owner_password_hash',
         'owner_recovery_key_hash',
         'owner_session_id',
@@ -35,21 +34,21 @@ class Document extends Model
     {
         return self::query()
             ->where('slug', DocumentSlug::root($slug))
-            ->where('paid_until', '>', now())
+            ->where('reserved_until', '>', now())
             ->first();
     }
 
     public function announceRulesChanged(): void
     {
         if (DB::connection()->getDriverName() === 'pgsql') {
-            DB::select('SELECT pg_notify(?, ?)', ['dumphere_mode', DocumentSlug::root($this->slug)]);
+            DB::select('SELECT pg_notify(?, ?)', ['document_mode', DocumentSlug::root($this->slug)]);
         }
     }
 
     public function announceDeleted(): void
     {
         if (DB::connection()->getDriverName() === 'pgsql') {
-            DB::select('SELECT pg_notify(?, ?)', ['dumphere_deleted', $this->slug]);
+            DB::select('SELECT pg_notify(?, ?)', ['document_deleted', $this->slug]);
         }
     }
 
@@ -62,7 +61,7 @@ class Document extends Model
     {
         return [
             'last_accessed_at' => 'datetime',
-            'paid_until' => 'datetime',
+            'reserved_until' => 'datetime',
             'readonly' => 'boolean',
         ];
     }

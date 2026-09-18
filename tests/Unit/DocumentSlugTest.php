@@ -29,3 +29,13 @@ it('accepts valid slugs', function (string $slug): void {
 it('rejects invalid slugs', function (string $slug): void {
     expect(DocumentSlug::isValid($slug))->toBeFalse();
 })->with('invalid document slugs');
+
+it('keeps the browser copy of the reserved segments in sync', function (): void {
+    $php = (new ReflectionClass(DocumentSlug::class))->getConstant('RESERVED_FIRST_SEGMENTS');
+
+    $source = file_get_contents(dirname(__DIR__, 2) . '/resources/js/Lib/documentPath.ts');
+    preg_match('/RESERVED_FIRST_SEGMENTS = new Set\(\[(.*?)\]\)/s', $source, $block);
+    preg_match_all("/'([^']+)'/", $block[1], $typescript);
+
+    expect($typescript[1])->toEqualCanonicalizing($php);
+});

@@ -1,10 +1,10 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "mauricioprb/dumphere",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "Public collaborative Markdown editor where the URL path is the document.",
+    "keywords": ["markdown", "editor", "collaborative", "crdt", "yjs"],
+    "license": "AGPL-3.0-or-later",
     "require": {
         "php": "^8.5",
         "inertiajs/inertia-laravel": "^3.0",

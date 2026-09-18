@@ -92,7 +92,7 @@ class PrefixController
             'themeChroma' => $document->theme_chroma,
             'themeHueDark' => $document->theme_hue_dark,
             'themeChromaDark' => $document->theme_chroma_dark,
-            'paidUntil' => $document->paid_until?->toISOString(),
+            'reservedUntil' => $document->reserved_until?->toISOString(),
         ])->withCookie($carriesCookie
             ? PrefixCookie::issue($document, PrefixCookie::OWNER)
             : PrefixCookie::claim($document));

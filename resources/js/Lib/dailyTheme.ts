@@ -112,7 +112,7 @@ export function applyAddressTheme(root: HTMLElement, theme: AddressTheme): void 
     applyHue(root, theme.hue);
 }
 
-/** A paid address pins its palette; the server writes the hue before the first paint. */
+/** A reserved address pins its palette; the server writes the hue before the first paint. */
 export function pinnedHue(root: HTMLElement): number | null {
     const raw = root.dataset.themeHue;
     const hue = Number(raw);

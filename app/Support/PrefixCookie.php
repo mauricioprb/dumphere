@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
 
 /**
- * Owner convenience cookie for a paid prefix — never the source of truth.
+ * Owner convenience cookie for a reserved prefix, never the source of truth.
  *
  * It is derived from the owner password, so changing that password revokes every
  * cookie still in circulation. Losing it costs a retype, never access.

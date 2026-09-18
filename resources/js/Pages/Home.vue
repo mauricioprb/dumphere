@@ -5,6 +5,7 @@ import { ArrowRight } from '@lucide/vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
 import { useI18n } from '@/Composables/useI18n';
+import { appName, sourceUrl } from '@/Lib/brand';
 import { useTypewriter } from '@/Composables/useTypewriter';
 import { useAppHost } from '@/Composables/useAppUrl';
 import { normalizeDocumentPath } from '@/Lib/documentPath';
@@ -208,7 +209,7 @@ function clearError() {
             <footer
                 class="relative z-2 mx-auto flex w-[min(100%,96rem)] items-center gap-[0.85rem] px-[clamp(1.1rem,3vw,2.75rem)] pt-4 pb-[clamp(1.1rem,3vw,2.75rem)] text-[0.78rem] text-(--external-muted)"
             >
-                <span>&copy; {{ year }} Dumphere</span>
+                <span>&copy; {{ year }} {{ appName }}</span>
                 <span class="external-divider" aria-hidden="true" />
                 <Link
                     href="/terms"
@@ -216,6 +217,14 @@ function clearError() {
                 >
                     {{ t('terms.heading') }}
                 </Link>
+                <span class="external-divider" aria-hidden="true" />
+                <a
+                    :href="sourceUrl"
+                    rel="noopener"
+                    class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
+                >
+                    {{ t('footer.source') }}
+                </a>
             </footer>
         </ExternalPageShell>
     </AppLayout>

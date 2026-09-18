@@ -58,7 +58,7 @@ class FindOrCreateDocument
 
             abort_unless(
                 $lockedOwner !== null
-                && $lockedOwner->paid_until?->isFuture()
+                && $lockedOwner->reserved_until?->isFuture()
                 && DocumentSlug::root($slug) === $lockedOwner->slug,
                 403,
             );

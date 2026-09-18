@@ -14,7 +14,7 @@ use function Laravel\Prompts\password as promptPassword;
 class GrantPrefixCommand extends Command
 {
     protected $signature = 'prefix:grant
-        {address : The address to reserve, without slashes (for example: mauricio)}
+        {address : The address to reserve, without slashes (for example: acme)}
         {--password= : Owner password; asked for when omitted}
         {--years=100 : How long the address stays reserved}
         {--readonly : Leave the address read-only for visitors}
@@ -29,7 +29,7 @@ class GrantPrefixCommand extends Command
         $address = DocumentSlug::normalize((string) $this->argument('address'));
 
         if (str_contains($address, '/') || ! DocumentSlug::isValid($address)) {
-            $this->error('The address must be a single valid segment, such as "mauricio".');
+            $this->error('The address must be a single valid segment, such as "acme".');
 
             return self::FAILURE;
         }
@@ -60,7 +60,7 @@ class GrantPrefixCommand extends Command
         $visitorPassword = (string) $this->option('visitor-password');
 
         $document->forceFill([
-            'paid_until' => now()->addYears($years),
+            'reserved_until' => now()->addYears($years),
             'owner_password_hash' => Hash::make($password),
             'owner_session_id' => null,
             'readonly' => (bool) $this->option('readonly'),
@@ -72,7 +72,7 @@ class GrantPrefixCommand extends Command
 
         $document->announceRulesChanged();
 
-        $this->info("Address /{$address} reserved until {$document->paid_until->toDateString()}.");
+        $this->info("Address /{$address} reserved until {$document->reserved_until->toDateString()}.");
         $this->table(
             ['setting', 'value'],
             [

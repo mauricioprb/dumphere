@@ -5,6 +5,7 @@ import { ArrowLeft } from '@lucide/vue';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import ExternalPageShell from '@/Components/Layout/ExternalPageShell.vue';
 import { useI18n } from '@/Composables/useI18n';
+import { appName, sourceUrl } from '@/Lib/brand';
 import { useContactEmail } from '@/Composables/useAppUrl';
 
 const { t } = useI18n();
@@ -281,12 +282,19 @@ const clauses = computed<Clause[]>(() => [
                 <footer
                     class="flex flex-wrap items-center gap-[0.85rem] border-t border-(--external-rule) py-[1.4rem] pb-10 text-[0.78rem] text-(--external-muted)"
                 >
-                    <span>&copy; {{ year }} Dumphere</span>
+                    <span>&copy; {{ year }} {{ appName }}</span>
                     <span class="external-divider" aria-hidden="true" />
                     <Link
                         href="/"
                         class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
                         >{{ t('terms.footerHome') }}</Link
+                    >
+                    <span class="external-divider" aria-hidden="true" />
+                    <a
+                        :href="sourceUrl"
+                        rel="noopener"
+                        class="external-focus text-inherit underline underline-offset-[0.2em] hover:text-(--external-ink)"
+                        >{{ t('footer.source') }}</a
                     >
                     <span class="external-divider" aria-hidden="true" />
                     <span>{{ t('terms.footer') }}</span>
