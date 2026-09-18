@@ -13,6 +13,7 @@ pest()->extend(TestCase::class)->beforeEach(function (): void {
 );
 
 pest()->use(LazilyRefreshDatabase::class)->in(
+    'Feature/CollaborationSchemaTest.php',
     'Feature/DocumentEndpointsTest.php',
     'Feature/DocumentTreeTest.php',
     'Feature/GrantPrefixCommandTest.php',

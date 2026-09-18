@@ -11,7 +11,6 @@ const en = {
     'home.disclosureAccess': 'Public to anyone with the link',
     'home.disclosureExpiry': 'Removed after 30 days without visits',
     'home.presenceYou': 'you',
-    'home.presenceGuest': 'guest',
     'home.example1': 'my-room',
     'home.example2': 'project/review',
     'home.example3': 'team/decisions',

@@ -150,7 +150,7 @@ async function authorizeAndUpgrade(request, socket, head) {
              FROM documents d
              LEFT JOIN documents owner
                ON owner.slug = split_part(d.slug, '/', 1)
-              AND owner.paid_until > now()
+              AND owner.reserved_until > now()
              WHERE d.id = $1
              LIMIT 1`,
             [tokenResult.documentId],

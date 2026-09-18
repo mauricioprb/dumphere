@@ -9,6 +9,7 @@ import { appName, sourceUrl } from '@/Lib/brand';
 import { useTypewriter } from '@/Composables/useTypewriter';
 import { useAppHost } from '@/Composables/useAppUrl';
 import { normalizeDocumentPath } from '@/Lib/documentPath';
+import { generateUniqueCollaboratorName } from '@/Lib/collaboratorIdentity';
 
 const { t } = useI18n();
 const appHost = useAppHost();
@@ -17,6 +18,7 @@ const slugInput = ref('');
 const inputError = ref('');
 const isNavigating = ref(false);
 const year = new Date().getFullYear();
+const guestName = generateUniqueCollaboratorName([]);
 
 const examples = computed(() => [t('home.example1'), t('home.example2'), t('home.example3')]);
 
@@ -176,9 +178,7 @@ function clearError() {
                                     v-if="guestArrived && !accessComplete"
                                     class="collaboration-carets__caret collaborator-caret"
                                     :class="{ 'collaborator-caret--idle': guestIsIdle }"
-                                    ><span class="collaboration-carets__label">{{
-                                        t('home.presenceGuest')
-                                    }}</span></span
+                                    ><span class="collaboration-carets__label">{{ guestName }}</span></span
                                 ></span
                             >
                         </span>
@@ -195,9 +195,7 @@ function clearError() {
                                     v-if="guestArrived && accessComplete"
                                     class="collaboration-carets__caret collaborator-caret"
                                     :class="{ 'collaborator-caret--idle': guestIsIdle }"
-                                    ><span class="collaboration-carets__label">{{
-                                        t('home.presenceGuest')
-                                    }}</span></span
+                                    ><span class="collaboration-carets__label">{{ guestName }}</span></span
                                 ></span
                             >
                         </span>

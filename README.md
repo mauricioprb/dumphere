@@ -9,6 +9,8 @@ Anyone who knows or guesses an address can read and edit it, and documents
 untouched for 30 days are deleted. Keep anything sensitive, or anything you
 cannot afford to lose, somewhere else.
 
+![Typing an address opens a page, and a second person edits it live](public/images/readme/demo.webp)
+
 ## Architecture
 
 - Laravel serves the application and persists the HTML representation of documents.

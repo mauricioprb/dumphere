@@ -9,7 +9,6 @@ export default {
     'home.disclosureAccess': 'Pública para quem tiver o link',
     'home.disclosureExpiry': 'Removida após 30 dias sem visitas',
     'home.presenceYou': 'você',
-    'home.presenceGuest': 'convidado',
     'home.example1': 'minha-sala',
     'home.example2': 'projeto/revisao',
     'home.example3': 'equipe/decisoes',
