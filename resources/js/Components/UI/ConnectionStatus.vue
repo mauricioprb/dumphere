@@ -74,7 +74,7 @@ watch(
         role="group"
         :aria-label="accessibleStatus"
     >
-        <span class="size-1.5 rounded-full" :class="dotColor" aria-hidden="true" />
+        <span class="size-1.5 shrink-0 translate-y-[-0.15em] rounded-full" :class="dotColor" aria-hidden="true" />
         <span class="truncate" :class="statusColor" :title="statusText">{{ statusText }}</span>
     </div>
 

@@ -329,9 +329,11 @@
 }
 
 .tiptap .code-block-copy-btn {
+    --code-first-line-center: calc(1px + 0.875em * 1.8);
+
     position: absolute;
-    top: 0.5em;
-    right: 0.5em;
+    top: max(4px, calc(var(--code-first-line-center) - 22px));
+    right: max(4px, calc(var(--code-first-line-center) - 22px));
     z-index: 10;
     display: flex;
     align-items: center;
