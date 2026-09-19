@@ -62,6 +62,7 @@ onUnmounted(() => {
             :aria-label="copyLabel"
             :title="copyLabel"
             contenteditable="false"
+            @mousedown.prevent
             @click="copyCode"
         >
             <Check v-if="copyState === 'copied'" :size="16" aria-hidden="true" />
