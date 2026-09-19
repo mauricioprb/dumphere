@@ -323,17 +323,27 @@
     color: var(--editor-code-text);
 }
 
+@property --code-copy-inset {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 4px;
+}
+
 .tiptap .code-block-wrapper {
+    --code-copy-inset: max(4px, calc(1px + 0.875em * 1.8 - 22px));
+
     position: relative;
     margin: 0.75em 0;
 }
 
-.tiptap .code-block-copy-btn {
-    --code-first-line-center: calc(1px + 0.875em * 1.8);
+.tiptap .code-block-wrapper pre {
+    padding-right: calc(var(--code-copy-inset) + 44px + 0.5em);
+}
 
+.tiptap .code-block-copy-btn {
     position: absolute;
-    top: max(4px, calc(var(--code-first-line-center) - 22px));
-    right: max(4px, calc(var(--code-first-line-center) - 22px));
+    top: var(--code-copy-inset);
+    right: var(--code-copy-inset);
     z-index: 10;
     display: flex;
     align-items: center;
