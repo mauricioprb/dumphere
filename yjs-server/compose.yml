@@ -9,7 +9,9 @@ x-yjs: &yjs
 services:
   dev:
     <<: *yjs
-    env_file: .env.dev
+    env_file:
+      - path: .env.dev
+        required: false
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=appwrite
@@ -34,7 +36,9 @@ services:
 
   prod:
     <<: *yjs
-    env_file: .env.prod
+    env_file:
+      - path: .env.prod
+        required: false
     labels:
       - traefik.enable=true
       - traefik.constraint-label-stack=appwrite
