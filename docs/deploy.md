@@ -53,6 +53,8 @@ cd /opt/dumphere && git pull
 cd yjs-server && docker compose up -d --build dev prod
 ```
 
+O mesmo `compose.yml` põe os cabeçalhos de segurança (CSP, HSTS, `X-Frame-Options`) no domínio do site de cada ambiente ([ADR 0003](decisions/0003-cabecalhos-de-seguranca.md)). Domínio de produção novo: troque `SITE_HOST_PROD` num `.env` ao lado do `compose.yml` e recrie o container. Para conferir: `curl -sI https://dumphere-dev.app.overclk.tech | grep -i content-security`.
+
 Rode um só container por ambiente: o Yjs guarda o documento em memória, e dois processos divergem. O `stop_grace_period` de 60 segundos dá tempo de gravar os documentos abertos antes de parar.
 
 ## Reservar um endereço
