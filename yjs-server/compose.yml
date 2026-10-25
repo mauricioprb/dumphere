@@ -49,7 +49,7 @@ services:
       - traefik.http.routers.dumphere_yjs_prod.tls=true
       - traefik.http.services.dumphere_yjs_prod.loadbalancer.server.port=1234
       - traefik.http.routers.dumphere_site_prod.entrypoints=appwrite_websecure
-      - traefik.http.routers.dumphere_site_prod.rule=Host(`${{SITE_HOST_PROD:-dumphere.app.overclk.tech}}`)
+      - traefik.http.routers.dumphere_site_prod.rule=Host(`${SITE_HOST_PROD:-dumphere.app.overclk.tech}`)
       - traefik.http.routers.dumphere_site_prod.priority=10000
       - traefik.http.routers.dumphere_site_prod.tls=true
       - traefik.http.routers.dumphere_site_prod.service=appwrite_api
