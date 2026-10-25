@@ -1,0 +1,193 @@
+<style>
+    :root {
+        --workspace-theme-hue: var(--light-hue, var(--daily-hue));
+        --theme-chroma: var(--light-chroma, 1);
+        --workspace-paper: oklch(
+            0.985 calc(0.012 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-ink: oklch(
+            0.19 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-muted: oklch(
+            0.42 calc(0.032 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-rule: oklch(
+            0.83 calc(0.028 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-accent: oklch(
+            0.9 calc(0.075 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-accent-ink: oklch(
+            0.24 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-live: oklch(
+            0.44 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+    }
+
+    html.dark {
+        --workspace-theme-hue: var(--dark-hue, calc(var(--light-hue, var(--daily-hue)) + 180deg));
+        --theme-chroma: var(--dark-chroma, var(--light-chroma, 1));
+        --workspace-paper: oklch(
+            0.145 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-ink: oklch(0.95 calc(0.01 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+        --workspace-muted: oklch(
+            0.72 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-rule: oklch(
+            0.34 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-accent: oklch(
+            0.3 calc(0.085 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-accent-ink: oklch(
+            0.92 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+        --workspace-live: oklch(
+            0.78 calc(0.13 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+        );
+    }
+
+    html,
+    body {
+        min-height: 100%;
+        background: var(--workspace-paper);
+    }
+
+    #app-loading {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        z-index: 200;
+        background: var(--workspace-paper);
+        color: var(--workspace-ink);
+    }
+
+    #app-loading .page-loader-stage {
+        display: grid;
+        width: min(calc(100% - 2.5rem), 46rem);
+        justify-items: center;
+        gap: clamp(1.5rem, 3vw, 2.25rem);
+    }
+
+    #app-loading .page-loader-wordmark {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        column-gap: 0.08em;
+        font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+        font-size: clamp(3.5rem, 12vw, 6rem);
+        font-weight: 700;
+        line-height: 0.9;
+        letter-spacing: -0.035em;
+        white-space: nowrap;
+    }
+
+    #app-loading .page-loader-slash {
+        display: inline-block;
+        margin-left: 0.015em;
+        color: var(--workspace-live);
+    }
+
+    #app-loading .page-loader-selection {
+        position: relative;
+        display: inline-block;
+        box-sizing: border-box;
+        padding: 0.015em 0.085em 0.055em 0.06em;
+    }
+
+    #app-loading .page-loader-selection__text,
+    #app-loading .page-loader-selection__fill {
+        white-space: nowrap;
+    }
+
+    #app-loading .page-loader-selection__fill {
+        position: absolute;
+        inset: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+        padding: inherit;
+        animation: boot-loader-selection 1.65s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        background: var(--workspace-accent);
+        color: var(--workspace-accent-ink);
+        clip-path: inset(0 100% 0 0);
+    }
+
+    #app-loading .page-loader-status {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid var(--workspace-rule);
+    }
+
+    #app-loading .page-loader-status__signal {
+        width: 0.5rem;
+        height: 0.5rem;
+        background: var(--workspace-live);
+    }
+
+    #app-loading .page-loader-label {
+        color: var(--workspace-muted);
+        font-family: 'Bricolage Grotesque', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+    }
+
+    #app-loading .page-loader-label-en {
+        display: none;
+    }
+
+    html[lang='en'] #app-loading .page-loader-label-pt {
+        display: none;
+    }
+
+    html[lang='en'] #app-loading .page-loader-label-en {
+        display: inline;
+    }
+
+    @keyframes boot-loader-selection {
+        0%,
+        12% {
+            clip-path: inset(0 100% 0 0);
+        }
+
+        50%,
+        72% {
+            clip-path: inset(0);
+        }
+
+        100% {
+            clip-path: inset(0 0 0 100%);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #app-loading .page-loader-selection__fill {
+            animation: none;
+            clip-path: inset(0);
+        }
+    }
+</style>
+<div id="app-loading" role="status" aria-live="polite" aria-atomic="true">
+    <div class="page-loader-stage">
+        <div class="page-loader-wordmark" translate="no" aria-hidden="true">
+            <span>dump<span class="page-loader-slash">/</span></span>
+            <span class="page-loader-selection">
+                <span class="page-loader-selection__text">here</span>
+                <span class="page-loader-selection__fill">here</span>
+            </span>
+        </div>
+
+        <div class="page-loader-status">
+            <span class="page-loader-status__signal" aria-hidden="true"></span>
+            <span class="page-loader-label page-loader-label-pt" lang="pt-BR"
+                >Carregando página...</span
+            >
+            <span class="page-loader-label page-loader-label-en" lang="en">Loading page...</span>
+        </div>
+    </div>
+</div>

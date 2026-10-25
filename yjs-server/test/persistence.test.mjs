@@ -1,31 +1,30 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import test from 'node:test';
-import { createPostgresPersistence, documentIdFromRoom } from '../persistence.mjs';
+import { createPersistence, documentIdFromRoom } from '../persistence.mjs';
 
 const require = createRequire(import.meta.url);
 const Y = require('yjs');
 
-const documentId = '0198f37a-21b4-7d6c-8a9b-123456789abc';
+const documentId = '6a1f0c2b3d4e5f607182';
 const room = `document-${documentId}`;
 
-test('loads and writes Yjs snapshots through PostgreSQL', async () => {
+test('loads and writes Yjs snapshots through the store', async () => {
     const source = new Y.Doc();
     source.getText('content').insert(0, 'persisted');
     const storedState = Buffer.from(Y.encodeStateAsUpdate(source)).toString('base64');
-    const queries = [];
-    const pool = {
-        async query(sql, parameters) {
-            queries.push({ sql, parameters });
+    const saves = [];
+    const store = {
+        async load() {
+            return storedState;
+        },
+        async save(id, state) {
+            saves.push({ id, state });
 
-            if (sql.startsWith('SELECT yjs_state_base64')) {
-                return { rowCount: 1, rows: [{ yjs_state_base64: storedState }] };
-            }
-
-            return { rowCount: 1, rows: [] };
+            return true;
         },
     };
-    const persistence = createPostgresPersistence(pool, { debounceMs: 60_000 });
+    const persistence = createPersistence(store, { debounceMs: 60_000 });
     const target = new Y.Doc();
 
     await persistence.bindState(room, target);
@@ -34,11 +33,10 @@ test('loads and writes Yjs snapshots through PostgreSQL', async () => {
     target.getText('content').insert(9, ' state');
     await persistence.writeState(room, target);
 
-    const update = queries.find((query) => query.sql.startsWith('UPDATE documents'));
-    assert.equal(update.parameters[1], documentId);
+    assert.equal(saves.at(-1).id, documentId);
 
     const restored = new Y.Doc();
-    Y.applyUpdate(restored, Buffer.from(update.parameters[0], 'base64'));
+    Y.applyUpdate(restored, Buffer.from(saves.at(-1).state, 'base64'));
     assert.equal(restored.getText('content').toString(), 'persisted state');
 });
 
@@ -51,16 +49,15 @@ test('restores Tiptap XML with the same Yjs constructors used by the websocket s
     source.getXmlFragment('document').insert(0, [paragraph]);
 
     const storedState = Buffer.from(Y.encodeStateAsUpdate(source)).toString('base64');
-    const pool = {
-        async query(sql) {
-            if (sql.startsWith('SELECT yjs_state_base64')) {
-                return { rowCount: 1, rows: [{ yjs_state_base64: storedState }] };
-            }
-
-            return { rowCount: 1, rows: [] };
+    const store = {
+        async load() {
+            return storedState;
+        },
+        async save() {
+            return true;
         },
     };
-    const persistence = createPostgresPersistence(pool, { debounceMs: 60_000 });
+    const persistence = createPersistence(store, { debounceMs: 60_000 });
     const target = new Y.Doc();
     const fragment = target.getXmlFragment('document');
 
@@ -79,14 +76,17 @@ test('extracts a document UUID only from a canonical room', () => {
 test('does not persist a collaboration snapshot above the document limit', async () => {
     let updateQueries = 0;
     let oversizedState = null;
-    const pool = {
-        async query(sql) {
-            if (sql.startsWith('UPDATE documents')) updateQueries++;
+    const store = {
+        async load() {
+            return null;
+        },
+        async save() {
+            updateQueries++;
 
-            return { rowCount: 1, rows: [] };
+            return true;
         },
     };
-    const persistence = createPostgresPersistence(pool, {
+    const persistence = createPersistence(store, {
         maxStateBytes: 10,
         onStateTooLarge(_room, sizeBytes) {
             oversizedState = sizeBytes;
@@ -104,14 +104,17 @@ test('does not persist a collaboration snapshot above the document limit', async
 test('enforces the document limit immediately while updates are still arriving', async () => {
     let oversizedState = null;
     let updateQueries = 0;
-    const pool = {
-        async query(sql) {
-            if (sql.startsWith('UPDATE documents')) updateQueries++;
+    const store = {
+        async load() {
+            return null;
+        },
+        async save() {
+            updateQueries++;
 
-            return { rowCount: 1, rows: [] };
+            return true;
         },
     };
-    const persistence = createPostgresPersistence(pool, {
+    const persistence = createPersistence(store, {
         debounceMs: 60_000,
         maxStateBytes: 64,
         onStateTooLarge(_room, sizeBytes) {

@@ -1,0 +1,62 @@
+name: dumphere-yjs
+
+x-yjs: &yjs
+  build: .
+  restart: unless-stopped
+  stop_grace_period: 60s
+  networks: [gateway]
+
+services:
+  dev:
+    <<: *yjs
+    env_file: .env.dev
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label-stack=appwrite
+      - traefik.docker.network=gateway
+      - traefik.http.routers.dumphere_yjs_dev.entrypoints=appwrite_websecure
+      - traefik.http.routers.dumphere_yjs_dev.rule=Host(`dumphere-yjs-dev.overclk.tech`)
+      - traefik.http.routers.dumphere_yjs_dev.priority=10000
+      - traefik.http.routers.dumphere_yjs_dev.tls=true
+      - traefik.http.services.dumphere_yjs_dev.loadbalancer.server.port=1234
+      - traefik.http.routers.dumphere_site_dev.entrypoints=appwrite_websecure
+      - traefik.http.routers.dumphere_site_dev.rule=Host(`dumphere-dev.app.overclk.tech`)
+      - traefik.http.routers.dumphere_site_dev.priority=10000
+      - traefik.http.routers.dumphere_site_dev.tls=true
+      - traefik.http.routers.dumphere_site_dev.service=appwrite_api
+      - traefik.http.routers.dumphere_site_dev.middlewares=dumphere_site_dev_headers
+      - "traefik.http.middlewares.dumphere_site_dev_headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net; img-src 'self' data: blob: https:; connect-src 'self' https://overmaker.overclk.tech wss://dumphere-yjs-dev.overclk.tech; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      - traefik.http.middlewares.dumphere_site_dev_headers.headers.frameDeny=true
+      - traefik.http.middlewares.dumphere_site_dev_headers.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.dumphere_site_dev_headers.headers.referrerPolicy=strict-origin-when-cross-origin
+      - traefik.http.middlewares.dumphere_site_dev_headers.headers.permissionsPolicy=camera=(), microphone=(), geolocation=()
+      - traefik.http.middlewares.dumphere_site_dev_headers.headers.stsSeconds=63072000
+
+  prod:
+    <<: *yjs
+    env_file: .env.prod
+    labels:
+      - traefik.enable=true
+      - traefik.constraint-label-stack=appwrite
+      - traefik.docker.network=gateway
+      - traefik.http.routers.dumphere_yjs_prod.entrypoints=appwrite_websecure
+      - traefik.http.routers.dumphere_yjs_prod.rule=Host(`dumphere-yjs.overclk.tech`)
+      - traefik.http.routers.dumphere_yjs_prod.priority=10000
+      - traefik.http.routers.dumphere_yjs_prod.tls=true
+      - traefik.http.services.dumphere_yjs_prod.loadbalancer.server.port=1234
+      - traefik.http.routers.dumphere_site_prod.entrypoints=appwrite_websecure
+      - traefik.http.routers.dumphere_site_prod.rule=Host(`${{SITE_HOST_PROD:-dumphere.app.overclk.tech}}`)
+      - traefik.http.routers.dumphere_site_prod.priority=10000
+      - traefik.http.routers.dumphere_site_prod.tls=true
+      - traefik.http.routers.dumphere_site_prod.service=appwrite_api
+      - traefik.http.routers.dumphere_site_prod.middlewares=dumphere_site_prod_headers
+      - "traefik.http.middlewares.dumphere_site_prod_headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net; img-src 'self' data: blob: https:; connect-src 'self' https://overmaker.overclk.tech wss://dumphere-yjs.overclk.tech; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      - traefik.http.middlewares.dumphere_site_prod_headers.headers.frameDeny=true
+      - traefik.http.middlewares.dumphere_site_prod_headers.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.dumphere_site_prod_headers.headers.referrerPolicy=strict-origin-when-cross-origin
+      - traefik.http.middlewares.dumphere_site_prod_headers.headers.permissionsPolicy=camera=(), microphone=(), geolocation=()
+      - traefik.http.middlewares.dumphere_site_prod_headers.headers.stsSeconds=63072000
+
+networks:
+  gateway:
+    external: true

@@ -1,0 +1,295 @@
+{
+    "organizationId": "6adc162a002312313a7a",
+    "projectId": "dumphere-dev",
+    "projectName": "Dumphere",
+    "functions": [
+        {
+            "$id": "documents",
+            "name": "documents",
+            "runtime": "php-8.4",
+            "buildSpecification": "s-1vcpu-512mb",
+            "runtimeSpecification": "s-0.5vcpu-512mb",
+            "execute": [
+                "any"
+            ],
+            "events": [],
+            "scopes": [
+                "rows.read",
+                "rows.write"
+            ],
+            "schedule": "",
+            "interval": 0,
+            "timeout": 15,
+            "enabled": true,
+            "logging": true,
+            "entrypoint": "src/index.php",
+            "commands": "composer install --no-dev",
+            "ignore": [
+                "vendor"
+            ],
+            "deploymentRetention": 0,
+            "path": "functions/documents"
+        },
+        {
+            "$id": "admin",
+            "name": "admin",
+            "runtime": "php-8.4",
+            "buildSpecification": "s-1vcpu-512mb",
+            "runtimeSpecification": "s-0.5vcpu-512mb",
+            "execute": [],
+            "events": [],
+            "scopes": [
+                "rows.read",
+                "rows.write"
+            ],
+            "schedule": "0 3 * * *",
+            "interval": 0,
+            "timeout": 300,
+            "enabled": true,
+            "logging": true,
+            "entrypoint": "src/index.php",
+            "commands": "composer install --no-dev",
+            "ignore": [
+                "vendor"
+            ],
+            "deploymentRetention": 0,
+            "path": "functions/admin"
+        }
+    ],
+    "sites": [
+        {
+            "$id": "app",
+            "name": "app",
+            "framework": "nuxt",
+            "adapter": "static",
+            "buildRuntime": "node-24",
+            "installCommand": "npm ci",
+            "buildCommand": "npm run generate",
+            "outputDirectory": "./.output/public",
+            "fallbackFile": "index.html",
+            "buildSpecification": "s-1vcpu-1gb",
+            "runtimeSpecification": "s-0.5vcpu-512mb",
+            "deploymentRetention": 0,
+            "timeout": 30,
+            "logging": true,
+            "path": "sites/app"
+        }
+    ],
+    "tablesDB": [
+        {
+            "$id": "dumphere",
+            "name": "dumphere",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "documents",
+            "$permissions": [],
+            "databaseId": "dumphere",
+            "name": "documents",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "slug",
+                    "type": "varchar",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "title",
+                    "type": "varchar",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "contentHtml",
+                    "type": "mediumtext",
+                    "required": false,
+                    "array": false,
+                    "size": 1048576,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "yjsState",
+                    "type": "mediumtext",
+                    "required": false,
+                    "array": false,
+                    "size": 4194303,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "lastAccessedAt",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "reservedUntil",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "ownerPasswordHash",
+                    "type": "varchar",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "ownerRecoveryKeyHash",
+                    "type": "varchar",
+                    "required": false,
+                    "array": false,
+                    "size": 64,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "ownerSessionId",
+                    "type": "varchar",
+                    "required": false,
+                    "array": false,
+                    "size": 64,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "visitorPasswordHash",
+                    "type": "varchar",
+                    "required": false,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "readonly",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "themeHue",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 1000,
+                    "default": null
+                },
+                {
+                    "key": "themeChroma",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 1000,
+                    "default": null
+                },
+                {
+                    "key": "themeHueDark",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 1000,
+                    "default": null
+                },
+                {
+                    "key": "themeChromaDark",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 1000,
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "slug_unique",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "slug"
+                    ],
+                    "orders": [
+                        "asc"
+                    ]
+                },
+                {
+                    "key": "last_accessed_at",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "lastAccessedAt"
+                    ],
+                    "orders": [
+                        "asc"
+                    ]
+                },
+                {
+                    "key": "reserved_until",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "reservedUntil"
+                    ],
+                    "orders": [
+                        "asc"
+                    ]
+                }
+            ]
+        },
+        {
+            "$id": "attempts",
+            "$permissions": [],
+            "databaseId": "dumphere",
+            "name": "attempts",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "key",
+                    "type": "varchar",
+                    "required": true,
+                    "array": false,
+                    "size": 64,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "key_created",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "key",
+                        "$createdAt"
+                    ],
+                    "orders": [
+                        "asc",
+                        "asc"
+                    ]
+                }
+            ]
+        }
+    ]
+}

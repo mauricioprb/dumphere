@@ -13,7 +13,7 @@ import {
 } from '../auth.mjs';
 
 const secret = 'test-secret';
-const documentId = '0198f37a-21b4-7d6c-8a9b-123456789abc';
+const documentId = '6a1f0c2b3d4e5f607182';
 const now = 1_800_000_000;
 
 function tokenFor(id = documentId, expiresAt = now + 3600, signingSecret = secret, scope = 'write', gate = '') {
@@ -30,7 +30,7 @@ test('accepts a valid token only for its document room', () => {
 
     assert.equal(result.valid, true);
     assert.equal(result.room, roomForDocument(documentId));
-    assert.notEqual(result.room, roomForDocument('0198f37a-21b4-7d6c-8a9b-000000000000'));
+    assert.notEqual(result.room, roomForDocument('6a1f0c2b3d4e5f600000'));
 });
 
 test('rejects expired, overlong and tampered tokens', () => {

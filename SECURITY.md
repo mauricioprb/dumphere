@@ -20,8 +20,8 @@ and edit it, and a report saying so will be closed. Reserved prefixes, visitor
 passwords and owner passwords are the only access controls, and reports about
 bypassing those are in scope.
 
-Also in scope: stored XSS through document content, WebSocket token forgery or
+Also in scope: stored XSS through document content, WebSocket or owner token forgery or
 replay, cross-document data leaks, and injection anywhere in the stack.
 
 Out of scope: missing rate limits on a local instance, anything requiring a
-compromised server, and findings that only reproduce with `APP_DEBUG=true`.
+compromised server, and findings that only reproduce on a misconfigured local instance.

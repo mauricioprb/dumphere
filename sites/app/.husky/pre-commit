@@ -1,0 +1,4 @@
+sites/app/node_modules/.bin/lint-staged
+cd sites/app
+npm run typecheck
+npm test

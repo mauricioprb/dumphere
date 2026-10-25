@@ -3,16 +3,16 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const Y = require('yjs');
 
-const ROOM_PATTERN = /^document-([0-9a-f-]{36})$/i;
+const ROOM_PATTERN = /^document-([A-Za-z0-9][A-Za-z0-9._-]{0,35})$/;
 
 export function documentIdFromRoom(room) {
     const match = ROOM_PATTERN.exec(room);
 
-    return match?.[1]?.toLowerCase() ?? null;
+    return match?.[1] ?? null;
 }
 
-export function createPostgresPersistence(
-    pool,
+export function createPersistence(
+    store,
     { debounceMs = 750, logger = console, maxStateBytes = 2_097_152, onStateTooLarge = () => {} } = {},
 ) {
     const pendingWrites = new Map();
@@ -43,13 +43,9 @@ export function createPostgresPersistence(
         const state = encodeStateWithinLimit(docName, ydoc);
         if (state === null) return;
 
-        const stateBase64 = Buffer.from(state).toString('base64');
-        const result = await pool.query(
-            'UPDATE documents SET yjs_state_base64 = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-            [stateBase64, documentId],
-        );
+        const saved = await store.save(documentId, Buffer.from(state).toString('base64'));
 
-        if (result.rowCount === 0) {
+        if (!saved) {
             logger.warn('Yjs snapshot was not persisted because the document no longer exists', {
                 documentId,
             });
@@ -76,7 +72,6 @@ export function createPostgresPersistence(
     }
 
     return {
-        provider: pool,
 
         async bindState(docName, ydoc) {
             const documentId = documentIdFromRoom(docName);
@@ -89,13 +84,10 @@ export function createPostgresPersistence(
             });
 
             try {
-                const result = await pool.query('SELECT yjs_state_base64 FROM documents WHERE id = $1 LIMIT 1', [
-                    documentId,
-                ]);
-                const stateBase64 = result.rows[0]?.yjs_state_base64;
+                const stateBase64 = await store.load(documentId);
 
                 if (typeof stateBase64 === 'string' && stateBase64.length > 0) {
-                    Y.applyUpdate(ydoc, Buffer.from(stateBase64, 'base64'), 'postgres');
+                    Y.applyUpdate(ydoc, Buffer.from(stateBase64, 'base64'), 'appwrite');
                 }
             } catch (error) {
                 logger.error('Failed to load Yjs snapshot', {
