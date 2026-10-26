@@ -12,7 +12,11 @@ export default defineNuxtConfig({
     ssr: false,
     devtools: { enabled: true },
     modules: ['@nuxt/eslint'],
-    css: ['~/assets/css/app.css'],
+    css: [
+        '@fontsource-variable/inter',
+        '@fontsource-variable/bricolage-grotesque',
+        '~/assets/css/app.css',
+    ],
     vite: { plugins: [tailwindcss()] },
     spaLoadingTemplate: true,
     experimental: { entryImportMap: false },
@@ -63,11 +67,6 @@ export default defineNuxtConfig({
                 { name: 'twitter:card', content: 'summary_large_image' },
             ],
             link: [
-                { rel: 'preconnect', href: 'https://fonts.bunny.net' },
-                {
-                    rel: 'stylesheet',
-                    href: 'https://fonts.bunny.net/css?family=bricolage-grotesque:400,500,600,700|inter:400,500,600,700',
-                },
                 { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
                 { rel: 'icon', href: '/images/logo/dumphere-mark.svg', type: 'image/svg+xml' },
                 { rel: 'apple-touch-icon', href: '/images/logo/dumphere-apple-touch-icon.png' },

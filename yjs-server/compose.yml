@@ -27,7 +27,7 @@ services:
       - traefik.http.routers.dumphere_site_dev.tls=true
       - traefik.http.routers.dumphere_site_dev.service=appwrite_api
       - traefik.http.routers.dumphere_site_dev.middlewares=dumphere_site_dev_headers
-      - "traefik.http.middlewares.dumphere_site_dev_headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net; img-src 'self' data: blob: https:; connect-src 'self' https://overmaker.overclk.tech wss://dumphere-yjs-dev.overclk.tech; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      - "traefik.http.middlewares.dumphere_site_dev_headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https:; connect-src 'self' https://overmaker.overclk.tech wss://dumphere-yjs-dev.overclk.tech; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
       - traefik.http.middlewares.dumphere_site_dev_headers.headers.frameDeny=true
       - traefik.http.middlewares.dumphere_site_dev_headers.headers.contentTypeNosniff=true
       - traefik.http.middlewares.dumphere_site_dev_headers.headers.referrerPolicy=strict-origin-when-cross-origin
@@ -54,7 +54,7 @@ services:
       - traefik.http.routers.dumphere_site_prod.tls=true
       - traefik.http.routers.dumphere_site_prod.service=appwrite_api
       - traefik.http.routers.dumphere_site_prod.middlewares=dumphere_site_prod_headers
-      - "traefik.http.middlewares.dumphere_site_prod_headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net; img-src 'self' data: blob: https:; connect-src 'self' https://overmaker.overclk.tech wss://dumphere-yjs.overclk.tech; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      - "traefik.http.middlewares.dumphere_site_prod_headers.headers.contentSecurityPolicy=default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https:; connect-src 'self' https://overmaker.overclk.tech wss://dumphere-yjs.overclk.tech; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
       - traefik.http.middlewares.dumphere_site_prod_headers.headers.frameDeny=true
       - traefik.http.middlewares.dumphere_site_prod_headers.headers.contentTypeNosniff=true
       - traefik.http.middlewares.dumphere_site_prod_headers.headers.referrerPolicy=strict-origin-when-cross-origin

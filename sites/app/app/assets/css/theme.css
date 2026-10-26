@@ -1,8 +1,8 @@
 @theme {
     --font-sans:
-        'Inter', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'Bricolage Grotesque', 'Inter', sans-serif;
+        'Inter Variable', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque Variable', 'Inter Variable', sans-serif;
 
     --color-neutral-50: #f4f4f5;
     --color-neutral-100: #e4e4e7;
@@ -167,7 +167,7 @@ html.theme-transition-to-light body *::after {
 }
 
 .wordmark {
-    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-family: 'Bricolage Grotesque Variable', 'Inter Variable', sans-serif;
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.025em;

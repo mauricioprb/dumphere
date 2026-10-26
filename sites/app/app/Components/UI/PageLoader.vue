@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
     align-items: baseline;
     justify-content: center;
     column-gap: 0.08em;
-    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-family: 'Bricolage Grotesque Variable', 'Inter Variable', sans-serif;
     font-size: clamp(3.5rem, 12vw, 6rem);
     font-weight: 700;
     line-height: 0.9;
@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
 
 .page-loader-label {
     color: var(--workspace-muted);
-    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-family: 'Bricolage Grotesque Variable', 'Inter Variable', sans-serif;
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.025em;
