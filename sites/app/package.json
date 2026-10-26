@@ -52,7 +52,7 @@
         "vue": "3.5.44",
         "vue-router": "5.4.0",
         "y-indexeddb": "9.0.12",
-        "y-websocket": "3.0.0",
+        "y-websocket": "3.1.0",
         "yjs": "13.6.31"
     },
     "devDependencies": {
