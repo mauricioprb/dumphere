@@ -41,7 +41,7 @@
         "@tiptap/starter-kit": "3.31.3",
         "@tiptap/suggestion": "3.31.3",
         "@tiptap/vue-3": "3.31.3",
-        "@tiptap/y-tiptap": "3.0.8",
+        "@tiptap/y-tiptap": "3.0.10",
         "appwrite": "29.1.0",
         "lowlight": "3.3.0",
         "nuxt": "4.6.2",
