@@ -1,0 +1,304 @@
+@theme {
+    --font-sans:
+        'Inter Variable', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Bricolage Grotesque Variable', 'Inter Variable', sans-serif;
+
+    --color-neutral-50: #f4f4f5;
+    --color-neutral-100: #e4e4e7;
+    --color-neutral-200: #d4d4d8;
+    --color-neutral-300: #a1a1aa;
+    --color-neutral-400: #71717a;
+    --color-neutral-500: #52525b;
+    --color-neutral-600: #3f3f46;
+    --color-neutral-700: #27272a;
+    --color-neutral-800: #18181b;
+    --color-neutral-900: #0e0e11;
+    --color-neutral-950: #08080a;
+
+    --color-primary-50: oklch(0.98 calc(0.018 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-100: oklch(0.95 calc(0.035 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-200: oklch(0.89 calc(0.06 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-300: oklch(0.8 calc(0.1 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-400: oklch(0.69 calc(0.13 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-500: oklch(0.56 calc(0.15 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-600: oklch(0.47 calc(0.14 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-700: oklch(0.39 calc(0.12 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-800: oklch(0.32 calc(0.09 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-900: oklch(0.26 calc(0.065 * var(--theme-chroma, 1)) var(--daily-hue));
+    --color-primary-950: oklch(0.18 calc(0.045 * var(--theme-chroma, 1)) var(--daily-hue));
+
+    --color-success-400: #34d399;
+    --color-success-500: #10b981;
+
+    --color-warning-300: #fcd34d;
+    --color-warning-400: #fbbf24;
+    --color-warning-500: #f59e0b;
+    --color-warning-700: #a54807;
+
+    --color-danger-400: #f87171;
+    --color-danger-500: #ef4444;
+    --color-danger-600: #dc2626;
+
+    --color-highlight-200: #fef08a;
+    --color-highlight-800: #854d0e;
+}
+
+:root {
+    --daily-hue: 87deg;
+    --workspace-theme-hue: var(--light-hue, var(--daily-hue));
+    --theme-chroma: var(--light-chroma, 1);
+    --brand-slash: var(--workspace-live);
+    --theme-phase-duration: 240ms;
+    --workspace-paper: oklch(0.985 calc(0.012 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.94 calc(0.02 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(
+        0.998 calc(0.004 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-ink: oklch(0.19 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.42 calc(0.032 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.83 calc(0.028 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.9 calc(0.075 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(
+        0.24 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-live: oklch(0.44 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(
+        0.985 calc(0.006 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-danger: oklch(0.48 calc(0.16 * var(--theme-chroma, 1)) 15deg);
+    --workspace-warning: oklch(0.52 calc(0.12 * var(--theme-chroma, 1)) 75deg);
+    --workspace-code: oklch(0.18 calc(0.026 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(
+        0.94 calc(0.012 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+}
+
+.dark {
+    --workspace-theme-hue: var(--dark-hue, calc(var(--light-hue, var(--daily-hue)) + 180deg));
+    --theme-chroma: var(--dark-chroma, var(--light-chroma, 1));
+    --workspace-paper: oklch(0.145 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.195 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.245 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.95 calc(0.01 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.72 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.34 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.3 calc(0.085 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(
+        0.92 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-live: oklch(0.78 calc(0.13 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(
+        0.15 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-danger: oklch(0.78 calc(0.12 * var(--theme-chroma, 1)) 15deg);
+    --workspace-warning: oklch(0.83 calc(0.09 * var(--theme-chroma, 1)) 75deg);
+    --workspace-code: oklch(0.115 calc(0.02 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(0.9 calc(0.01 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+}
+
+html.theme-phase-light {
+    --workspace-theme-hue: calc(var(--light-hue, var(--daily-hue)) + 250deg);
+    --workspace-paper: oklch(0.955 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.91 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(0.98 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-ink: oklch(0.22 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.45 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.76 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.84 calc(0.095 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(
+        0.24 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-live: oklch(0.49 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(
+        0.97 calc(0.015 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-code: oklch(0.19 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(
+        0.93 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+}
+
+html.theme-phase-dark {
+    --workspace-theme-hue: calc(var(--light-hue, var(--daily-hue)) + 72deg);
+    --workspace-paper: oklch(0.16 calc(0.045 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-panel: oklch(0.205 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-raised: oklch(
+        0.255 calc(0.055 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-ink: oklch(0.91 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-muted: oklch(0.68 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-rule: oklch(0.31 calc(0.05 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent: oklch(0.27 calc(0.1 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-accent-ink: oklch(
+        0.91 calc(0.035 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-live: oklch(0.72 calc(0.14 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-live-ink: oklch(
+        0.13 calc(0.04 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+    --workspace-code: oklch(0.12 calc(0.03 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --workspace-code-ink: oklch(
+        0.88 calc(0.025 * var(--theme-chroma, 1)) var(--workspace-theme-hue)
+    );
+}
+
+html.theme-transition-to-dark body,
+html.theme-transition-to-dark body *,
+html.theme-transition-to-dark body *::before,
+html.theme-transition-to-dark body *::after,
+html.theme-transition-to-light body,
+html.theme-transition-to-light body *,
+html.theme-transition-to-light body *::before,
+html.theme-transition-to-light body *::after {
+    transition-delay: 0s !important;
+    transition-duration: var(--theme-phase-duration) !important;
+    transition-property:
+        color, background-color, border-color, outline-color, text-decoration-color, fill, stroke,
+        box-shadow, filter !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.theme-transition-to-dark body,
+    html.theme-transition-to-light body {
+        transition: none;
+    }
+}
+
+.wordmark {
+    font-family: 'Bricolage Grotesque Variable', 'Inter Variable', sans-serif;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    white-space: nowrap;
+}
+
+.wordmark__slash {
+    margin-inline: -0.028em;
+    color: var(--brand-slash);
+}
+
+.theme-toggle {
+    color: color-mix(in srgb, var(--workspace-live) 78%, var(--workspace-ink));
+    box-shadow: none;
+}
+
+.theme-toggle__track {
+    border-color: color-mix(in srgb, var(--workspace-live) 58%, var(--workspace-rule));
+    background: color-mix(in srgb, var(--workspace-panel) 72%, var(--workspace-paper));
+    pointer-events: none;
+    transition:
+        border-color 120ms ease,
+        background-color 120ms ease;
+}
+
+.theme-toggle:hover .theme-toggle__track {
+    border-color: var(--workspace-live);
+    background: var(--workspace-panel);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--workspace-live);
+    outline-offset: 3px;
+}
+
+.theme-toggle__icon {
+    z-index: 1;
+    pointer-events: none;
+}
+
+.theme-toggle__thumb {
+    z-index: 2;
+    background: var(--workspace-live);
+    translate: 0 0;
+    transition:
+        translate 160ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 160ms ease;
+}
+
+.dark .theme-toggle {
+    color: var(--workspace-muted);
+}
+
+.dark .theme-toggle__track {
+    border-color: color-mix(in srgb, var(--workspace-muted) 52%, var(--workspace-rule));
+    background: color-mix(in srgb, var(--workspace-panel) 74%, var(--workspace-paper));
+}
+
+.dark .theme-toggle:hover .theme-toggle__track {
+    border-color: var(--workspace-muted);
+    background: var(--workspace-panel);
+}
+
+.dark .theme-toggle__thumb {
+    translate: 1.5rem 0;
+}
+
+html.theme-transition-to-dark .theme-toggle__thumb {
+    translate: 1.5rem 0;
+    transition-duration: 160ms !important;
+    transition-property: translate, background-color !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html.theme-transition-to-light .theme-toggle__thumb {
+    translate: 0 0;
+    transition-duration: 160ms !important;
+    transition-property: translate, background-color !important;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle,
+    .theme-toggle__track,
+    .theme-toggle__thumb {
+        transition: none;
+    }
+
+    html.theme-transition-to-dark .theme-toggle__thumb,
+    html.theme-transition-to-light .theme-toggle__thumb {
+        transition: none !important;
+    }
+}
+
+:root {
+    --editor-body: var(--workspace-ink);
+    --editor-heading-1: var(--workspace-ink);
+    --editor-heading-2: var(--workspace-ink);
+    --editor-heading-3: var(--workspace-ink);
+    --editor-placeholder: var(--workspace-muted);
+    --editor-link: var(--workspace-live);
+    --editor-code-bg: var(--workspace-panel);
+    --editor-code-text: oklch(0.36 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --editor-pre-bg: var(--workspace-code);
+    --editor-pre-text: var(--workspace-code-ink);
+    --editor-pre-border: transparent;
+    --editor-blockquote-border: var(--workspace-rule);
+    --editor-blockquote-text: var(--workspace-muted);
+    --editor-hr: var(--workspace-rule);
+    --editor-table-border: var(--workspace-rule);
+    --editor-th-bg: var(--workspace-panel);
+    --editor-th-text: var(--workspace-ink);
+    --editor-td-text: var(--workspace-ink);
+    --editor-checkbox-border: var(--workspace-muted);
+    --editor-checkbox-checked: var(--workspace-live);
+    --editor-checkbox-hover: var(--workspace-live);
+    --editor-mark-bg: var(--workspace-accent);
+    --editor-mark-text: var(--workspace-accent-ink);
+    --editor-task-done: var(--workspace-muted);
+    --editor-selection: color-mix(in srgb, var(--workspace-live) 26%, transparent);
+    --editor-selected-cell: color-mix(in srgb, var(--workspace-live) 14%, transparent);
+    --editor-resize-handle: var(--workspace-live);
+    --editor-scrollbar-thumb: color-mix(in srgb, var(--workspace-muted) 55%, transparent);
+    --editor-scrollbar-hover: var(--workspace-muted);
+}
+
+.dark {
+    --editor-code-text: oklch(0.82 calc(0.07 * var(--theme-chroma, 1)) var(--workspace-theme-hue));
+    --editor-pre-border: var(--workspace-rule);
+}
+
+#app {
+    height: 100%;
+}

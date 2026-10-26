@@ -1,0 +1,24 @@
+{
+    "type": "library",
+    "require": {
+        "php": "^8.4",
+        "appwrite/appwrite": "28.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dumphere\\": "src/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.4.27"
+        }
+    },
+    "require-dev": {
+        "laravel/pint": "1.32.1"
+    },
+    "scripts": {
+        "lint": "pint --test",
+        "format": "pint"
+    }
+}

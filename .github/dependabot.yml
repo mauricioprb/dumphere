@@ -1,19 +1,13 @@
 version: 2
 updates:
   - package-ecosystem: composer
-    directory: /
+    directories: [/functions/documents, /functions/admin]
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
 
   - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-
-  - package-ecosystem: npm
-    directory: /yjs-server
+    directories: [/sites/app, /yjs-server]
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

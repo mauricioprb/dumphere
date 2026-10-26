@@ -1,139 +1,72 @@
-# Deploying
+# Publicação
 
-The application is four things running against one PostgreSQL database. Any host
-that can run them works.
+O Dumphere roda no Appwrite da fábrica (`overmaker.overclk.tech`), em dois projetos: `dumphere-dev` e `dumphere-prod`. São três partes:
 
-| Process       | What it is                                             |
-| ------------- | ------------------------------------------------------ |
-| Web           | PHP-FPM behind Nginx, document root `public/`          |
-| Assets        | `npm run build` at deploy time, not a daemon           |
-| Collaboration | `node yjs-server/server.mjs`, long-lived, one instance |
-| Scheduler     | `php artisan schedule:run` every minute                |
+| Parte | Onde | Como publica |
+| --- | --- | --- |
+| Site (`sites/app`) | Appwrite Sites, Nuxt estático | CI ou `appwrite push site` |
+| Functions `documents` e `admin` | Appwrite Functions, PHP 8.4 | CI ou `appwrite push function` |
+| Colaboração (`yjs-server`) | container no mesmo servidor, atrás do Traefik do Appwrite | à mão, como root no servidor |
 
-Requirements on the server: PHP 8.5 with `pdo_pgsql`, `mbstring`, `intl`,
-`bcmath`, `pcntl` and `zip`; Composer 2; Node 24; PostgreSQL 18.
+O motivo do container fora do console está no [ADR 0001](decisions/0001-colaboracao-em-container-ao-lado.md).
 
-## Deploy steps
+## Primeira vez em cada ambiente
 
-```bash
-composer install --no-dev --optimize-autoloader
-npm ci --include=dev && npm run build
-npm --prefix yjs-server ci --omit=dev --omit=optional
-php artisan migrate --force
-php artisan optimize
-```
+Exemplo com o `-dev`. Para o `-prod`, troque o sufixo, o domínio `dumphere-yjs-dev` por `dumphere-yjs` e o site pelo domínio de produção.
 
-The frontend needs its development dependencies to compile, which is why the
-build install is not `--omit=dev`. The collaboration server only needs production
-dependencies.
+1. Crie o projeto `dumphere-dev` no console, como no guia [Criar o projeto](https://docs.overclk.tech/guia/criar-projeto), e libere o `localhost` como plataforma web.
+2. Gere o segredo do WebSocket, que é o mesmo nas Functions e no container: `openssl rand -hex 32`.
+3. Publique esquema e Functions: `appwrite push table --all --force` e `appwrite push function --all --activate --force`.
+4. Nas duas Functions (`documents` e `admin`), crie as variáveis:
+   - `YJS_WS_SECRET`: o segredo do passo 2;
+   - `YJS_NOTIFY_URL`: `https://dumphere-yjs-dev.overclk.tech/notify`.
 
-## What the environment needs
+   Na `documents`, `RESERVED_PREFIX_MAX_DOCUMENTS` é opcional (padrão 50). Depois de criar variáveis, publique as Functions de novo.
+5. Crie uma chave de API no projeto, chamada `yjs-server`, só com `rows.read` e `rows.write`.
+6. No servidor, como root:
 
-Start from `.env.example`. In production, at minimum:
+   ```bash
+   git clone https://github.com/mauricioprb/dumphere.git /opt/dumphere
+   cd /opt/dumphere/yjs-server
+   cp .env.example .env.dev
+   chmod 600 .env.dev
+   ```
 
-- `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` on your HTTPS domain.
-- `APP_KEY` and `YJS_WS_SECRET` generated separately, 32+ characters, unique to
-  the environment. `openssl rand -hex 32` produces a usable WebSocket secret.
-- `YJS_ALLOWED_ORIGINS` set to your domain, and `YJS_TRUST_PROXY=true` when the
-  collaboration server sits behind a reverse proxy.
-- `SESSION_ENCRYPT=true`, `SESSION_SECURE_COOKIE=true` and `SESSION_SAME_SITE=lax`.
-- Never a secret in a `VITE_*` variable: those are compiled into the bundle the
-  browser downloads.
+   No `.env.dev`, preencha `APPWRITE_API_KEY` (passo 5) e `YJS_WS_SECRET` (passo 2), e confira `YJS_ALLOWED_ORIGINS` com o endereço do site. Depois:
 
-Laravel and the collaboration server share the same database and the same
-`YJS_WS_SECRET`. The Yjs port stays bound to loopback; the browser reaches it
-through the reverse proxy over WSS, so `YJS_WS_PUBLIC_URL` is a `wss://` URL on
-your own domain and the `VITE_YJS_WS_*` variables can stay empty.
+   ```bash
+   docker compose up -d --build dev
+   curl -s https://dumphere-yjs-dev.overclk.tech/health
+   ```
 
-## Keeping the collaboration server alive
+   O `*.overclk.tech` já aponta para o servidor e tem certificado curinga, então não há DNS a criar.
+7. Publique o site: `appwrite push site --all --activate --with-variables --force`, com o `sites/app/.env` copiado do `.env.example`.
 
-Run it under whatever supervisor the host offers (systemd, Supervisor, or the
-process manager of a panel), with one instance, `SIGTERM` to stop and at least 60
-seconds of stop timeout so it can persist its snapshots. Restart it on every
-deploy, after the new release is in place, and check
-`http://127.0.0.1:1234/health` afterwards.
+## No dia a dia
 
-## Nginx
+O CI publica site, esquema e Functions: **Run workflow** manda qualquer branch para o `-dev`, e o merge na `main` manda para o `-prod`. Além dos segredos e variáveis do modelo da fábrica (`APPWRITE_API_KEY_DEV`, `APPWRITE_API_KEY_PROD`, `SITE_URL`, `DEPLOY_ENABLED`), o repositório precisa das variáveis `YJS_URL_DEV` (`wss://dumphere-yjs-dev.overclk.tech`), `YJS_URL_PROD` (`wss://dumphere-yjs.overclk.tech`) e, se quiser, `CONTACT_EMAIL`.
 
-Add this to the `http` context. It sets the limits and a log format that records
-no IP, URL, query string, referrer or user agent, because document addresses are
-the secret.
-
-```nginx
-log_format app_privacy escape=json
-    '{"timestamp":"$time_iso8601",'
-    '"request_id":"$request_id",'
-    '"method":"$request_method",'
-    '"status":$status,'
-    '"bytes":$body_bytes_sent,'
-    '"duration_seconds":$request_time}';
-
-limit_req_zone $binary_remote_addr zone=app_pages:10m rate=5r/s;
-limit_req_zone $binary_remote_addr zone=app_saves:10m rate=1r/s;
-limit_conn_zone $binary_remote_addr zone=app_websockets:10m;
-```
-
-And this to the HTTPS `server` block, replacing any existing directive of the
-same name rather than duplicating it. In the HTTP redirect block, use
-`access_log off` for the same reason.
-
-```nginx
-client_max_body_size 600k;
-access_log /var/log/nginx/app.access.log app_privacy;
-
-add_header X-Frame-Options "DENY" always;
-add_header X-Content-Type-Options "nosniff" always;
-add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
-add_header Strict-Transport-Security "max-age=63072000; includeSubDomains" always;
-
-location /yjs-ws/ {
-    limit_conn app_websockets 10;
-    rewrite ^/yjs-ws/(.*) /$1 break;
-    proxy_pass http://127.0.0.1:1234;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 86400s;
-    proxy_send_timeout 86400s;
-}
-
-location / {
-    limit_req zone=app_pages burst=15 nodelay;
-    try_files $uri $uri/ /index.php?$query_string;
-}
-
-location ~ /save$ {
-    limit_req zone=app_saves burst=5 nodelay;
-    try_files $uri $uri/ /index.php?$query_string;
-}
-```
-
-Run `sudo nginx -t` before reloading. Never expose port 1234 directly.
-
-## Things that are easy to get wrong
-
-Run exactly one collaboration process. The synchronization architecture assumes a
-single instance holding the in-memory documents; a second one will diverge.
-
-Keep migrations compatible with the previous release if you deploy without
-downtime, because that release keeps serving while the new one is prepared.
-
-`/health` on the collaboration server and `/health` on the application are both
-suitable for a deploy health check.
-
-## Operation
-
-The scheduler runs `documents:purge` at 03:00, which deletes documents untouched
-for more than 30 days and skips reserved addresses. It is destructive and has no
-trash, so configure PostgreSQL backups.
-
-Reserved addresses are granted by command:
+O `yjs-server` não entra no CI. Quando ele mudar, como root no servidor:
 
 ```bash
-php artisan prefix:grant address-name
+cd /opt/dumphere && git pull
+cd yjs-server && docker compose up -d --build dev prod
 ```
+
+O mesmo `compose.yml` põe os cabeçalhos de segurança (CSP, HSTS, `X-Frame-Options`) no domínio do site de cada ambiente ([ADR 0003](decisions/0003-cabecalhos-de-seguranca.md)). Domínio de produção novo: troque `SITE_HOST_PROD` num `.env` ao lado do `compose.yml` e recrie o container. Para conferir: `curl -sI https://dumphere-dev.app.overclk.tech | grep -i content-security`.
+
+Rode um só container por ambiente: o Yjs guarda o documento em memória, e dois processos divergem. O `stop_grace_period` de 60 segundos dá tempo de gravar os documentos abertos antes de parar.
+
+## Reservar um endereço
+
+No console, Function `admin`, **Execute**, método `POST`, caminho `/grant`, corpo:
+
+```json
+{ "address": "acme", "password": "senha-do-dono", "readonly": false, "visitorPassword": "", "hue": null, "saturation": null, "years": 100 }
+```
+
+A resposta traz a `recoveryKey`. Ela aparece só nessa vez: entregue ao dono, que usa em `/recover` se esquecer a senha.
+
+## Limpeza
+
+A Function `admin` roda todo dia às 3h UTC e apaga as páginas sem acesso há mais de 30 dias, menos as de endereços reservados, e as tentativas com mais de um dia. Não há lixeira: o que foi apagado só volta pelo backup do servidor. Para rodar na hora, execute `POST /purge`.

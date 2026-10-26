@@ -8,14 +8,14 @@
         "npm": ">=11.0.0"
     },
     "scripts": {
-        "start": "node --env-file-if-exists=../.env server.mjs",
-        "dev": "node --watch --env-file-if-exists=../.env server.mjs",
+        "start": "node server.mjs",
+        "dev": "node --watch --env-file-if-exists=.env server.mjs",
         "test": "node --test"
     },
     "dependencies": {
-        "pg": "^8.22.0",
-        "ws": "^8.21.1",
-        "y-websocket": "^1.5.4",
-        "yjs": "^13.6.31"
+        "node-appwrite": "30.0.1",
+        "ws": "8.21.1",
+        "y-websocket": "1.5.4",
+        "yjs": "13.6.31"
     }
 }

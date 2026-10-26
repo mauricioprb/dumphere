@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { isIP } from 'node:net';
 
-const DOCUMENT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const DOCUMENT_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,35}$/;
 const BASE64_URL_PATTERN = /^[A-Za-z0-9_-]+$/;
 const MAX_TOKEN_LIFETIME_SECONDS = 7200;
 const SCOPES = new Set(['write', 'read']);
@@ -22,14 +22,14 @@ export function roomForDocument(documentId) {
         throw new Error('Invalid document identifier');
     }
 
-    return `document-${documentId.toLowerCase()}`;
+    return `document-${documentId}`;
 }
 
 export function roomFromPathname(pathname) {
     try {
         const room = decodeURIComponent(pathname).replace(/^\/+|\/+$/g, '');
 
-        return /^document-[0-9a-f-]{36}$/i.test(room) && !room.includes('/') ? room.toLowerCase() : null;
+        return /^document-[A-Za-z0-9][A-Za-z0-9._-]{0,35}$/.test(room) ? room : null;
     } catch {
         return null;
     }
@@ -90,7 +90,7 @@ export function verifyToken(token, secret, now = Math.floor(Date.now() / 1000)) 
             valid: true,
             scope,
             gate,
-            documentId: documentId.toLowerCase(),
+            documentId,
             room: roomForDocument(documentId),
         };
     } catch {
@@ -133,7 +133,7 @@ export function resolveClientIp(forwardedHeader, remoteAddress, trustProxy, trus
 
 function isTrustedProxy(remoteAddress, trustedProxies) {
     if (!(trustedProxies instanceof Set)) return false;
-    if (trustedProxies.has(remoteAddress)) return true;
+    if (trustedProxies.has('*') || trustedProxies.has(remoteAddress)) return true;
 
     return remoteAddress.startsWith('::ffff:') && trustedProxies.has(remoteAddress.slice('::ffff:'.length));
 }
