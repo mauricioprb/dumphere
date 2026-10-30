@@ -3,7 +3,7 @@
     "require": {
         "php": "^8.4",
         "appwrite/appwrite": "28.0.0",
-        "symfony/html-sanitizer": "8.1.8"
+        "symfony/html-sanitizer": "8.1.10"
     },
     "autoload": {
         "psr-4": {
