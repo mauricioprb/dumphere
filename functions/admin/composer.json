@@ -15,7 +15,7 @@
         }
     },
     "require-dev": {
-        "laravel/pint": "1.32.1"
+        "laravel/pint": "1.32.3"
     },
     "scripts": {
         "lint": "pint --test",
